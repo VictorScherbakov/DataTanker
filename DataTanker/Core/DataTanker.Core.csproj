@@ -73,7 +73,7 @@
     <Compile Include="IValueStorage.cs" />
     <Compile Include="IValue.cs" />
     <Compile Include="IComparableKey.cs" />
-    <Compile Include="ComparableComparableKeyOf.cs" />
+    <Compile Include="ComparableKeyOf.cs" />
     <Compile Include="BinaryFormat\Page\BPlusTreeNodePageHeader.cs" />
     <Compile Include="MemoryManagement\AllocationType.cs" />
     <Compile Include="BinaryFormat\Page\EnumHelper.cs" />

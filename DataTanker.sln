@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{220BF7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTanker.Core.Tests", "DataTanker\Tests\Unit\DataTanker.Core.Tests.csproj", "{677A726B-E269-46DB-827C-36858F0CC534}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Performance", "DataTanker\Tests\Performance\Performance\Performance.csproj", "{CB86CE2C-8B57-4833-94C2-4A304DDBE48E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Performance", "DataTanker\Tests\Performance\Performance.csproj", "{CB86CE2C-8B57-4833-94C2-4A304DDBE48E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
