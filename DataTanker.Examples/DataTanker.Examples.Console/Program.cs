@@ -56,36 +56,6 @@ namespace DataTanker.Examples.Console
 
         static void Main(string[] args)
         {
-            var factory = new StorageFactory();
-
-            // create storage with integer keys and byte[] values
-            using (var storage = factory.CreateBPlusTreeByteArrayStorage<int>(
-                BitConverter.GetBytes,            // key serialization
-                p => BitConverter.ToInt32(p, 0),  // key deserialization
-                BPlusTreeStorageSettings.Default(sizeof(int))))
-            {
-                storage.OpenOrCreate(Directory.GetCurrentDirectory());
-
-                var r = new Random();
-                var bytes = new byte[20];
-                const int count = 1000000;
-
-                for (int i = 0; i < count; i++)
-                {
-                    // fill value with random bytes
-                    r.NextBytes(bytes);
-
-                    // insert
-                    storage.Set(i, bytes);
-                }
-
-                for (int i = 0; i < count; i++)
-                {
-                    // read
-                    bytes = storage.Get(i);
-                }
-            }
-
             WriteMessage("DataTanker console example - interactive key-value storage");
             WriteMessage("with integer keys and string values");
             WriteMessage("");
