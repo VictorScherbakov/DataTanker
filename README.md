@@ -59,7 +59,9 @@ In cases where the data storage is required, but the file system is not suitable
 
 ## Access methods
 
-Now DataTanker supports two access methods: B+Tree and RadixTree.
+Now DataTanker support two access methods: B+Tree and RadixTree.
+B+Tree have a good fill factor and demonstrates best performance on small sized keys without hierarchy.
+RadixTree is well suited for storing long hierarchical keys like filepaths.
 
 ## Keys
 Serialization and deserialization methods should be provided for the objects used as keys. Existing key always corresponds to a single value. 
