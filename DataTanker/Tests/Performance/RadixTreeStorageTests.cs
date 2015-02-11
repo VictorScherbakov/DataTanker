@@ -23,7 +23,7 @@ namespace Performance
 
         public static void EnglishWords(Action<string> writeInfo)
         {
-            using (var fileStream = new FileStream("..\\..\\..\\Data\\words.txt", FileMode.Open))
+            using (var fileStream = new FileStream("..\\..\\..\\Performance\\Data\\words.txt", FileMode.Open))
             {
                 using (var textReader = new StreamReader(fileStream))
                 {
