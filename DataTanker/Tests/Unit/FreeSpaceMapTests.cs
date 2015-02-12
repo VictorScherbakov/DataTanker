@@ -11,16 +11,11 @@ using DataTanker;
 namespace Tests
 {
     [TestFixture]
-    public class FreeSpaceMapTests
+    public class FreeSpaceMapTests : FileSystemStorageTestBase
     {
-        private string _workPath = "..\\..\\Storages";
-
-        [TearDown]
-        public void Cleanup()
+        public FreeSpaceMapTests()
         {
-            string[] files = Directory.GetFiles(_workPath);
-            foreach (string file in files)
-                File.Delete(file);
+            StoragePath = "..\\..\\Storages";
         }
 
         [Test]
@@ -36,7 +31,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
                 new FreeSpaceMap(manager);
             }
         }
@@ -47,7 +42,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
                 var fsm = new FreeSpaceMap(manager);
 
                 foreach (var fsmValue in EnumHelper.FixedSizeItemsFsmValues())
@@ -61,7 +56,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
                 var fsm = new FreeSpaceMap(manager);
 
                 int entryCount = PageFormatter.GetFsmEntryCount(manager.FetchPage(1));
@@ -77,7 +72,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
                 var fsm = new FreeSpaceMap(manager);
 
                 var r = new Random();
@@ -100,7 +95,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
                 var fsm = new FreeSpaceMap(manager);
 
                 int entryPerPage = PageFormatter.GetFsmEntryCount(manager.FetchPage(1));

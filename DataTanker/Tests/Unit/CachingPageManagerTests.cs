@@ -10,9 +10,12 @@ using NUnit.Framework;
 namespace Tests
 {
     [TestFixture]
-    public class CachingPageManagerTests
+    public class CachingPageManagerTests : FileSystemStorageTestBase
     {
-        private string _workPath = "..\\..\\Storages";
+        public CachingPageManagerTests()
+        {
+            StoragePath = "..\\..\\Storages";
+        }
 
         private bool AreEqualByteArrays(byte[] bytes1, byte[] bytes2)
         {
@@ -36,14 +39,6 @@ namespace Tests
         }
 
 
-        [TearDown]
-        public void Cleanup()
-        {
-            string[] files = Directory.GetFiles(_workPath);
-            foreach (string file in files)
-                File.Delete(file);
-        }
-
         [Test]
         public void SinglePage()
         {
@@ -52,7 +47,7 @@ namespace Tests
 
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 // append a page
                 IPage page = manager.CreatePage();
@@ -97,7 +92,7 @@ namespace Tests
 
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 var r = new Random();
 
@@ -156,7 +151,7 @@ namespace Tests
             var pages = new List<IPage>();
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 var r = new Random();
 
@@ -202,7 +197,7 @@ namespace Tests
             var m = new FileSystemPageManager(4096);
             using (var storage = new Storage(m))
             {
-                storage.OpenExisting(_workPath);
+                storage.OpenExisting(StoragePath);
 
                 // fetch and compare pages by filesystem manager
                 CheckStoragePages(pages, m);

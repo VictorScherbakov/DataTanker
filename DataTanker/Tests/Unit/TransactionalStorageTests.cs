@@ -12,16 +12,11 @@ using DataTanker;
 namespace Tests
 {
     [TestFixture]
-    public class TransactionalStorageTests
+    public class TransactionalStorageTests : FileSystemStorageTestBase
     {
-        private string _workPath = "..\\..\\Storages";
-
-        [TearDown]
-        public void Cleanup()
+        public TransactionalStorageTests()
         {
-            string[] files = Directory.GetFiles(_workPath);
-            foreach (string file in files)
-                File.Delete(file);
+            StoragePath = "..\\..\\Storages";
         }
 
         [Test]
@@ -29,7 +24,7 @@ namespace Tests
         {
             using (var storage = new TransactionalStorage(new FileSystemPageManager(4096)))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
                 ISnapshotData snapshotData;
                 var number = storage.CreateTransaction(out snapshotData);
                 Assert.AreEqual(TransactionState.Active, storage.GetState(number));
@@ -41,7 +36,7 @@ namespace Tests
         {
             using (var storage = new TransactionalStorage(new FileSystemPageManager(4096)))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 ISnapshotData snapshotData;
                 var number = storage.CreateTransaction(out snapshotData);
@@ -65,7 +60,7 @@ namespace Tests
 
             using (var storage = new TransactionalStorage(new FileSystemPageManager(4096)))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 for (int i = 0; i < count; i++)
                 {

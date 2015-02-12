@@ -60,6 +60,7 @@
     <Compile Include="Emulation\SnapshotData.cs" />
     <Compile Include="Emulation\MemoryManager.cs" />
     <Compile Include="Emulation\MemoryValueStorage.cs" />
+    <Compile Include="FileSystemStorageTestBase.cs" />
     <Compile Include="FreeSpaceMapTests.cs" />
     <Compile Include="PageFormatterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

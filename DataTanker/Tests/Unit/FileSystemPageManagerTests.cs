@@ -12,9 +12,13 @@ using DataTanker;
 namespace Tests
 {
     [TestFixture]
-    public class FileSystemPageManagerTests
+    public class FileSystemPageManagerTests : FileSystemStorageTestBase
     {
-        private string _workPath = "..\\..\\Storages";
+        public FileSystemPageManagerTests()
+        {
+            StoragePath = "..\\..\\Storages";
+        }
+
         private List<IPage> _sharedPages = new List<IPage>();
         private FileSystemPageManager _sharedManager;
         private static readonly object _locker = new object();
@@ -22,7 +26,7 @@ namespace Tests
         [TearDown]
         public void Cleanup()
         {
-            string[] files = Directory.GetFiles(_workPath);
+            string[] files = Directory.GetFiles(StoragePath);
             foreach (string file in files)
                 File.Delete(file);
         }
@@ -62,7 +66,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 // append a page
                 IPage page = manager.CreatePage();
@@ -105,7 +109,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 var r = new Random();
 
@@ -164,7 +168,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 var r = new Random();
 
@@ -215,7 +219,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
                 _sharedManager = manager;
 
                 // create threads

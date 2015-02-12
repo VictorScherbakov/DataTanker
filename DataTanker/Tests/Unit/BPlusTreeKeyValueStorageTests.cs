@@ -13,9 +13,12 @@ using DataTanker;
 namespace Tests
 {
     [TestFixture]
-    public class BPlusTreeKeyValueStorageTests
+    public class BPlusTreeKeyValueStorageTests : FileSystemStorageTestBase
     {
-        private string _workPath = "..\\..\\Storages";
+        public BPlusTreeKeyValueStorageTests()
+        {
+            StoragePath = "..\\..\\Storages";
+        }
 
         private IBPlusTreeKeyValueStorage<ComparableKeyOf<String>, ValueOf<String>> GetStorage()
         {
@@ -36,20 +39,12 @@ namespace Tests
                 settings);
         }
 
-        [TearDown]
-        public void Cleanup()
-        {
-            string[] files = Directory.GetFiles(_workPath);
-            foreach (string file in files)
-                File.Delete(file);
-        }
-
         [Test]
         public void SingleKeyOperations()
         {
             using (var storage = GetStorage())
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
                 storage.Set("1", "1");
                 string value = storage.Get("1");
 
@@ -73,13 +68,13 @@ namespace Tests
         {
             using (var storage = GetStorage())
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
                 storage.Set("1", "1");
             }
 
             using (var storage = GetStorage())
             {
-                storage.OpenExisting(_workPath);
+                storage.OpenExisting(StoragePath);
                 string value = storage.Get("1");
                 Assert.AreEqual("1", value);
             }
@@ -97,7 +92,7 @@ namespace Tests
 
             using (var storage = GetStorage())
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 foreach (var pair in pairs)
                     storage.Set(pair.Key.ToString(CultureInfo.InvariantCulture), pair.Value.ToString(CultureInfo.InvariantCulture));
@@ -105,7 +100,7 @@ namespace Tests
 
             using (var storage = GetStorage())
             {
-                storage.OpenExisting(_workPath);
+                storage.OpenExisting(StoragePath);
 
                 foreach (var pair in pairs)
                 {
@@ -127,7 +122,7 @@ namespace Tests
 
             using (var storage = GetStorage())
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 foreach (var pair in pairs)
                     storage.Set(pair.Key.ToString(CultureInfo.InvariantCulture), pair.Value.ToString(CultureInfo.InvariantCulture));
@@ -137,7 +132,7 @@ namespace Tests
 
             using (var storage = GetStorage())
             {
-                storage.OpenExisting(_workPath);
+                storage.OpenExisting(StoragePath);
 
                 foreach (var pair in pairs)
                 {
@@ -151,7 +146,7 @@ namespace Tests
 
             using (var storage = GetStorage())
             {
-                storage.OpenExisting(_workPath);
+                storage.OpenExisting(StoragePath);
 
                 foreach (var pair in pairs)
                 {
@@ -182,7 +177,7 @@ namespace Tests
             using (var storage = GetStorage())
             {
                 _sharedStorage = storage;
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 // create threads
                 var threads = new List<Thread>();

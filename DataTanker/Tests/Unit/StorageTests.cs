@@ -9,16 +9,11 @@ using DataTanker;
 namespace Tests
 {
     [TestFixture]
-    public class StorageTests
+    public class StorageTests : FileSystemStorageTestBase
     {
-        private string _workPath = "..\\..\\Storages";
-
-        [TearDown]
-        public void Cleanup()
+        public StorageTests()
         {
-            string[] files = Directory.GetFiles(_workPath);
-            foreach (string file in files)
-                File.Delete(file);
+            StoragePath = "..\\..\\Storages";
         }
 
         [Test]
@@ -33,7 +28,7 @@ namespace Tests
                         p => BitConverter.ToInt32(p, 0),
                         BPlusTreeStorageSettings.Default()))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
             }
 
             using (var storage = factory.CreateBPlusTreeStorage<ComparableKeyOf<Int32>, ValueOf<Int32>>(
@@ -43,7 +38,7 @@ namespace Tests
                         p => BitConverter.ToInt32(p, 0),
                         BPlusTreeStorageSettings.Default()))
             {
-                storage.OpenExisting(_workPath);
+                storage.OpenExisting(StoragePath);
             }
 
             using (var storage = factory.CreateBPlusTreeStorage<ComparableKeyOf<Int32>, ValueOf<Int32>>(
@@ -53,7 +48,7 @@ namespace Tests
             p => BitConverter.ToInt32(p, 0),
             BPlusTreeStorageSettings.Default()))
             {
-                storage.OpenOrCreate(_workPath);
+                storage.OpenOrCreate(StoragePath);
             }
         }
 
@@ -70,7 +65,7 @@ namespace Tests
                         p => BitConverter.ToInt32(p, 0),
                         BPlusTreeStorageSettings.Default()))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
             }
 
             var differentSettings = BPlusTreeStorageSettings.Default();
@@ -83,7 +78,7 @@ namespace Tests
                         p => BitConverter.ToInt32(p, 0),
                         differentSettings))
             {
-                storage.OpenExisting(_workPath);
+                storage.OpenExisting(StoragePath);
             }
         }
     }

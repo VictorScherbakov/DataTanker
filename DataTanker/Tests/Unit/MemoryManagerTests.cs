@@ -14,16 +14,11 @@ using DataTanker;
 namespace Tests
 {
     [TestFixture]
-    public class MemoryManagerTests
+    public class MemoryManagerTests : FileSystemStorageTestBase
     {
-        private string _workPath = "..\\..\\Storages";
-
-        [TearDown]
-        public void Cleanup()
+        public MemoryManagerTests()
         {
-            string[] files = Directory.GetFiles(_workPath);
-            foreach (string file in files)
-                File.Delete(file);
+            StoragePath = "..\\..\\Storages";
         }
 
         private bool AreEqualByteArrays(byte[] bytes1, byte[] bytes2)
@@ -66,7 +61,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 var fsm = new FreeSpaceMap(manager);
 
@@ -117,7 +112,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 var fsm = new FreeSpaceMap(manager);
 
@@ -168,7 +163,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 var fsm = new FreeSpaceMap(manager);
 
@@ -198,7 +193,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 var fsm = new FreeSpaceMap(manager);
 
@@ -231,7 +226,7 @@ namespace Tests
             var manager = new FileSystemPageManager(4096);
             using (var storage = new Storage(manager))
             {
-                storage.CreateNew(_workPath);
+                storage.CreateNew(StoragePath);
 
                 var fsm = new FreeSpaceMap(manager);
 
