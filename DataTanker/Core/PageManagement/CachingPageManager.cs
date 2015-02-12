@@ -42,7 +42,7 @@
             for (int i = 0; i < temp.Count; i++)
             {
                 var t = temp[i];
-                if (i < truncation && t.Pinned)
+                if (i < truncation || t.Pinned)
                 {
                     t.HitCount = 0;
                     _entries.Add(t.Page.Index, t);
@@ -164,11 +164,14 @@
             Lock();
             try
             {
-                foreach (PageCacheEntry cacheEntry in _entries.Values.Where(entry => entry.IsDirty && !entry.Pinned))
+                if (_dirtyPageCount > 0)
                 {
-                    _underlyingPageManager.UpdatePage(cacheEntry.Page);
-                    cacheEntry.IsDirty = false;
-                    _dirtyPageCount--;
+                    foreach (PageCacheEntry cacheEntry in _entries.Values.Where(entry => entry.IsDirty && !entry.Pinned))
+                    {
+                        _underlyingPageManager.UpdatePage(cacheEntry.Page);
+                        cacheEntry.IsDirty = false;
+                        _dirtyPageCount--;
+                    }
                 }
             }
             finally
