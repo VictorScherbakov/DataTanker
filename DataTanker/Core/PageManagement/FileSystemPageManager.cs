@@ -6,6 +6,9 @@
     using System.Diagnostics;
     using System.Linq;
 
+    using Recovery;
+    using Utils;
+
     /// <summary>
     /// Implements a page-level interface of a storage
     /// over a file system.
@@ -21,14 +24,17 @@
         private readonly PageMap _pagemap;
 
         private static string _storageFileName = "storage";
+        private static string _recoveryFileName = "recovery";
 
-        private object _locker = new object();
+        private readonly object _locker = new object();
 
         private readonly bool _forcedWrites;
         private readonly int _writeBufferSize;
 
         // storage content file
         private FileStream _storageStream;
+        private readonly RecoveryFile _recoveryFile;
+        private bool _deferredUpdatesMode;
 
         private void Flush(Stream stream)
         {
@@ -44,6 +50,11 @@
         private string StorageFileName()
         {
             return _storage.Path + Path.DirectorySeparatorChar + _storageFileName;
+        }
+
+        private string RecoveryFileName()
+        {
+            return _storage.Path + Path.DirectorySeparatorChar + _recoveryFileName;
         }
 
         public void CheckIfStorageFilesExist(string path)
@@ -157,8 +168,7 @@
                     // last page is occupied
                     // read its content
                     _storageStream.Seek(-_pageSize, SeekOrigin.End);
-                    if (_storageStream.Read(reallocatedPageBytes, 0, _pageSize) < _pageSize)
-                        throw new IOException("Unable to read reallocated page");
+                    _storageStream.BlockingRead(reallocatedPageBytes);
 
                     var firstFreePage = freePageData[0];
                     var newPageAllocation = firstFreePage.Item1;
@@ -244,6 +254,47 @@
         }
 
         /// <summary>
+        /// Switches page manager instane to the atomic operation mode.
+        /// In such a mode, all further changes can be applied all at once 
+        /// by calling ExitAtomicOperation() method or canceled.
+        /// </summary>
+        public void EnterAtomicOperation()
+        {
+            if (!_deferredUpdatesMode && _recoveryFile != null)
+                _deferredUpdatesMode = true;
+        }
+
+        /// <summary>
+        /// Switches page manager instane to normal mode.
+        /// All the changes made since the last EnterAtomicOperation() call are applied.
+        /// </summary>
+        public void ExitAtomicOperation()
+        {
+            if (_deferredUpdatesMode)
+            {
+                // write end marker to indicate that 
+                // one can playback the recovery records
+                // without risking to corrupt the storage
+                _recoveryFile.WriteFinalMarker();
+
+                // switch off deferred update mode for normal page management operation
+                _deferredUpdatesMode = false;
+
+                foreach (var pageIndex in _recoveryFile.UpdatedPageIndexes)
+                    UpdatePage(new Page(this, pageIndex, _recoveryFile.GetUpdatedPageContent(pageIndex)));
+
+                foreach (var index in _recoveryFile.DeletedPageIndexes)
+                    RemovePage(index);
+
+                Flush(_storageStream);
+                _pagemap.Flush();
+
+                // now all are done, reset the recovery file
+                _recoveryFile.Reset();
+            }
+        }
+
+        /// <summary>
         /// Gets the storage instance that operates with storage pages via this page manager.
         /// </summary>
         public IStorage Storage
@@ -268,6 +319,12 @@
             try
             {
                 CheckStorage();
+
+                if (_deferredUpdatesMode)
+                {
+                    if (_recoveryFile.DeletedPageIndexes.Contains(pageIndex))
+                        return false;
+                }
 
                 if (pageIndex > _pagemap.GetMaxPageIndex())
                     return false;
@@ -300,6 +357,15 @@
             {
                 CheckStorage();
 
+                if (_deferredUpdatesMode)
+                {
+                    if (_recoveryFile.IsPageUpdated(pageIndex))
+                        return new Page(this, pageIndex, _recoveryFile.GetUpdatedPageContent(pageIndex));
+
+                    if(_recoveryFile.DeletedPageIndexes.Contains(pageIndex))
+                        throw new PageMapException(string.Format("Page {0} is removed", pageIndex));
+                }
+
                 long pageAllocation = _pagemap.GetPageAllocation(pageIndex);
                 if (pageAllocation == -1)
                     throw new PageMapException("Page is removed");
@@ -308,8 +374,8 @@
 
                 _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
                 var pageContent = new byte[_pageSize];
-                if (_storageStream.Read(pageContent, 0, _pageSize) < _pageSize)
-                    throw new IOException("Unable to read page content");
+
+                _storageStream.BlockingRead(pageContent);
 
                 return new Page(this, pageIndex, pageContent);
             }
@@ -340,6 +406,15 @@
             {
                 CheckStorage();
 
+                if (_deferredUpdatesMode)
+                {
+                    if (_recoveryFile.IsPageUpdated(pageIndex))
+                        return new Page(this, pageIndex, _recoveryFile.GetUpdatedPageContent(pageIndex));
+
+                    if (_recoveryFile.DeletedPageIndexes.Contains(pageIndex))
+                        throw new PageMapException(string.Format("Page {0} is removed", pageIndex));
+                }
+
                 long pageAllocation = _pagemap.GetPageAllocation(pageIndex);
                 if (pageAllocation == -1)
                     throw new PageMapException("Page is removed");
@@ -347,8 +422,7 @@
                 CheckRemovalMarker(pageIndex);
 
                 _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
-                if (_storageStream.Read(content, 0, _pageSize) < _pageSize)
-                    throw new IOException("Unable to read page content");
+                _storageStream.BlockingRead(content);
 
                 return new Page(this, pageIndex, content);
             }
@@ -374,17 +448,24 @@
             {
                 CheckStorage();
 
-                long pageAllocation = _pagemap.GetPageAllocation(page.Index);
-                if (pageAllocation == -1)
-                    throw new PageMapException("Page is removed");
+                if (_deferredUpdatesMode)
+                {
+                    _recoveryFile.WriteUpdatePageRecord(page);
+                }
+                else
+                {
+                    long pageAllocation = _pagemap.GetPageAllocation(page.Index);
+                    if (pageAllocation == -1)
+                        throw new PageMapException("Page is removed");
 
-                CheckRemovalMarker(page.Index);
-                _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
-                _storageStream.Write(page.ContentCopy, 0, _pageSize);
+                    CheckRemovalMarker(page.Index);
+                    _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
+                    _storageStream.Write(page.ContentCopy, 0, _pageSize);
 
-                _pagemap.Flush();
+                    _pagemap.Flush();
 
-                Flush(_storageStream);
+                    Flush(_storageStream);
+                }
             }
             finally 
             {
@@ -425,21 +506,28 @@
             {
                 CheckStorage();
 
-                if (pageIndex > _pagemap.GetMaxPageIndex())
-                    throw new ArgumentException("Too large page index");
-
-                long pageAllocation = _pagemap.GetPageAllocation(pageIndex);
-                if (pageAllocation == -1)
-                    throw new PageMapException("Page is removed");
-
-                CheckRemovalMarker(pageIndex);
-
-                _pagemap.MarkPageAsFree(pageIndex);
-
-                if (_pagemap.GetEmptyPageCount() > _maxEmptyPages)
-                    Vacuum();
+                if (_deferredUpdatesMode)
+                {
+                    _recoveryFile.WriteDeletePageRecord(pageIndex);
+                }
                 else
-                    _pagemap.Flush();
+                {
+                    if (pageIndex > _pagemap.GetMaxPageIndex())
+                        throw new ArgumentException("Too large page index");
+
+                    long pageAllocation = _pagemap.GetPageAllocation(pageIndex);
+                    if (pageAllocation == -1)
+                        throw new PageMapException("Page is removed");
+
+                    CheckRemovalMarker(pageIndex);
+
+                    _pagemap.MarkPageAsFree(pageIndex);
+
+                    if (_pagemap.GetEmptyPageCount() > _maxEmptyPages)
+                        Vacuum();
+                    else
+                        _pagemap.Flush();
+                }
             }
             finally
             {
@@ -492,10 +580,53 @@
                 _storageStream = new FileStream(StorageFileName(), FileMode.Open, FileAccess.ReadWrite, FileShare.Read, _pageSize * _writeBufferSize, options);
 
                 _pagemap.Open();
+                if (File.Exists(RecoveryFileName()))
+                    Recover();
             }
             finally
             {
                 Unlock();
+            }
+        }
+
+        private void Recover()
+        {
+            var recoveryFile = _recoveryFile ?? new RecoveryFile(this, PageSize);
+            try
+            {
+                if (recoveryFile.CorrectlyFinished)
+                {
+                    // OK, the recovery file exists and finished correctly
+                    // we can use it to replay operations which may be applied partialy
+
+                    // read all records
+                    recoveryFile.ReadAllRecoveryRecords();
+
+                    // apply updates
+                    foreach (var pageIndex in recoveryFile.UpdatedPageIndexes)
+                    {
+                        if (PageExists(pageIndex))
+                            UpdatePage(new Page(this, pageIndex, recoveryFile.GetUpdatedPageContent(pageIndex)));
+                    }
+
+                    // apply removes
+                    foreach (var index in recoveryFile.DeletedPageIndexes)
+                    {
+                        if (PageExists(index))
+                            RemovePage(index);
+                    }
+
+                    Flush(_storageStream);
+                    _pagemap.Flush();
+                }
+
+                // reset recovery file in any way
+                recoveryFile.Reset();
+            }
+            finally 
+            {
+                if (_recoveryFile == null)
+                    recoveryFile.Dispose();
             }
         }
 
@@ -564,6 +695,8 @@
                             _storageStream.Close();
 
                         _pagemap.Dispose();
+                        if(_recoveryFile != null)
+                            _recoveryFile.Dispose();
                     }
                     finally
                     {
@@ -595,6 +728,18 @@
         /// <param name="forcedWrites"></param>
         /// <param name="writeBufferSize">The size of buffer (in pages) using to async write changes to disk. Async writing is not applied when forcedWrites is true.</param>
         internal FileSystemPageManager(int pageSize, bool forcedWrites, int writeBufferSize)
+            : this (pageSize, forcedWrites, writeBufferSize, false)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the FileSystemPageManager.
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="forcedWrites"></param>
+        /// <param name="writeBufferSize">The size of buffer (in pages) using to async write changes to disk. Async writing is not applied when forcedWrites is true.</param>
+        /// <param name="useRecoveryFile"></param>
+        internal FileSystemPageManager(int pageSize, bool forcedWrites, int writeBufferSize, bool useRecoveryFile)
         {
             if (pageSize < 4096)
                 throw new ArgumentOutOfRangeException("pageSize", "Too small page size");
@@ -604,6 +749,8 @@
             _writeBufferSize = forcedWrites || writeBufferSize < 1 ? 1 : writeBufferSize;
 
             _pagemap = new PageMap(this);
+            if(useRecoveryFile)
+                _recoveryFile = new RecoveryFile(this, pageSize);
         }
     }
 }

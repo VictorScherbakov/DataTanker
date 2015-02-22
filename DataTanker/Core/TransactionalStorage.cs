@@ -45,6 +45,7 @@ namespace DataTanker
 
         private void EnterTransaction()
         {
+
             //// use autocommit if the transaction is not set 
             //_shouldCommitOnExit = _transactionProvider.Current == null;
 
@@ -66,6 +67,11 @@ namespace DataTanker
 
 
         internal TransactionalStorage(IPageManager pageManager) : base(pageManager)
+        {
+        }
+
+        internal TransactionalStorage(IPageManager pageManager, int autoFlushInterval)
+            : base(pageManager, autoFlushInterval)
         {
         }
 

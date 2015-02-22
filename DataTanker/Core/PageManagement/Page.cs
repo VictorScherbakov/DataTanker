@@ -54,7 +54,7 @@
         }
 
         /// <summary>
-        /// Gets the copy of page content.
+        /// Gets a copy of page content.
         /// </summary>
         public byte[] ContentCopy
         {

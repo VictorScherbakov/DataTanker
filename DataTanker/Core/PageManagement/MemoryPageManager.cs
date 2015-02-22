@@ -80,6 +80,23 @@
         }
 
         /// <summary>
+        /// Switches page manager instane to the atomic operation mode.
+        /// In such a mode, all further changes can be applied all at once 
+        /// by calling ExitAtomicOperation() method or canceled.
+        /// </summary>
+        public void EnterAtomicOperation()
+        {
+        }
+
+        /// <summary>
+        /// Switches page manager instane to normal mode.
+        /// All the changes made since the last EnterAtomicOperation() call are applied.
+        /// </summary>
+        public void ExitAtomicOperation()
+        {
+        }
+
+        /// <summary>
         /// Gets the storage instance that operates with storage pages via this page manager.
         /// </summary>
         public IStorage Storage

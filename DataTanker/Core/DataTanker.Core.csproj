@@ -94,6 +94,10 @@
     <Compile Include="MemoryManagement\DbItemType.cs" />
     <Compile Include="PageManagement\MemoryPageManager.cs" />
     <Compile Include="AccessMethods\RadixTree\RadixTreeKeyValueStorage.cs" />
+    <Compile Include="Recovery\RecoveryFile.cs" />
+    <Compile Include="Recovery\RecoveryRecord.cs" />
+    <Compile Include="Recovery\RecoveryRecordType.cs" />
+    <Compile Include="Utils\StreamExtensions.cs" />
     <Compile Include="Settings\AccessMethodSpecificSettingsBase.cs" />
     <Compile Include="Settings\BPlusTreeStorageSettings.cs" />
     <Compile Include="Settings\RadixTreeStorageSettings.cs" />

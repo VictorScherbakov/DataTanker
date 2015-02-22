@@ -157,7 +157,7 @@
             {
                 var asyncWriteBuffer = usePageCache ? Math.Min(settings.CacheSettings.MaxDirtyPages, 1000) : 100;
 
-                fsPageManager = new FileSystemPageManager((int)settings.PageSize, settings.ForcedWrites, asyncWriteBuffer) { MaxEmptyPages = settings.MaxEmptyPages };
+                fsPageManager = new FileSystemPageManager((int)settings.PageSize, settings.ForcedWrites, asyncWriteBuffer, true) { MaxEmptyPages = settings.MaxEmptyPages };
 
                 pageManager = usePageCache ?
                                 new CachingPageManager(fsPageManager, settings.CacheSettings.MaxCachedPages, settings.CacheSettings.MaxDirtyPages)
@@ -173,7 +173,7 @@
                     new BPlusTreeNodeStorage<ComparableKeyOf<TKey>>(pageManager, ks, settings.MaxKeySize),
                     new ValueStorage<ValueOf<TValue>>(new MemoryManager(new FreeSpaceMap(pageManager), pageManager), vs));
 
-                return new BPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>>(pageManager, bPlusTree, settings.MaxKeySize);
+                return new BPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>>(pageManager, bPlusTree, settings.MaxKeySize, settings.AutoFlushInterval);
             }
             catch (Exception)
             {
@@ -220,7 +220,7 @@
             {
                 var asyncWriteBuffer = usePageCache ? Math.Min(settings.CacheSettings.MaxDirtyPages, 1000) : 100;
 
-                fsPageManager = new FileSystemPageManager((int)settings.PageSize, settings.ForcedWrites, asyncWriteBuffer) { MaxEmptyPages = settings.MaxEmptyPages };
+                fsPageManager = new FileSystemPageManager((int)settings.PageSize, settings.ForcedWrites, asyncWriteBuffer, true) { MaxEmptyPages = settings.MaxEmptyPages };
 
                 pageManager = usePageCache ?
                                 new CachingPageManager(fsPageManager, settings.CacheSettings.MaxCachedPages, settings.CacheSettings.MaxDirtyPages)

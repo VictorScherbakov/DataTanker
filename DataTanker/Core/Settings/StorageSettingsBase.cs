@@ -31,5 +31,12 @@
         /// Vacuum procedure starts immediately when this value is reached.
         /// </summary>
         public int MaxEmptyPages { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value defining a number of storage write operations (inserts, deletes, and updates) 
+        /// to allow before forcing the changes to write out to main storage file by calling Flush().
+        /// If this is set to zero the Flush() will only called explicitly by the application.
+        /// </summary>
+        public int AutoFlushInterval { get; set; }
     }
 }

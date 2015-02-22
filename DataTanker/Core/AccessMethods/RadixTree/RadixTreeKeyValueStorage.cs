@@ -75,8 +75,9 @@ namespace DataTanker.AccessMethods.RadixTree
             if (Info.ValueClrTypeName != typeof(TValue).FullName)
                 throw new DataTankerException("Mismatch storage value type");
 
-            if (Info.MaxKeyLength != int.MaxValue)
-                throw new DataTankerException("Mismatch key size");
+            // we needn't check key size for radix-tree
+            //if (Info.MaxKeyLength != int.MaxValue)
+            //    throw new DataTankerException("Mismatch key size");
         }
 
         protected override void FillInfo()
@@ -84,7 +85,6 @@ namespace DataTanker.AccessMethods.RadixTree
             base.FillInfo();
             Info.KeyClrTypeName = typeof(TKey).FullName;
             Info.ValueClrTypeName = typeof(TValue).FullName;
-            Info.MaxKeyLength = int.MaxValue;
         }
 
         public Type KeyType { get; private set; }
@@ -122,6 +122,7 @@ namespace DataTanker.AccessMethods.RadixTree
             }
             finally
             {
+                EndEditOperation();
                 ExitWrap();
             }
         }
@@ -141,6 +142,7 @@ namespace DataTanker.AccessMethods.RadixTree
             }
             finally
             {
+                EndEditOperation();
                 ExitWrap();
             }
         }
@@ -182,7 +184,12 @@ namespace DataTanker.AccessMethods.RadixTree
         }
 
         internal RadixTreeKeyValueStorage(IPageManager pageManager, IRadixTree<TKey, TValue> tree)
-            : base(pageManager)
+            : this(pageManager,  tree, 10000)
+        {
+        }
+
+        internal RadixTreeKeyValueStorage(IPageManager pageManager, IRadixTree<TKey, TValue> tree, int autoFlushInterval)
+            : base(pageManager, autoFlushInterval)
         {
             if (tree == null)
                 throw new ArgumentNullException("tree");

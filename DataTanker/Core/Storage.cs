@@ -78,6 +78,16 @@
 
         #region IStorage Members
 
+        private long _updateOperationCount;
+        private long _autoFlushInterval;
+
+        protected void EndEditOperation()
+        {
+            _updateOperationCount++;
+            if (_autoFlushInterval > 0 && _updateOperationCount > _autoFlushInterval)
+                Flush();
+        }
+
         /// <summary>
         /// Gets the on-disk structure version.
         /// </summary>
@@ -138,6 +148,8 @@
                 Close();
                 throw new NotSupportedException(string.Format("Access method {0} is not supported by this instance of storage.", headingHeader.AccessMethod));
             }
+
+            PageManager.EnterAtomicOperation();
         }
 
         private void ReadInfo()
@@ -210,7 +222,12 @@
             PageManager.Lock();
             try
             {
+                PageManager.EnterAtomicOperation();
+
                 Init();
+
+                PageManager.ExitAtomicOperation();
+                PageManager.EnterAtomicOperation();
             }
             finally
             {
@@ -254,7 +271,12 @@
                 var cachingPageManager = PageManager as ICachingPageManager;
                 if (cachingPageManager != null)
                     cachingPageManager.Flush();
+
+                PageManager.ExitAtomicOperation();
+                PageManager.EnterAtomicOperation();
             }
+
+            _updateOperationCount = 0;
         }
 
         /// <summary>
@@ -294,9 +316,11 @@
         /// Initializes a new instance of the Storage.
         /// </summary>
         /// <param name="pageManager">The FileSystemPageManager instance</param>
-        internal Storage(IPageManager pageManager)
+        /// <param name="autoFlushInterval"></param>
+        internal Storage(IPageManager pageManager, long autoFlushInterval = 10000)
         {
             _pageManager = pageManager;
+            _autoFlushInterval = autoFlushInterval;
             pageManager.Storage = this;
         }
 
@@ -315,6 +339,7 @@
             {
                 if (disposing)
                 {
+                    Flush();
                     if(PageManager != null)
                     {
                         var disposablePageManager = PageManager as IDisposable;

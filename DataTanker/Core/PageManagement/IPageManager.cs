@@ -98,5 +98,18 @@
         /// </summary>
         /// <returns>True if storage can be created, false otherwise</returns>
         bool CanCreate();
+
+        /// <summary>
+        /// Switches page manager instane to the atomic operation mode.
+        /// In such a mode, all further changes can be applied all at once 
+        /// by calling ExitAtomicOperation() method or canceled.
+        /// </summary>
+        void EnterAtomicOperation();
+
+        /// <summary>
+        /// Switches page manager instane to normal mode.
+        /// All the changes made since the last EnterAtomicOperation() call are applied.
+        /// </summary>
+        void ExitAtomicOperation();
     }
 }

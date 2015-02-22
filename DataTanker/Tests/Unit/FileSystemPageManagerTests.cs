@@ -23,14 +23,6 @@ namespace Tests
         private FileSystemPageManager _sharedManager;
         private static readonly object _locker = new object();
 
-        [TearDown]
-        public void Cleanup()
-        {
-            string[] files = Directory.GetFiles(StoragePath);
-            foreach (string file in files)
-                File.Delete(file);
-        }
-
         private bool AreEqualByteArrays(byte[] bytes1, byte[] bytes2)
         {
             return bytes1.Length == bytes2.Length 

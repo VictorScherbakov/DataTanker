@@ -14,7 +14,8 @@
         ///     },
         /// PageSize = PageSize.Default,
         /// ForcedWrites = false,
-        /// MaxEmptyPages = 100
+        /// MaxEmptyPages = 100,
+        /// AutoFlushInterval = 10000
         /// </summary>
         /// <returns>Default storage settings</returns>
         public static RadixTreeStorageSettings Default()
@@ -28,7 +29,8 @@
                 },
                 PageSize = PageSize.Default,
                 ForcedWrites = false,
-                MaxEmptyPages = 100
+                MaxEmptyPages = 100,
+                AutoFlushInterval = 100000
             };
         }
     }

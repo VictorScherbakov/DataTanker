@@ -121,6 +121,26 @@
         }
 
         /// <summary>
+        /// Switches page manager instane to the atomic operation mode.
+        /// In such a mode, all further changes can be applied all at once 
+        /// by calling ExitAtomicOperation() method or canceled.
+        /// </summary>
+        public void EnterAtomicOperation()
+        {
+            _underlyingPageManager.EnterAtomicOperation();
+        }
+
+        /// <summary>
+        /// Switches page manager instane to normal mode.
+        /// All the changes made since the last EnterAtomicOperation() call are applied.
+        /// </summary>
+        public void ExitAtomicOperation()
+        {
+            Flush();
+            _underlyingPageManager.ExitAtomicOperation();
+        }
+
+        /// <summary>
         /// Gets or sets a maximum number of updated pages.
         /// </summary>
         public long MaxDirtyPages

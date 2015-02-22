@@ -5,6 +5,8 @@
     using System.Linq;
     using System.Collections.Generic;
 
+    using Utils;
+
     /// <summary>
     /// Represents a map of on-disk stored pages.
     /// </summary>
@@ -55,22 +57,22 @@
 
             public void Write(Stream stream)
             {
-                stream.Write(BitConverter.GetBytes(PageCount), 0, 8);
-                stream.Write(BitConverter.GetBytes(OnDiskPageCount), 0, 8);
-                stream.Write(BitConverter.GetBytes(ReleasedPageCount), 0, 8);
+                stream.Write(BitConverter.GetBytes(PageCount), 0, sizeof(long));
+                stream.Write(BitConverter.GetBytes(OnDiskPageCount), 0, sizeof(long));
+                stream.Write(BitConverter.GetBytes(ReleasedPageCount), 0, sizeof(long));
             }
 
             public void Read(Stream stream)
             {
-                var buffer = new byte[8];
+                var buffer = new byte[sizeof(long)];
 
-                stream.Read(buffer, 0, 8);
+                stream.BlockingRead(buffer);
                 PageCount = BitConverter.ToInt64(buffer, 0);
 
-                stream.Read(buffer, 0, 8);
+                stream.BlockingRead(buffer);
                 OnDiskPageCount = BitConverter.ToInt64(buffer, 0);
 
-                stream.Read(buffer, 0, 8);
+                stream.BlockingRead(buffer);
                 ReleasedPageCount = BitConverter.ToInt64(buffer, 0);
 
             }
@@ -364,8 +366,7 @@
                 return result;
 
             _fileStream.Seek(position, SeekOrigin.Begin);
-            if (_fileStream.Read(result, 0, _blockLength) < _blockLength)
-                throw new IOException("Unable to read pagemap block");
+            _fileStream.BlockingRead(result);
 
             _blockCache[index] = result;
             return result;
@@ -373,13 +374,13 @@
 
         public void Flush()
         {
-            if(_header.Changed) WriteHeader();
+            if (_header.Changed) WriteHeader();
 
             if (_dirtyBlockIndexes.Any())
             {
                 foreach (var blockIndex in _dirtyBlockIndexes)
                 {
-                    _fileStream.Seek(_blockLength + blockIndex * _blockLength, SeekOrigin.Begin);
+                    _fileStream.Seek(_blockLength + blockIndex*_blockLength, SeekOrigin.Begin);
                     _fileStream.Write(_blockCache[blockIndex], 0, _blockLength);
                 }
                 _dirtyBlockIndexes.Clear();
@@ -400,7 +401,11 @@
             _header = new PagemapHeader();
 
             ReadHeader();
+
+            _opened = true;
         }
+
+        private bool _opened;
 
         /// <summary>
         /// Creates a pagemap on disk.
@@ -431,9 +436,11 @@
             {
                 if (disposing)
                 {
-                    Flush();
-                    if(_fileStream != null)
+                    if (_opened)
+                    {
+                        Flush();
                         _fileStream.Close();
+                    }
                 }
                 _disposed = true;
             }

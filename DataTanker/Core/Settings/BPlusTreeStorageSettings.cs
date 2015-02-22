@@ -32,7 +32,8 @@
         /// PageSize = PageSize.Default,
         /// ForcedWrites = false,
         /// MaxKeySize = 500,
-        /// MaxEmptyPages = 100
+        /// MaxEmptyPages = 100,
+        /// AutoFlushInterval = 10000
         /// </summary>
         /// <returns>Default storage settings</returns>
         public static BPlusTreeStorageSettings Default()
@@ -47,7 +48,8 @@
                 PageSize = PageSize.Default,
                 ForcedWrites = false,
                 MaxKeySize = 500,
-                MaxEmptyPages = 100
+                MaxEmptyPages = 100,
+                AutoFlushInterval = 100000
             };
         }
     }
