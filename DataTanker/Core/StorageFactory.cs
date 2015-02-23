@@ -233,7 +233,7 @@
                     new RadixTreeNodeStorage(pageManager),
                     new ValueStorage<ValueOf<TValue>>(new MemoryManager(new FreeSpaceMap(pageManager), pageManager), vs), ks);
 
-                return new RadixTreeKeyValueStorage<KeyOf<TKey>, ValueOf<TValue>>(pageManager, radixTree);
+                return new RadixTreeKeyValueStorage<KeyOf<TKey>, ValueOf<TValue>>(pageManager, radixTree, settings.AutoFlushInterval);
 
             }
             catch (Exception)
