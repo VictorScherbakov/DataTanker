@@ -109,18 +109,23 @@
         private IPage AppendPage()
         {
             long pageIndex = _pagemap.GetMaxPageIndex() + 1;
-
-            _pagemap.WritePageAllocation(pageIndex, _storageStream.Length);
-            _pagemap.WritePageIndex(pageIndex, _storageStream.Length);
-            _pagemap.Flush();
-            
-            _storageStream.Seek(0, SeekOrigin.End);
             var pageBytes = new byte[_pageSize];
-            _storageStream.Write(pageBytes, 0, _pageSize);
-            Flush(_storageStream);
+
+            // prevent ThreadAbortException
+            try { }
+            finally
+            {
+                _pagemap.WritePageAllocation(pageIndex, _storageStream.Length);
+                _pagemap.WritePageIndex(pageIndex, _storageStream.Length);
+                _pagemap.Flush();
+
+                _storageStream.Seek(0, SeekOrigin.End);
+               
+                _storageStream.Write(pageBytes, 0, _pageSize);
+                Flush(_storageStream);
+            }
 
             var result = new Page(this, pageIndex, pageBytes);
-
             return result;
         }
 
@@ -132,13 +137,20 @@
             if (pageAllocation == -1)
                 throw new PageMapException("Page is removed");
 
-            _pagemap.TruncateLastFreePageMarker();
-            _pagemap.Flush();
-
             var pageBytes = new byte[_pageSize];
-            _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
-            _storageStream.Write(pageBytes, 0, _pageSize);
-            Flush(_storageStream);
+
+            // prevent ThreadAbortException
+            try{ }
+            finally
+            {
+                _pagemap.TruncateLastFreePageMarker();
+                _pagemap.Flush();
+
+                
+                _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
+                _storageStream.Write(pageBytes, 0, _pageSize);
+                Flush(_storageStream);
+            }
 
             return new Page(this, pageIndex, pageBytes);
         }
@@ -521,12 +533,17 @@
 
                     CheckRemovalMarker(pageIndex);
 
-                    _pagemap.MarkPageAsFree(pageIndex);
+                    // prevent ThreadAbortException while vacuuming
+                    try { }
+                    finally
+                    {
+                        _pagemap.MarkPageAsFree(pageIndex);
 
-                    if (_pagemap.GetEmptyPageCount() > _maxEmptyPages)
-                        Vacuum();
-                    else
-                        _pagemap.Flush();
+                        if (_pagemap.GetEmptyPageCount() > _maxEmptyPages)
+                            Vacuum();
+                        else
+                            _pagemap.Flush();
+                    }
                 }
             }
             finally
