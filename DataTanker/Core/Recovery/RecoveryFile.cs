@@ -21,7 +21,7 @@ namespace DataTanker.Recovery
         private FileStream _stream;
         private bool _writeDisabled;
 
-        private static string _fileName = "recovery";
+        private const string _fileName = "recovery";
 
         private class UpdateRecord
         {

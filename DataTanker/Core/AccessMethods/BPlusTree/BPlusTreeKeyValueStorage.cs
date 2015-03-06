@@ -165,7 +165,7 @@ namespace DataTanker.AccessMethods.BPlusTree
             }
             finally
             {
-                EndEditOperation();
+                EditOperationFinished();
                 ExitWrap();
             }
         }
@@ -185,7 +185,7 @@ namespace DataTanker.AccessMethods.BPlusTree
             }
             finally
             {
-                EndEditOperation();
+                EditOperationFinished();
                 ExitWrap();
             }
         }
@@ -250,12 +250,12 @@ namespace DataTanker.AccessMethods.BPlusTree
         }
 
         internal BPlusTreeKeyValueStorage(IPageManager pageManager, IBPlusTree<TKey, TValue> tree, int maxKeySize)
-            : this(pageManager, tree, maxKeySize, 10000)
+            : this(pageManager, tree, maxKeySize, 10000, TimeSpan.Zero)
         {
         }
 
-        internal BPlusTreeKeyValueStorage(IPageManager pageManager, IBPlusTree<TKey, TValue> tree, int maxKeySize, int autoFlushInterval) 
-            : base(pageManager, autoFlushInterval)
+        internal BPlusTreeKeyValueStorage(IPageManager pageManager, IBPlusTree<TKey, TValue> tree, int maxKeySize, int autoFlushInterval, TimeSpan autoFlushTimeout) 
+            : base(pageManager, autoFlushInterval, autoFlushTimeout)
         {
             if (tree == null) 
                 throw new ArgumentNullException("tree");

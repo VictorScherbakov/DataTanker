@@ -1,3 +1,5 @@
+using System.Security.Cryptography.X509Certificates;
+
 namespace DataTanker.AccessMethods.RadixTree
 {
     using System;
@@ -122,7 +124,7 @@ namespace DataTanker.AccessMethods.RadixTree
             }
             finally
             {
-                EndEditOperation();
+                EditOperationFinished();
                 ExitWrap();
             }
         }
@@ -142,7 +144,7 @@ namespace DataTanker.AccessMethods.RadixTree
             }
             finally
             {
-                EndEditOperation();
+                EditOperationFinished();
                 ExitWrap();
             }
         }
@@ -184,12 +186,12 @@ namespace DataTanker.AccessMethods.RadixTree
         }
 
         internal RadixTreeKeyValueStorage(IPageManager pageManager, IRadixTree<TKey, TValue> tree)
-            : this(pageManager,  tree, 10000)
+            : this(pageManager,  tree, 10000, TimeSpan.Zero)
         {
         }
 
-        internal RadixTreeKeyValueStorage(IPageManager pageManager, IRadixTree<TKey, TValue> tree, int autoFlushInterval)
-            : base(pageManager, autoFlushInterval)
+        internal RadixTreeKeyValueStorage(IPageManager pageManager, IRadixTree<TKey, TValue> tree, int autoFlushInterval, TimeSpan autoFlishInterval)
+            : base(pageManager, autoFlushInterval, autoFlishInterval)
         {
             if (tree == null)
                 throw new ArgumentNullException("tree");

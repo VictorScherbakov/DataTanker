@@ -10,9 +10,7 @@ namespace DataTanker.Examples.Console
         private static IKeyValueStorage<ComparableKeyOf<int>, ValueOf<string>> GetStorage()
         {
             var settings = BPlusTreeStorageSettings.Default(4); // use default settings with 4-bytes keys
-
-            // interactive applications are not focused on massive write operations
-            settings.ForcedWrites = true;             
+            settings.AutoFlushTimeout = TimeSpan.FromMilliseconds(50);
 
             return new StorageFactory().CreateBPlusTreeStorage<int, string>( 
                     BitConverter.GetBytes,               // key serialization
@@ -94,7 +92,6 @@ namespace DataTanker.Examples.Console
                             {
                                 var value = line.Substring(startIndex).Trim();
                                 storage.Set(key, value);
-                                storage.Flush();
                             }
                         }
                         continue;
@@ -115,7 +112,6 @@ namespace DataTanker.Examples.Console
                         if (GetInteger(line, out key))
                         {
                             storage.Remove(key);
-                            storage.Flush();
                             WriteMessage("Done!");
                         }
                         continue;

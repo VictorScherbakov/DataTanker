@@ -1,5 +1,7 @@
 ﻿namespace DataTanker.Settings
 {
+    using System;
+
     /// <summary>
     /// Represents the settings of storage.
     /// </summary>
@@ -17,7 +19,7 @@
         public CacheSettings CacheSettings { get; set; }
 
         /// <summary>
-        /// Gets the value indicating whether all write operations perform immediatly to file storage.
+        /// Gets the value indicating whether all write operations perform immediately to file storage.
         /// <remarks>
         /// Setting to true disables only OS file system buffer on write operations.
         /// This does not affect the page caching behavior. Disable caching if you don't need it
@@ -33,10 +35,19 @@
         public int MaxEmptyPages { get; set; }
 
         /// <summary>
-        /// Gets or sets a value defining a number of storage write operations (inserts, deletes, and updates) 
+        /// Gets or sets a value defining a number of storage write operations (inserts, deletes and updates) 
         /// to allow before forcing the changes to write out to main storage file by calling Flush().
-        /// If this is set to zero the Flush() will only called explicitly by the application.
+        /// If this property is set to zero or negative value flush is performed in cases of expired 
+        /// AutoFlushTimeout and explicit calls of the Flush method.
         /// </summary>
         public int AutoFlushInterval { get; set; }
+
+        /// <summary>
+        /// Gets or sets a timeout after which the changes made by write operations (inserts, deletes and updates) 
+        /// are written out to main storage file by calling Flush().
+        /// New countdown starts after each writing transaction and old one is canceled.
+        /// To disable timeout based flushing, set this property to zero or negative value.
+        /// </summary>
+        public TimeSpan AutoFlushTimeout { get; set; }
     }
 }

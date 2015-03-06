@@ -108,6 +108,7 @@
     <Compile Include="Transactions\ITransactionProvider.cs" />
     <Compile Include="Transactions\DataTankerTransaction.cs" />
     <Compile Include="Transactions\TransactionState.cs" />
+    <Compile Include="Utils\TimerHelper.cs" />
     <Compile Include="Versioning\SnapshotDataStub.cs" />
     <Compile Include="Versioning\WriteConflictException.cs" />
     <Compile Include="Versioning\VersionedRecord.cs" />

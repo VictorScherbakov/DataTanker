@@ -7,6 +7,7 @@
     using PageManagement;
     using BinaryFormat.Page;
     using Settings;
+    using Utils;
 
     /// <summary>
     /// Represents a data Storage.
@@ -16,6 +17,7 @@
         private bool _disposed;
 
         private readonly IPageManager _pageManager;
+        private readonly TimeSpan _autoFlushTimeout;
         private string _path = string.Empty;
         private bool _isOpen;
 
@@ -76,17 +78,23 @@
                 throw new ObjectDisposedException("Storage");
         }
 
-        #region IStorage Members
-
         private long _updateOperationCount;
-        private long _autoFlushInterval;
+        private readonly long _autoFlushInterval;
+        readonly TimerHelper _flushTimer;
 
-        protected void EndEditOperation()
+        protected void EditOperationFinished()
         {
             _updateOperationCount++;
             if (_autoFlushInterval > 0 && _updateOperationCount > _autoFlushInterval)
                 Flush();
+            else
+            {
+                if(_autoFlushTimeout > TimeSpan.Zero)
+                    _flushTimer.Start(_autoFlushTimeout);
+            }
         }
+
+        #region IStorage Members
 
         /// <summary>
         /// Gets the on-disk structure version.
@@ -268,6 +276,8 @@
 
             if (PageManager != null)
             {
+                _flushTimer.Stop();
+
                 var cachingPageManager = PageManager as ICachingPageManager;
                 if (cachingPageManager != null)
                     cachingPageManager.Flush();
@@ -312,15 +322,28 @@
             get { return _pageManager; }
         }
 
+        /// <summary> Initializes a new instance of the Storage.
+        /// </summary>
+        /// <param name="pageManager">The FileSystemPageManager instance</param>
+        internal Storage(IPageManager pageManager)
+            :this(pageManager, TimeSpan.Zero)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the Storage.
         /// </summary>
         /// <param name="pageManager">The FileSystemPageManager instance</param>
+        /// <param name="autoFlushTimeout"></param>
         /// <param name="autoFlushInterval"></param>
-        internal Storage(IPageManager pageManager, long autoFlushInterval = 10000)
+        internal Storage(IPageManager pageManager, TimeSpan autoFlushTimeout, long autoFlushInterval = 10000)
         {
-            _pageManager = pageManager;
+            _autoFlushTimeout = autoFlushTimeout;
             _autoFlushInterval = autoFlushInterval;
+            _flushTimer = new TimerHelper();
+            _flushTimer.Elapsed += (timer, o) => Flush();
+
+            _pageManager = pageManager;
             pageManager.Storage = this;
         }
 
@@ -339,6 +362,7 @@
             {
                 if (disposing)
                 {
+                    _flushTimer.Dispose();
                     Flush();
                     if(PageManager != null)
                     {

@@ -1,5 +1,7 @@
 ﻿namespace DataTanker.Settings
 {
+    using System;
+
     /// <summary>
     /// Represents settings specific to the BPlusTree access.
     /// </summary>
@@ -33,7 +35,8 @@
         /// ForcedWrites = false,
         /// MaxKeySize = 500,
         /// MaxEmptyPages = 100,
-        /// AutoFlushInterval = 10000
+        /// AutoFlushInterval = 10000,
+        /// AutoFlushTimeout = TimeSpan.Zero
         /// </summary>
         /// <returns>Default storage settings</returns>
         public static BPlusTreeStorageSettings Default()
@@ -49,7 +52,8 @@
                 ForcedWrites = false,
                 MaxKeySize = 500,
                 MaxEmptyPages = 100,
-                AutoFlushInterval = 100000
+                AutoFlushInterval = 100000,
+                AutoFlushTimeout = TimeSpan.Zero
             };
         }
     }

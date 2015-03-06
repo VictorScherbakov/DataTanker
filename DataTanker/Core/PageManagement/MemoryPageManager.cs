@@ -345,7 +345,7 @@
         }
 
         /// <summary>
-        /// Gets a value indicating whether all write operations perform immediatly to file storage
+        /// Gets a value indicating whether all write operations perform immediately to file storage
         /// </summary>
         public bool ForcedWrites
         {

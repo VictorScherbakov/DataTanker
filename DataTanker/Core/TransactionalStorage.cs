@@ -66,12 +66,12 @@ namespace DataTanker
         #endregion
 
 
-        internal TransactionalStorage(IPageManager pageManager) : base(pageManager)
+        internal TransactionalStorage(IPageManager pageManager) : base(pageManager, TimeSpan.Zero)
         {
         }
 
-        internal TransactionalStorage(IPageManager pageManager, int autoFlushInterval)
-            : base(pageManager, autoFlushInterval)
+        internal TransactionalStorage(IPageManager pageManager, int autoFlushInterval, TimeSpan autoFlushTimeout)
+            : base(pageManager, autoFlushTimeout, autoFlushInterval)
         {
         }
 

@@ -173,7 +173,7 @@
                     new BPlusTreeNodeStorage<ComparableKeyOf<TKey>>(pageManager, ks, settings.MaxKeySize),
                     new ValueStorage<ValueOf<TValue>>(new MemoryManager(new FreeSpaceMap(pageManager), pageManager), vs));
 
-                return new BPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>>(pageManager, bPlusTree, settings.MaxKeySize, settings.AutoFlushInterval);
+                return new BPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>>(pageManager, bPlusTree, settings.MaxKeySize, settings.AutoFlushInterval, settings.AutoFlushTimeout);
             }
             catch (Exception)
             {
@@ -233,7 +233,7 @@
                     new RadixTreeNodeStorage(pageManager),
                     new ValueStorage<ValueOf<TValue>>(new MemoryManager(new FreeSpaceMap(pageManager), pageManager), vs), ks);
 
-                return new RadixTreeKeyValueStorage<KeyOf<TKey>, ValueOf<TValue>>(pageManager, radixTree, settings.AutoFlushInterval);
+                return new RadixTreeKeyValueStorage<KeyOf<TKey>, ValueOf<TValue>>(pageManager, radixTree, settings.AutoFlushInterval, settings.AutoFlushTimeout);
 
             }
             catch (Exception)
