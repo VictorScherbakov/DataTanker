@@ -63,20 +63,9 @@ namespace Tests
 
                 // remove it
                 manager.RemovePage(page.Index);
-                bool exceptionThrown = false;
 
                 // try to fetch removed page
-                try
-                {
-                    manager.FetchPage(page.Index);
-                }
-                catch (PageMapException)
-                {
-                    exceptionThrown = true;
-                }
-
-                if (!exceptionThrown)
-                    Assert.Fail("Exception was not thrown");
+                Assert.Throws<PageMapException>(() => manager.FetchPage(page.Index));
 
                 // resurrect and check content
                 page = manager.CreatePage();

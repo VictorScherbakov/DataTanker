@@ -313,11 +313,7 @@
             int nodePrefixOffset;
             bool isFullMatch;
 
-            //var references = new List<DbItemReference>();
-
             IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch/*, treeNode => references.Add(treeNode.Reference)*/);
-
-            //var pageCount = references.GroupBy(r => r.PageIndex, pageIndex => pageIndex).Count();
 
             if (isFullMatch)
             {

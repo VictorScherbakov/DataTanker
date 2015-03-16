@@ -14,28 +14,50 @@ namespace DataTanker
         private readonly List<DataTankerTransaction> _transactions = new List<DataTankerTransaction>();
         private int _lastCommited = -1;
 
-        private readonly object _locker = new object();
+        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-        protected void Lock()
+        protected void EnterWriteLock()
         {
-            Monitor.Enter(_locker);
+            _lock.EnterWriteLock();
         }
 
-        protected void Unlock()
+        protected void ExitWriteUnlock()
         {
-            Monitor.Exit(_locker);
+            _lock.ExitWriteLock();
         }
 
-        protected void EnterWrap()
+        protected void EnterReadLock()
         {
-            Lock();
+            _lock.EnterReadLock();
+        }
+
+        protected void ExitReadLock()
+        {
+            _lock.ExitReadLock();
+        }
+
+        protected void EnterWriteWrap()
+        {
+            EnterWriteLock();
             EnterTransaction();
         }
 
-        protected void ExitWrap()
+        protected void ExitWriteWrap()
         {
             ExitTransaction();
-            Unlock();
+            ExitWriteUnlock();
+        }
+
+        protected void EnterReadWrap()
+        {
+            EnterReadLock();
+            EnterTransaction();
+        }
+
+        protected void ExitReadWrap()
+        {
+            ExitTransaction();
+            ExitReadLock();
         }
 
         #region temporary disabled transactional issues

@@ -20,31 +20,31 @@ namespace DataTanker.AccessMethods.BPlusTree
         private readonly int _maxKeySize;
         private readonly IBPlusTree<TKey, TValue> _tree;
 
-        private TKey WrapMethod(Func<TKey> method)
-        {
-            EnterWrap();
-            try
-            {
-                return method();
-            }
-            finally
-            {
-                ExitWrap();
-            }
-        }
-
-        private TReturnValue WrapMethod<TReturnValue>(Func<TKey, TReturnValue> method, TKey key)
+        private TReturnValue WrapWithReadLock<TReturnValue>(Func<TKey, TReturnValue> method, TKey key)
         {
             if (key == null) throw new ArgumentNullException("key");
 
-            EnterWrap();
+            EnterReadWrap();
             try
             {
                 return method(key);
             }
             finally
             {
-                ExitWrap();
+                ExitReadWrap();
+            }
+        }
+
+        private TKey WrapWithReadLock(Func<TKey> method)
+        {
+            EnterReadWrap();
+            try
+            {
+                return method();
+            }
+            finally
+            {
+                ExitReadWrap();
             }
         }
 
@@ -106,7 +106,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <returns>The minimal key</returns>
         public TKey Min()
         {
-            return WrapMethod(_tree.Min);
+            return WrapWithReadLock(_tree.Min);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <returns>The maximal key</returns>
         public TKey Max()
         {
-            return WrapMethod(_tree.Max);
+            return WrapWithReadLock(_tree.Max);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <returns>The key previous to specified key</returns>
         public TKey PreviousTo(TKey key)
         {
-            return WrapMethod(_tree.PreviousTo, key);
+            return WrapWithReadLock(_tree.PreviousTo, key);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <returns>The key next to specified key</returns>
         public TKey NextTo(TKey key)
         {
-            return WrapMethod(_tree.NextTo, key);
+            return WrapWithReadLock(_tree.NextTo, key);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <returns>Requested value</returns>
         public TValue Get(TKey key)
         {
-            return WrapMethod(_tree.Get, key);
+            return WrapWithReadLock(_tree.Get, key);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace DataTanker.AccessMethods.BPlusTree
             if(key == null) throw new ArgumentNullException("key");
             if (value == null) throw new ArgumentNullException("value");
 
-            EnterWrap();
+            EnterWriteWrap();
             try
             {
                 _tree.Set(key, value);
@@ -166,7 +166,7 @@ namespace DataTanker.AccessMethods.BPlusTree
             finally
             {
                 EditOperationFinished();
-                ExitWrap();
+                ExitWriteWrap();
             }
         }
 
@@ -178,7 +178,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         {
             if (key == null) throw new ArgumentNullException("key");
 
-            EnterWrap();
+            EnterWriteWrap();
             try
             {
                 _tree.Remove(key);
@@ -186,7 +186,7 @@ namespace DataTanker.AccessMethods.BPlusTree
             finally
             {
                 EditOperationFinished();
-                ExitWrap();
+                ExitWriteWrap();
             }
         }
 
@@ -197,7 +197,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <returns>True if key-value pair exists, false otherwise</returns>
         public bool Exists(TKey key)
         {
-            return WrapMethod(_tree.Exists, key);
+            return WrapWithReadLock(_tree.Exists, key);
         }
 
         /// <summary>
@@ -206,14 +206,14 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <returns>the count of key-value pairs</returns>
         public long Count()
         {
-            EnterWrap();
+            EnterReadWrap();
             try
             {
                 return _tree.Count();
             }
             finally
             {
-                ExitWrap();
+                ExitReadWrap();
             }
         }
 
@@ -225,7 +225,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <returns>The length of binary representation</returns>
         public long GetRawDataLength(TKey key)
         {
-            return WrapMethod(_tree.GetRawDataLength, key);
+            return WrapWithReadLock(_tree.GetRawDataLength, key);
         }
 
         /// <summary>
@@ -238,14 +238,14 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <returns></returns>
         public byte[] GetRawDataSegment(TKey key, long startIndex, long endIndex)
         {
-            EnterWrap();
+            EnterReadWrap();
             try
             {
                 return _tree.GetRawDataSegment(key, startIndex, endIndex);
             }
             finally
             {
-                ExitWrap();
+                ExitReadWrap();
             }
         }
 

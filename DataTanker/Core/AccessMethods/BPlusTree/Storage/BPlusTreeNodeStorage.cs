@@ -30,6 +30,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
         private readonly bool _pageCacheEnabled;
 
         private long? _rootIndex;
+        private readonly object _locker = new object();
 
         private KeyValuePair<TKey, DbItemReference> IndexEntryFromBytes(byte[] bytes)
         {
@@ -102,13 +103,16 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
 
             int cnt = node.Entries.Count;
 
-            for (int i = 0; i < cnt; i++)
+            lock (_locker)
             {
-                var entry = node.Entries[i];
-                _dbItems[i].RawData = GetIndexEntryBytes(entry);
-            }
+                for (int i = 0; i < cnt; i++)
+                {
+                    var entry = node.Entries[i];
+                    _dbItems[i].RawData = GetIndexEntryBytes(entry);
+                }
 
-            PageFormatter.FormatFixedSizeItemsPage(page, header, _dbItems.Take(cnt).ToArray());
+                PageFormatter.FormatFixedSizeItemsPage(page, header, _dbItems.Take(cnt).ToArray());
+            }
 
             return page.Content;
         }

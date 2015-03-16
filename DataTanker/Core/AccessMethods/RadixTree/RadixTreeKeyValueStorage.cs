@@ -1,5 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
-
 namespace DataTanker.AccessMethods.RadixTree
 {
     using System;
@@ -20,31 +18,31 @@ namespace DataTanker.AccessMethods.RadixTree
     {
         private readonly IRadixTree<TKey, TValue> _tree;
 
-        private TReturnValue WrapMethod<TReturnValue>(Func<TKey, TReturnValue> method, TKey key)
+        private TReturnValue WrapWithReadLock<TReturnValue>(Func<TKey, TReturnValue> method, TKey key)
         {
             if (key == null) throw new ArgumentNullException("key");
 
-            EnterWrap();
+            EnterReadWrap();
             try
             {
                 return method(key);
             }
             finally
             {
-                ExitWrap();
+                ExitReadWrap();
             }
         }
 
-        private TKey WrapMethod(Func<TKey> method)
+        private TKey WrapWithReadLock(Func<TKey> method)
         {
-            EnterWrap();
+            EnterReadWrap();
             try
             {
                 return method();
             }
             finally
             {
-                ExitWrap();
+                ExitReadWrap();
             }
         }
 
@@ -99,12 +97,12 @@ namespace DataTanker.AccessMethods.RadixTree
 
         public TValue Get(TKey key)
         {
-            return WrapMethod(_tree.Get, key);
+            return WrapWithReadLock(_tree.Get, key);
         }
 
         public bool HasSubkeys(TKey key)
         {
-            return WrapMethod(_tree.HasSubkeys, key);
+            return WrapWithReadLock(_tree.HasSubkeys, key);
         }
 
         /// <summary>
@@ -117,7 +115,7 @@ namespace DataTanker.AccessMethods.RadixTree
             if (key == null) throw new ArgumentNullException("key");
             if (value == null) throw new ArgumentNullException("value");
 
-            EnterWrap();
+            EnterWriteWrap();
             try
             {
                 _tree.Set(key, value);
@@ -125,7 +123,7 @@ namespace DataTanker.AccessMethods.RadixTree
             finally
             {
                 EditOperationFinished();
-                ExitWrap();
+                ExitWriteWrap();
             }
         }
 
@@ -137,7 +135,7 @@ namespace DataTanker.AccessMethods.RadixTree
         {
             if (key == null) throw new ArgumentNullException("key");
 
-            EnterWrap();
+            EnterWriteWrap();
             try
             {
                 _tree.Remove(key);
@@ -145,7 +143,7 @@ namespace DataTanker.AccessMethods.RadixTree
             finally
             {
                 EditOperationFinished();
-                ExitWrap();
+                ExitWriteWrap();
             }
         }
 
@@ -156,12 +154,12 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <returns>True if key-value pair exists, false otherwise</returns>
         public bool Exists(TKey key)
         {
-            return WrapMethod(_tree.Exists, key);
+            return WrapWithReadLock(_tree.Exists, key);
         }
 
         public long GetRawDataLength(TKey key)
         {
-            return WrapMethod(_tree.GetRawDataLength, key);
+            return WrapWithReadLock(_tree.GetRawDataLength, key);
         }
 
         /// <summary>
@@ -174,14 +172,14 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <returns></returns>
         public byte[] GetRawDataSegment(TKey key, long startIndex, long endIndex)
         {
-            EnterWrap();
+            EnterReadWrap();
             try
             {
                 return _tree.GetRawDataSegment(key, startIndex, endIndex);
             }
             finally
             {
-                ExitWrap();
+                ExitReadWrap();
             }
         }
 
@@ -208,7 +206,7 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <returns>The minimal key</returns>
         public TKey Min()
         {
-            return WrapMethod(_tree.Min);
+            return WrapWithReadLock(_tree.Min);
         }
 
         /// <summary>
@@ -217,7 +215,7 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <returns>The maximal key</returns>
         public TKey Max()
         {
-            return WrapMethod(_tree.Max);
+            return WrapWithReadLock(_tree.Max);
         }
 
         /// <summary>
@@ -227,7 +225,7 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <returns>The key previous to specified key</returns>
         public TKey PreviousTo(TKey key)
         {
-            return WrapMethod(_tree.PreviousTo, key);
+            return WrapWithReadLock(_tree.PreviousTo, key);
         }
 
         /// <summary>
@@ -237,7 +235,7 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <returns>The key next to specified key</returns>
         public TKey NextTo(TKey key)
         {
-            return WrapMethod(_tree.NextTo, key);
+            return WrapWithReadLock(_tree.NextTo, key);
         }
 
         /// <summary>
@@ -246,14 +244,14 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <returns>the count of key-value pairs</returns>
         public long Count()
         {
-            EnterWrap();
+            EnterReadWrap();
             try
             {
                 return _tree.Count();
             }
             finally
             {
-                ExitWrap();
+                ExitReadWrap();
             }
         }
     }
