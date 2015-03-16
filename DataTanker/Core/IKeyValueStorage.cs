@@ -1,8 +1,7 @@
 namespace DataTanker
 {
     /// <summary>
-    /// Contains methods for accessing a key-value storage 
-    /// based on B+Tree.
+    /// Contains methods for accessing a key-value storage.
     /// </summary>
     /// <typeparam name="TKey">The type of keys</typeparam>
     /// <typeparam name="TValue">The type of values</typeparam>

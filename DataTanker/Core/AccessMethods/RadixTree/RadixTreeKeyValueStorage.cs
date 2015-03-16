@@ -33,6 +33,19 @@ namespace DataTanker.AccessMethods.RadixTree
             }
         }
 
+        private TReturnValue WrapWithReadLock<TReturnValue>(Func<TReturnValue> method)
+        {
+            EnterReadWrap();
+            try
+            {
+                return method();
+            }
+            finally
+            {
+                ExitReadWrap();
+            }
+        }
+
         private TKey WrapWithReadLock(Func<TKey> method)
         {
             EnterReadWrap();
@@ -216,6 +229,25 @@ namespace DataTanker.AccessMethods.RadixTree
         public TKey Max()
         {
             return WrapWithReadLock(_tree.Max);
+        }
+
+        /// <summary>
+        /// Gets a value corresponing to the minimal key.
+        /// </summary>
+        /// <returns>The value corresponding to the minimal key</returns>
+        public TValue MinValue()
+        {
+            return WrapWithReadLock<TValue>(_tree.MinValue);
+            
+        }
+
+        /// <summary>
+        /// Gets the value corresponing to the maximal key.
+        /// </summary>
+        /// <returns>The value corresponding to the maximal key</returns>
+        public TValue MaxValue()
+        {
+            return WrapWithReadLock<TValue>(_tree.MaxValue);
         }
 
         /// <summary>

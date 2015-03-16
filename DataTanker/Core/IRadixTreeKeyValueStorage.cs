@@ -23,6 +23,18 @@ namespace DataTanker
         TKey Max();
 
         /// <summary>
+        /// Gets a value corresponing to the minimal key.
+        /// </summary>
+        /// <returns>The value corresponding to the minimal key</returns>
+        TValue MinValue();
+
+        /// <summary>
+        /// Gets the value corresponing to the maximal key.
+        /// </summary>
+        /// <returns>The value corresponding to the maximal key</returns>
+        TValue MaxValue();
+
+        /// <summary>
         /// Gets the key previous to the specified key.
         /// The existence of the specified key is not required.
         /// </summary>
