@@ -140,12 +140,6 @@
     <Compile Include="PageManagement\PageMapException.cs" />
     <Compile Include="Versioning\ISnapshotData.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Utils\DataTanker.Utils.csproj">
-      <Project>{1FBD5135-09A5-4917-8908-998D695238B7}</Project>
-      <Name>DataTanker.Utils</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
