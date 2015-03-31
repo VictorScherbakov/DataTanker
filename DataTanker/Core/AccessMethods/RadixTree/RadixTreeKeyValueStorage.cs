@@ -161,7 +161,7 @@ namespace DataTanker.AccessMethods.RadixTree
         }
 
         /// <summary>
-        /// Cheks if key-value pair exists in storage.
+        /// Checks if key-value pair exists in storage.
         /// </summary>
         /// <param name="key">The key</param>
         /// <returns>True if key-value pair exists, false otherwise</returns>

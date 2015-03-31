@@ -199,7 +199,7 @@
         }
 
         /// <summary>
-        /// Cheks if key-value pair exists in tree.
+        /// Checks if key-value pair exists in tree.
         /// </summary>
         /// <param name="key">The key</param>
         /// <returns>True if key-value pair exists, false otherwise</returns>
