@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+    <metadata>
+        <id>DataTanker</id>
+        <version>1.1.0-alpha1</version>
+        <title>DataTanker</title>
+        <authors>Victor Scherbakov</authors>
+        <licenseUrl>https://github.com/VictorScherbakov/DataTanker/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/VictorScherbakov/DataTanker</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Embedded persistent key-value store for .NET. Pure C# code, zero configuration and installation, MIT License.</description>
+        <tags>keyvalue key-value store nosql database b-tree b+tree radix</tags>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.0" />
+            <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.0" />
+            <frameworkAssembly assemblyName="System.Runtime.Serialization" targetFramework=".NETFramework4.0" />
+            <frameworkAssembly assemblyName="System.Transactions" targetFramework=".NETFramework4.0" />
+            <frameworkAssembly assemblyName="System.Xml" targetFramework=".NETFramework4.0" />
+        </frameworkAssemblies>
+    </metadata>
+    <files>
+        <file src="bin\Release\DataTanker.Core.dll" target="lib\net40\DataTanker.Core.dll" />
+    </files>
+</package>
