@@ -132,7 +132,29 @@
             bool isFullMatch;
             IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
 
-            return node.Entries.Any();
+            return isFullMatch && node.Entries.Any();
+        }
+
+
+        /// <summary>
+        /// Computes the number of child key-value pairs for a given key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public long SubkeysCount(TKey key)
+        {
+            var binaryKey = _keySerializer.Serialize(key);
+            int keyOffset;
+            int nodePrefixOffset;
+            bool isFullMatch;
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+
+            long result = 0;
+
+            if(isFullMatch) 
+                Count(node, ref result);
+
+            return result;
         }
 
         private IRadixTreeNode GetChildPreviousTo(IRadixTreeNode node, byte b)

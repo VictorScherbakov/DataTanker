@@ -83,6 +83,13 @@
         long Count();
 
         /// <summary>
+        /// Computes the number of child key-value pairs for a given key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        long SubkeysCount(TKey key);
+
+        /// <summary>
         /// Retrieves the length (in bytes) of binary representation
         /// of the value referenced by the specified key.
         /// </summary>
