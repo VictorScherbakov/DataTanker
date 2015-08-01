@@ -1,5 +1,7 @@
 ﻿namespace DataTanker.AccessMethods.BPlusTree
 {
+    using System.Diagnostics;
+
     using System.Linq;
     using System.Collections.Generic;
 
@@ -62,10 +64,42 @@
 
         private KeyValuePair<TKey, DbItemReference>? FindSuitableEntry(TKey key)
         {
-            var node = GetSuitableLeafNodeForKey(key);
+            var node = GetSuitableLeafNodeForKeyIfRangeExists(key);
+            if (node == null) 
+                return null;
+
             int index;
 
             return FindSuitableEntry(node.Entries, key, out index);
+        }
+
+        private IBPlusTreeNode<TKey> NextNodeForKey(TKey key, IBPlusTreeNode<TKey> node, bool returnNullIfOutOfRange = false)
+        {
+            int index;
+            FindSuitableEntry(node.Entries, key, out index);
+            if (index < node.Entries.Count)
+                return FetchNode(node.Entries[index].Value.PageIndex);
+
+            if(returnNullIfOutOfRange) 
+                return null;
+
+            if (index == node.Entries.Count) // tricky last node
+                return FetchNode(node.Entries[index - 1].Value.PageIndex);
+
+            Debug.Fail("Should never get here");
+            return null;
+        }
+
+        private IBPlusTreeNode<TKey> GetSuitableLeafNodeForKeyIfRangeExists(TKey key)
+        {
+            var node = FetchRoot();
+
+            while (node != null && !node.IsLeaf)
+            {
+                node = NextNodeForKey(key, node, true);
+            }
+
+            return node;
         }
 
         private IBPlusTreeNode<TKey> GetSuitableLeafNodeForKey(TKey key)
@@ -74,12 +108,7 @@
 
             while (!node.IsLeaf)
             {
-                int index;
-                FindSuitableEntry(node.Entries, key, out index);
-                if (index < node.Entries.Count)
-                    node = FetchNode(node.Entries[index].Value.PageIndex);
-                else if(index == node.Entries.Count) // tricky last node
-                    node = FetchNode(node.Entries[index - 1].Value.PageIndex);
+                node = NextNodeForKey(key, node);
             }
 
             return node;
@@ -93,13 +122,7 @@
 
             while (!node.IsLeaf)
             {
-                int index;
-                FindSuitableEntry(node.Entries, key, out index);
-                if (index < node.Entries.Count)
-                    node = FetchNode(node.Entries[index].Value.PageIndex);
-                else if (index == node.Entries.Count) // tricky last node
-                    node = FetchNode(node.Entries[index - 1].Value.PageIndex);
-
+                node = NextNodeForKey(key, node);
                 result.Add(node);
             }
 
@@ -291,7 +314,9 @@
         /// <param name="key">The key</param>
         public void Remove(TKey key)
         {
-            var leafNode = GetSuitableLeafNodeForKey(key);
+            var leafNode = GetSuitableLeafNodeForKeyIfRangeExists(key);
+            if(leafNode == null)
+                return;
 
             int index;
 
