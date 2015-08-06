@@ -18,7 +18,7 @@
 
         public int CompareTo(object obj)
         {
-            if (obj is int)
+            if (obj is T)
                 return Value.CompareTo(((T)obj));
 
             return Value.CompareTo(((ComparableKeyOf<T>)obj).Value);
