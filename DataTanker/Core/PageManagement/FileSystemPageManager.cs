@@ -642,7 +642,7 @@
             }
             finally 
             {
-                if (_recoveryFile == null)
+                if (_recoveryFile != null)
                     recoveryFile.Dispose();
             }
         }
