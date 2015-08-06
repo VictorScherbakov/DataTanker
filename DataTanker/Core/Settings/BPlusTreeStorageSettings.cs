@@ -36,7 +36,8 @@
         /// MaxKeySize = 500,
         /// MaxEmptyPages = 100,
         /// AutoFlushInterval = 10000,
-        /// AutoFlushTimeout = TimeSpan.Zero
+        /// AutoFlushTimeout = TimeSpan.Zero,
+        /// StartRecoveryOnOpenCorruptedStorage = false
         /// </summary>
         /// <returns>Default storage settings</returns>
         public static BPlusTreeStorageSettings Default()
@@ -53,7 +54,8 @@
                 MaxKeySize = 500,
                 MaxEmptyPages = 100,
                 AutoFlushInterval = 100000,
-                AutoFlushTimeout = TimeSpan.Zero
+                AutoFlushTimeout = TimeSpan.Zero,
+                StartRecoveryOnOpenCorruptedStorage = false
             };
         }
     }
