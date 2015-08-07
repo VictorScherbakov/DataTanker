@@ -93,7 +93,6 @@
     <Compile Include="Recovery\RecoveryFile.cs" />
     <Compile Include="Recovery\RecoveryRecord.cs" />
     <Compile Include="Recovery\RecoveryRecordType.cs" />
-    <Compile Include="StorageCorruptException.cs" />
     <Compile Include="Utils\StreamExtensions.cs" />
     <Compile Include="Settings\AccessMethodSpecificSettingsBase.cs" />
     <Compile Include="Settings\BPlusTreeStorageSettings.cs" />

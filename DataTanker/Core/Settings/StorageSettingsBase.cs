@@ -49,14 +49,5 @@
         /// To disable timeout based flushing, set this property to zero or negative value.
         /// </summary>
         public TimeSpan AutoFlushTimeout { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to start the recovery process on open 
-        /// of the existing storage when properly recorded recovery data was found.
-        /// If this value is set to false, attemption to open a corrupted storage will 
-        /// throw the exception. However, prevention of the automatic recovery gives 
-        /// a chance to backup a corrupted data for subsequent proceedings.
-        /// </summary>
-        public bool StartRecoveryOnOpenCorruptedStorage { get; set; }
     }
 }

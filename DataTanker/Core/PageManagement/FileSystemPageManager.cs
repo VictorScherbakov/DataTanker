@@ -29,7 +29,6 @@
         private readonly object _locker = new object();
 
         private readonly bool _forcedWrites;
-        private readonly bool _autoRecover;
         private readonly int _writeBufferSize;
 
         // storage content file
@@ -599,12 +598,7 @@
 
                 _pagemap.Open();
                 if (File.Exists(RecoveryFileName()))
-                {
-                    if(_autoRecover)
-                        Recover();
-                    else
-                        throw new StorageCorruptException("The storage is corrupt. Please backup your data and try to start with enabled StartRecoveryOnOpenCorruptedStorage option.");
-                }
+                    Recover();
             }
             finally
             {
@@ -751,7 +745,7 @@
         /// <param name="forcedWrites"></param>
         /// <param name="writeBufferSize">The size of buffer (in pages) using to async write changes to disk. Async writing is not applied when forcedWrites is true.</param>
         internal FileSystemPageManager(int pageSize, bool forcedWrites, int writeBufferSize)
-            : this (pageSize, forcedWrites, writeBufferSize, false, false)
+            : this (pageSize, forcedWrites, writeBufferSize, false)
         {
         }
 
@@ -762,8 +756,7 @@
         /// <param name="forcedWrites"></param>
         /// <param name="writeBufferSize">The size of buffer (in pages) using to async write changes to disk. Async writing is not applied when forcedWrites is true.</param>
         /// <param name="useRecoveryFile"></param>
-        /// <param name="autoRecover"></param>
-        internal FileSystemPageManager(int pageSize, bool forcedWrites, int writeBufferSize, bool useRecoveryFile, bool autoRecover)
+        internal FileSystemPageManager(int pageSize, bool forcedWrites, int writeBufferSize, bool useRecoveryFile)
         {
             if (pageSize < 4096)
                 throw new ArgumentOutOfRangeException("pageSize", "Too small page size");
@@ -775,8 +768,6 @@
             _pagemap = new PageMap(this);
             if(useRecoveryFile)
                 _recoveryFile = new RecoveryFile(this, pageSize);
-
-            _autoRecover = autoRecover;
         }
     }
 }

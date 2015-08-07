@@ -157,10 +157,7 @@
             {
                 var asyncWriteBuffer = usePageCache ? Math.Min(settings.CacheSettings.MaxDirtyPages, 1000) : 100;
 
-                fsPageManager = new FileSystemPageManager((int)settings.PageSize, settings.ForcedWrites, asyncWriteBuffer, true, settings.StartRecoveryOnOpenCorruptedStorage)
-                {
-                    MaxEmptyPages = settings.MaxEmptyPages
-                };
+                fsPageManager = new FileSystemPageManager((int)settings.PageSize, settings.ForcedWrites, asyncWriteBuffer, true) { MaxEmptyPages = settings.MaxEmptyPages };
 
                 pageManager = usePageCache ?
                                 new CachingPageManager(fsPageManager, settings.CacheSettings.MaxCachedPages, settings.CacheSettings.MaxDirtyPages)
@@ -223,10 +220,7 @@
             {
                 var asyncWriteBuffer = usePageCache ? Math.Min(settings.CacheSettings.MaxDirtyPages, 1000) : 100;
 
-                fsPageManager = new FileSystemPageManager((int)settings.PageSize, settings.ForcedWrites, asyncWriteBuffer, true, settings.StartRecoveryOnOpenCorruptedStorage)
-                {
-                    MaxEmptyPages = settings.MaxEmptyPages
-                };
+                fsPageManager = new FileSystemPageManager((int)settings.PageSize, settings.ForcedWrites, asyncWriteBuffer, true) { MaxEmptyPages = settings.MaxEmptyPages };
 
                 pageManager = usePageCache ?
                                 new CachingPageManager(fsPageManager, settings.CacheSettings.MaxCachedPages, settings.CacheSettings.MaxDirtyPages)
