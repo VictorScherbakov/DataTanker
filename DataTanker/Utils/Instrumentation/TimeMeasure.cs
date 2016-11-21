@@ -21,10 +21,7 @@
         [ThreadStatic]
         private static Stopwatch _unnamedWatch;
 
-        private static Stopwatch UnnamedWatch
-        {
-            get { return _unnamedWatch ?? (_unnamedWatch = new Stopwatch()); }
-        }
+        private static Stopwatch UnnamedWatch => _unnamedWatch ?? (_unnamedWatch = new Stopwatch());
 
         [ThreadStatic]
         private static Dictionary<string, Stopwatch> Watches;
@@ -36,13 +33,7 @@
         /// <summary>
         /// Gets the names of the performed measures
         /// </summary>
-        public static string[] MeasureNames
-        {
-            get
-            {
-                return Ticks.Keys.ToArray();
-            }
-        }
+        public static string[] MeasureNames => Ticks.Keys.ToArray();
 
         /// <summary>
         /// Gets the result of unnamed measure.

@@ -113,18 +113,18 @@ namespace Performance
                     flags[key] = !flags[key];
 
                     if (i % 1000 == 0)
-                        writeInfo(string.Format("operation {0}", i));
+                        writeInfo($"operation {i}");
                 }
 
                 for (int i = 0; i < keyCount; i++)
                 {
                     if (i % 100 == 0)
-                        writeInfo(string.Format("checking key {0}", i));
+                        writeInfo($"checking key {i}");
 
                     var value = storage.Get(i);
                     if (flags[i])
                         if (i != value.Value)
-                            throw new ApplicationException(string.Format("RandomOperations failed: expected {0} but found {1}", i, value.Value));
+                            throw new ApplicationException($"RandomOperations failed: expected {i} but found {value.Value}");
 
                 }
             }

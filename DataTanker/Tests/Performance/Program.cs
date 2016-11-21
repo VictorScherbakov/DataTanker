@@ -44,7 +44,7 @@ namespace Performance
                 test(message =>
                          {
                              TimeMeasure.Stop(testName);
-                             WriteInfo(string.Format("{0:hh\\:mm\\:ss\\:fff} {1}", TimeMeasure.Result(testName), message));
+                             WriteInfo($"{TimeMeasure.Result(testName):hh\\:mm\\:ss\\:fff} {message}");
                              TimeMeasure.Start(testName);
                          });
             }

@@ -85,7 +85,7 @@
             short itemSizesLength = BitConverter.ToInt16(page.Content, headerLength);
 
             if (itemIndex >= itemSizesLength)
-                throw new ArgumentOutOfRangeException("itemIndex");
+                throw new ArgumentOutOfRangeException(nameof(itemIndex));
 
             int offset = headerLength + OnPagePointerSize + itemIndex * OnPagePointerSize;
             return BitConverter.ToInt16(page.Content, offset);
@@ -156,7 +156,7 @@
             if (items.Any())
             {
                 if (items.Any(item => item.SizeClass != sizeClass))
-                    throw new ArgumentException("Size classes should be equal", "items");
+                    throw new ArgumentException("Size classes should be equal", nameof(items));
             }
 
             header.WriteToPage(page);
@@ -167,7 +167,7 @@
                 items.Length * OnPagePointerSize - OnPagePointerSize;             // subtract item length markers array and its length
 
             if (remainingSpace < 0)
-                throw new ArgumentException("Page have no space to add specified items", "items");
+                throw new ArgumentException("Page have no space to add specified items", nameof(items));
 
             var maxSize = DbItem.GetMaxSize(sizeClass);
             var content = page.Content;
@@ -212,12 +212,12 @@
                 // find an empty slot for a new item
                 var slotIndex = GetFirstFixedSizeItemEmptySlotIndex(page, header.Length);
                 if (slotIndex == -1)
-                    throw new DataTankerException(string.Format("Page is corrupt: empty slot counter is {0}, but there is no empty slot found", header.EmptySlotCount));
+                    throw new DataTankerException($"Page is corrupt: empty slot counter is {header.EmptySlotCount}, but there is no empty slot found");
 
                 // write the item length marker
                 lengthBytes = BitConverter.GetBytes((short)item.RawData.Length);
                 lengthBytes.CopyTo(page.Content,
-                                   header.Length +                     // length of header
+                                   header.Length +               // length of header
                                    OnPagePointerSize +           // length of length marker array
                                    slotIndex * OnPagePointerSize // offset in length marker array
                     );
@@ -272,7 +272,7 @@
         public static void DeleteFixedSizeItem(IPage page, short itemIndex)
         {
             if (itemIndex < 0)
-                throw new ArgumentOutOfRangeException("itemIndex");
+                throw new ArgumentOutOfRangeException(nameof(itemIndex));
 
             var header = (FixedSizeItemsPageHeader)GetPageHeader(page);
             if (header.SizeClass == SizeClass.MultiPage ||
@@ -295,7 +295,7 @@
         public static void RewriteFixedSizeItem(IPage page, short itemIndex, DbItem item)
         {
             if (itemIndex < 0)
-                throw new ArgumentOutOfRangeException("itemIndex");
+                throw new ArgumentOutOfRangeException(nameof(itemIndex));
 
             PageHeaderBase header = GetPageHeader(page);
             if (header.SizeClass == SizeClass.MultiPage ||

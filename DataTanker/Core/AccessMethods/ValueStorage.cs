@@ -1,11 +1,10 @@
-namespace DataTanker.AccessMethods.BPlusTree.Storage
+using System;
+using DataTanker.MemoryManagement;
+using DataTanker.Transactions;
+using DataTanker.Versioning;
+
+namespace DataTanker.AccessMethods
 {
-    using System;
-
-    using MemoryManagement;
-    using Versioning;
-    using Transactions;
-
     /// <summary>
     /// Implementation of IValueStorage. 
     /// Instances of this class store values using specified object that implements IMemoryManager.
@@ -120,18 +119,15 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
         /// <summary>
         /// Gets the value indicating whether the versioning mechanisms is enabled.
         /// </summary>
-        public bool IsVersioningEnabled
-        {
-            get { return SnapshotData != null && DataTankerTransaction.Current != null; }
-        }
+        public bool IsVersioningEnabled => SnapshotData != null && DataTankerTransaction.Current != null;
 
         public ValueStorage(IMemoryManager memoryManager, ISerializer<TValue> valueSerializer)
         {
             if (memoryManager == null) 
-                throw new ArgumentNullException("memoryManager");
+                throw new ArgumentNullException(nameof(memoryManager));
 
             if (valueSerializer == null) 
-                throw new ArgumentNullException("valueSerializer");
+                throw new ArgumentNullException(nameof(valueSerializer));
 
             _memoryManager = memoryManager;
             _valueSerializer = valueSerializer;

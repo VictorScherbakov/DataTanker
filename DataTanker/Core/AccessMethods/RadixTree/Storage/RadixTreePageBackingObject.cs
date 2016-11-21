@@ -9,14 +9,9 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
 
     internal class RadixTreePageBackingObject
     {
-        private readonly long _pageIndex;
+        public long PageIndex { get; }
 
-        public long PageIndex
-        {
-            get { return _pageIndex; }
-        }
-
-        public IList<object> Items { get; private set; }
+        public IList<object> Items { get; }
 
         private short GetNodeSize(object item)
         {
@@ -32,7 +27,7 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
             var radixTreeNode = item as IRadixTreeNode;
             if (radixTreeNode != null)
             {
-                var prefixLength = (short)(radixTreeNode.Prefix == null ? 0 : radixTreeNode.Prefix.Length);
+                var prefixLength = (short)(radixTreeNode.Prefix?.Length ?? 0);
                 return RadixTreeNodeStorage.GetNodeSize(prefixLength, radixTreeNode.Entries.Count);
             }
 
@@ -78,7 +73,7 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
 
         public RadixTreePageBackingObject(long pageIndex)
         {
-            _pageIndex = pageIndex;
+            PageIndex = pageIndex;
             Items = new List<object>();
         }
     }

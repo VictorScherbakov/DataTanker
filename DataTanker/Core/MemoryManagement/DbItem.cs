@@ -35,7 +35,7 @@
         {
             if (sizeClass == SizeClass.NotApplicable ||
                 sizeClass == SizeClass.MultiPage)
-                throw new ArgumentOutOfRangeException("sizeClass");
+                throw new ArgumentOutOfRangeException(nameof(sizeClass));
 
             return _maxSizes[(int) sizeClass];
         }
@@ -43,7 +43,7 @@
         public static SizeClass GetSizeClass(long length)
         {
             if (length < 0)
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
 
             for (int i = 0; i < _maxSizes.Length; i++)
             {
@@ -80,19 +80,13 @@
         /// Gets a size class of this item.
         /// Items unable to change its size classes.
         /// </summary>
-        public SizeClass SizeClass
-        {
-            get { return _sizeClass; }
-        }
+        public SizeClass SizeClass => _sizeClass;
 
 
         /// <summary>
         /// Gets a size of object.
         /// </summary>
-        public long Size 
-        {
-            get { return _rawData.Length; }  
-        }
+        public long Size => _rawData.Length;
 
         /// <summary>
         /// 
@@ -101,6 +95,9 @@
         /// <returns></returns>
         public bool Equals(DbItem other)
         {
+            if (other == null)
+                return false;
+
             return _sizeClass == other.SizeClass &&
                    _rawData.Length == other.RawData.Length &&
                    _rawData.SequenceEqual(other.RawData);
@@ -109,7 +106,7 @@
         public DbItem(byte[] rawData)
         {
             if(rawData == null)
-                throw new ArgumentNullException("rawData");
+                throw new ArgumentNullException(nameof(rawData));
 
             _rawData = rawData;
 

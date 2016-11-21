@@ -15,10 +15,7 @@
         internal class PagemapHeader
         {
             private bool _changed;
-            public bool Changed
-            {
-                get { return _changed; }
-            }
+            public bool Changed => _changed;
 
             private long _pageCount;
             public long PageCount
@@ -53,7 +50,7 @@
                 }
             }
 
-            public static int BytesLength { get { return 24; } }
+            public static int BytesLength => 24;
 
             public void Write(Stream stream)
             {
@@ -112,7 +109,7 @@
         private void CheckIfFileExists(string fileName)
         {
             if (!File.Exists(fileName))
-                throw new FileNotFoundException(string.Format("File '{0}' not found", fileName));
+                throw new FileNotFoundException($"File '{fileName}' not found");
         }
 
         private string PagemapFileName()
@@ -152,10 +149,10 @@
         public long GetPageAllocation(long pageIndex)
         {
             if (pageIndex >= _header.PageCount)
-                throw new ArgumentException("Too large page index", "pageIndex");
+                throw new ArgumentException("Too large page index", nameof(pageIndex));
 
             if (pageIndex < 0)
-                throw new ArgumentException("Page index should not be negative", "pageIndex");
+                throw new ArgumentException("Page index should not be negative", nameof(pageIndex));
 
             long blockIndex = pageIndex * _itemSize / _blockLength;
             var blockOffset = (int)(pageIndex * _itemSize % _blockLength);
@@ -190,8 +187,7 @@
             if (_header.ReleasedPageCount == 0)
                 throw new InvalidOperationException("There are no free pages in pagemap");
 
-            if(_freePageIndexes != null)
-                _freePageIndexes.RemoveAt(_freePageIndexes.Count - 1);
+            _freePageIndexes?.RemoveAt(_freePageIndexes.Count - 1);
 
             _header.ReleasedPageCount--;
         }
@@ -222,8 +218,7 @@
 
             _header.ReleasedPageCount++;
 
-            if(_freePageIndexes != null)
-                _freePageIndexes.Add(index);
+            _freePageIndexes?.Add(index);
         }
 
         public long GetMaxPageIndex()
@@ -298,10 +293,10 @@
         public void WritePageAllocation(long pageIndex, long allocation)
         {
             if (pageIndex > _header.PageCount)
-                throw new ArgumentException("Too large page index", "pageIndex");
+                throw new ArgumentException("Too large page index", nameof(pageIndex));
 
             if (pageIndex < 0)
-                throw new ArgumentException("Page index should not be negative", "pageIndex");
+                throw new ArgumentException("Page index should not be negative", nameof(pageIndex));
 
             long blockIndex = pageIndex * _itemSize / _blockLength;
             var blockOffset = (int)(pageIndex * _itemSize % _blockLength);

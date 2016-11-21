@@ -87,7 +87,7 @@
             FreeSpaceMapPageHeader header = GetFsmPageHeader(page);
 
             if (index < 0 || index > (page.Length - header.Length) * 2)
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
 
             int targetIndex = index / 2 + header.Length;
             byte b = page.Content[targetIndex];

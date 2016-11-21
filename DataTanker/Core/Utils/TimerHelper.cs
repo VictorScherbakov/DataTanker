@@ -25,8 +25,7 @@ namespace DataTanker.Utils
         {
             lock (_locker)
             {
-                if (_timer != null)
-                    _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                _timer?.Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
 
@@ -55,10 +54,7 @@ namespace DataTanker.Utils
                         return;
 
                     Action<Timer, object> timerEvent = Elapsed;
-                    if (timerEvent != null)
-                    {
-                        timerEvent(_timer, state);
-                    }
+                    timerEvent?.Invoke(_timer, state);
                 }
                 finally
                 {

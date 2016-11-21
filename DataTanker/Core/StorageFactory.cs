@@ -1,4 +1,6 @@
-﻿namespace DataTanker
+﻿using DataTanker.AccessMethods;
+
+namespace DataTanker
 {
     using System;
 
@@ -73,16 +75,16 @@
             where TKey : IComparable
         {
             if (serializeKey == null) 
-                throw new ArgumentNullException("serializeKey");
+                throw new ArgumentNullException(nameof(serializeKey));
 
             if (deserializeKey == null) 
-                throw new ArgumentNullException("deserializeKey");
+                throw new ArgumentNullException(nameof(deserializeKey));
 
             if (serializeValue == null) 
-                throw new ArgumentNullException("serializeValue");
+                throw new ArgumentNullException(nameof(serializeValue));
 
             if (deserializeValue == null) 
-                throw new ArgumentNullException("deserializeValue");
+                throw new ArgumentNullException(nameof(deserializeValue));
 
             return CreateBPlusTreeStorage(new Serializer<TKey>(serializeKey, deserializeKey),
                           new Serializer<TValue>(serializeValue, deserializeValue), settings);
@@ -107,16 +109,16 @@
             RadixTreeStorageSettings settings)
         {
             if (serializeKey == null)
-                throw new ArgumentNullException("serializeKey");
+                throw new ArgumentNullException(nameof(serializeKey));
 
             if (deserializeKey == null)
-                throw new ArgumentNullException("deserializeKey");
+                throw new ArgumentNullException(nameof(deserializeKey));
 
             if (serializeValue == null)
-                throw new ArgumentNullException("serializeValue");
+                throw new ArgumentNullException(nameof(serializeValue));
 
             if (deserializeValue == null)
-                throw new ArgumentNullException("deserializeValue");
+                throw new ArgumentNullException(nameof(deserializeValue));
 
             return CreateRadixTreeStorage(new Serializer<TKey>(serializeKey, deserializeKey),
                           new Serializer<TValue>(serializeValue, deserializeValue), settings);
@@ -137,18 +139,18 @@
             bool usePageCache = settings.CacheSettings != null;
 
             if(settings.MaxEmptyPages < 0)
-                throw new ArgumentException("MaxEmptyPages shouldn't be negative", "settings");
+                throw new ArgumentException("MaxEmptyPages shouldn't be negative", nameof(settings));
 
             if (usePageCache)
             {
                 if(settings.CacheSettings.MaxCachedPages < 0)
-                    throw new ArgumentException("MaxCachedPages shouldn't be negative", "settings");
+                    throw new ArgumentException("MaxCachedPages shouldn't be negative", nameof(settings));
 
                 if (settings.CacheSettings.MaxDirtyPages < 0)
-                    throw new ArgumentException("MaxDirtyPages shouldn't be negative", "settings");
+                    throw new ArgumentException("MaxDirtyPages shouldn't be negative", nameof(settings));
 
                 if (settings.CacheSettings.MaxDirtyPages > settings.CacheSettings.MaxCachedPages)
-                    throw new ArgumentException("MaxDirtyPages shouldn be equal to or less than MaxCachedPages", "settings");
+                    throw new ArgumentException("MaxDirtyPages shouldn be equal to or less than MaxCachedPages", nameof(settings));
             }
 
             IPageManager pageManager = null;
@@ -167,7 +169,7 @@
                 var vs = new Serializer<ValueOf<TValue>>(obj => valueSerializer.Serialize(obj), bytes => valueSerializer.Deserialize(bytes));
 
                 if (settings.MaxKeySize <= 0)
-                    throw new ArgumentException("MaxKeySize size should be positive", "settings");
+                    throw new ArgumentException("MaxKeySize size should be positive", nameof(settings));
 
                 var bPlusTree = new BPlusTree<ComparableKeyOf<TKey>, ValueOf<TValue>>(
                     new BPlusTreeNodeStorage<ComparableKeyOf<TKey>>(pageManager, ks, settings.MaxKeySize),
@@ -179,8 +181,8 @@
             {
                 if (pageManager != null)    
                     pageManager.Close();
-                else if(fsPageManager != null)
-                    fsPageManager.Close();
+                else
+                    fsPageManager?.Close();
 
                 throw;
             }
@@ -200,18 +202,18 @@
             bool usePageCache = settings.CacheSettings != null;
 
             if (settings.MaxEmptyPages < 0)
-                throw new ArgumentException("MaxEmptyPages shouldn't be negative", "settings");
+                throw new ArgumentException("MaxEmptyPages shouldn't be negative", nameof(settings));
 
             if (usePageCache)
             {
                 if (settings.CacheSettings.MaxCachedPages < 0)
-                    throw new ArgumentException("MaxCachedPages shouldn't be negative", "settings");
+                    throw new ArgumentException("MaxCachedPages shouldn't be negative", nameof(settings));
 
                 if (settings.CacheSettings.MaxDirtyPages < 0)
-                    throw new ArgumentException("MaxDirtyPages shouldn't be negative", "settings");
+                    throw new ArgumentException("MaxDirtyPages shouldn't be negative", nameof(settings));
 
                 if (settings.CacheSettings.MaxDirtyPages > settings.CacheSettings.MaxCachedPages)
-                    throw new ArgumentException("MaxDirtyPages shouldn be equal to or less than MaxCachedPages", "settings");
+                    throw new ArgumentException("MaxDirtyPages shouldn be equal to or less than MaxCachedPages", nameof(settings));
             }
 
             IPageManager pageManager = null;
@@ -240,8 +242,8 @@
             {
                 if (pageManager != null)
                     pageManager.Close();
-                else if (fsPageManager != null)
-                    fsPageManager.Close();
+                else
+                    fsPageManager?.Close();
 
                 throw;
             }

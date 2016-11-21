@@ -12,7 +12,7 @@
     {
         private bool _disposed;
 
-        private Dictionary<long, IPage> _entries = new Dictionary<long, IPage>();
+        private readonly Dictionary<long, IPage> _entries = new Dictionary<long, IPage>();
 
         private IStorage _storage;
         private readonly int _pageSize;
@@ -36,7 +36,6 @@
         }
 
         private long _maxPageIndex;
-        private readonly bool _forcedWrites;
 
         private IPage AppendPage()
         {
@@ -113,7 +112,7 @@
         public bool PageExists(long pageIndex)
         {
             if (pageIndex < 0)
-                throw new ArgumentException("Page index should not be negative", "pageIndex");
+                throw new ArgumentException("Page index should not be negative", nameof(pageIndex));
 
             CheckDisposed();
 
@@ -167,7 +166,7 @@
         {
             CheckDisposed();
 
-            if (content == null) throw new ArgumentNullException("content");
+            if (content == null) throw new ArgumentNullException(nameof(content));
             if (content.Length != _pageSize)
                 throw new ArgumentException("content");
 
@@ -200,7 +199,7 @@
             CheckDisposed();
 
             if (page == null)
-                throw new ArgumentNullException("page");
+                throw new ArgumentNullException(nameof(page));
 
             Lock();
             try
@@ -254,7 +253,7 @@
         {
             CheckDisposed();
 
-            if (content == null) throw new ArgumentNullException("content");
+            if (content == null) throw new ArgumentNullException(nameof(content));
 
             Lock();
             try
@@ -339,18 +338,12 @@
         /// <summary>
         /// Gets a page size in bytes.
         /// </summary>
-        public int PageSize
-        {
-            get { return _pageSize; }
-        }
+        public int PageSize => _pageSize;
 
         /// <summary>
         /// Gets a value indicating whether all write operations perform immediately to file storage
         /// </summary>
-        public bool ForcedWrites
-        {
-            get { return _forcedWrites; }
-        }
+        public bool ForcedWrites { get; }
 
         /// <summary>
         /// Checks if this page manager instance can
@@ -402,10 +395,10 @@
         internal MemoryPageManager(int pageSize, bool forcedWrites)
         {
             if (pageSize < 4096)
-                throw new ArgumentOutOfRangeException("pageSize", "Too small page size");
+                throw new ArgumentOutOfRangeException(nameof(pageSize), "Too small page size");
 
             _pageSize = pageSize;
-            _forcedWrites = forcedWrites;
+            ForcedWrites = forcedWrites;
         }
     }
 }

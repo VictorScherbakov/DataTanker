@@ -22,7 +22,7 @@ namespace DataTanker.AccessMethods.BPlusTree
 
         private TReturnValue WrapWithReadLock<TReturnValue>(Func<TKey, TReturnValue> method, TKey key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             EnterReadWrap();
             try
@@ -111,7 +111,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <summary>
         /// Gets the access method implemented by this storage
         /// </summary>
-        public override AccessMethod AccessMethod { get { return AccessMethod.BPlusTree; } }
+        public override AccessMethod AccessMethod => AccessMethod.BPlusTree;
 
         /// <summary>
         /// Gets the minimal key.
@@ -172,7 +172,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <summary>
         /// Gets a value from storage.
         /// </summary>
-        /// <param name="key">ComparableComparableKeyOf value</param>
+        /// <param name="key">The key</param>
         /// <returns>Requested value</returns>
         public TValue Get(TKey key)
         {
@@ -182,12 +182,12 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <summary>
         /// Inserts a new value to storage or updates an existing one.
         /// </summary>
-        /// <param name="key">ComparableComparableKeyOf value</param>
-        /// <param name="value">ValueOf value :)</param>
+        /// <param name="key">The key</param>
+        /// <param name="value">The value :)</param>
         public void Set(TKey key, TValue value)
         {
-            if(key == null) throw new ArgumentNullException("key");
-            if (value == null) throw new ArgumentNullException("value");
+            if(key == null) throw new ArgumentNullException(nameof(key));
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             EnterWriteWrap();
             try
@@ -207,7 +207,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <param name="key">The key of value to remove</param>
         public void Remove(TKey key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             EnterWriteWrap();
             try
@@ -289,7 +289,7 @@ namespace DataTanker.AccessMethods.BPlusTree
             : base(pageManager, autoFlushInterval, autoFlushTimeout)
         {
             if (tree == null) 
-                throw new ArgumentNullException("tree");
+                throw new ArgumentNullException(nameof(tree));
 
             _maxKeySize = maxKeySize;
             _tree = tree;

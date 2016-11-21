@@ -146,10 +146,10 @@
         public static DbItemReference CreateNew(byte[] body, int transactionNumber, IMemoryManager memoryManager)
         {
             if (body == null) 
-                throw new ArgumentNullException("body");
+                throw new ArgumentNullException(nameof(body));
 
             if (memoryManager == null) 
-                throw new ArgumentNullException("memoryManager");
+                throw new ArgumentNullException(nameof(memoryManager));
 
             var bodyReference = memoryManager.Allocate(body);
             var versionInfo = new VersionInfo
@@ -172,13 +172,13 @@
         public VersionedRecord(byte[] versionInfoBytes, IMemoryManager memoryManager, ISnapshotData snapshotData)
         {
             if (versionInfoBytes == null) 
-                throw new ArgumentNullException("versionInfoBytes");
+                throw new ArgumentNullException(nameof(versionInfoBytes));
 
             if (memoryManager == null) 
-                throw new ArgumentNullException("memoryManager");
+                throw new ArgumentNullException(nameof(memoryManager));
 
             if (snapshotData == null) 
-                throw new ArgumentNullException("snapshotData");
+                throw new ArgumentNullException(nameof(snapshotData));
 
             using (var ms = new MemoryStream(versionInfoBytes))
             {

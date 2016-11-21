@@ -16,7 +16,6 @@
     {
         private bool _disposed;
 
-        private readonly IPageManager _pageManager;
         private readonly TimeSpan _autoFlushTimeout;
         private string _path = string.Empty;
         private bool _isOpen;
@@ -25,10 +24,7 @@
 
         private StorageInfo _info;
 
-        public StorageInfo Info
-        {
-            get { return _info; }
-        }
+        public StorageInfo Info => _info;
 
         private string InfoFileName()
         {
@@ -99,12 +95,12 @@
         /// <summary>
         /// Gets the on-disk structure version.
         /// </summary>
-        public int OnDiskStructureVersion { get { return 1; } }
+        public int OnDiskStructureVersion => 1;
 
         /// <summary>
         /// Gets the access method implemented by this storage
         /// </summary>
-        public virtual AccessMethod AccessMethod { get { return AccessMethod.Undefined; } }
+        public virtual AccessMethod AccessMethod => AccessMethod.Undefined;
 
         /// <summary>
         /// Opens an existing Storage.
@@ -140,21 +136,21 @@
                 var pageSize = PageSize;
                 _isOpen = false;
                 Close();
-                throw new StorageFormatException(string.Format("Page size: {0} bytes is set. But pages of the opening storage is {1} bytes length", pageSize, headingHeader.PageSize));
+                throw new StorageFormatException($"Page size: {pageSize} bytes is set. But pages of the opening storage is {headingHeader.PageSize} bytes length");
             }
 
             if(headingHeader.OnDiskStructureVersion != OnDiskStructureVersion)
             {
                 _isOpen = false;
                 Close();
-                throw new NotSupportedException(string.Format("On-disk structure version {0} is not supported.", headingHeader.OnDiskStructureVersion));
+                throw new NotSupportedException($"On-disk structure version {headingHeader.OnDiskStructureVersion} is not supported.");
             }
 
             if (headingHeader.AccessMethod != (short) AccessMethod)
             {
                 _isOpen = false;
                 Close();
-                throw new NotSupportedException(string.Format("Access method {0} is not supported by this instance of storage.", headingHeader.AccessMethod));
+                throw new NotSupportedException($"Access method {headingHeader.AccessMethod} is not supported by this instance of storage.");
             }
 
             PageManager.EnterAtomicOperation();
@@ -164,7 +160,7 @@
         {
             var infoFileName = InfoFileName();
             if (!File.Exists(infoFileName))
-                throw new FileNotFoundException(string.Format("File '{0}' not found", infoFileName));
+                throw new FileNotFoundException($"File '{infoFileName}' not found");
 
             var infoString = File.ReadAllText(infoFileName);
             _info = StorageInfo.FromString(infoString);
@@ -278,9 +274,7 @@
             {
                 _flushTimer.Stop();
 
-                var cachingPageManager = PageManager as ICachingPageManager;
-                if (cachingPageManager != null)
-                    cachingPageManager.Flush();
+                (PageManager as ICachingPageManager)?.Flush();
 
                 PageManager.ExitAtomicOperation();
                 PageManager.EnterAtomicOperation();
@@ -293,10 +287,7 @@
         /// Gets a page size in bytes.
         /// Page is a data block that is write and read entirely.
         /// </summary>
-        public int PageSize
-        {
-            get { return PageManager.PageSize; }
-        }
+        public int PageSize => PageManager.PageSize;
 
         /// <summary>
         /// Gets a Storage location.
@@ -310,17 +301,11 @@
         /// <summary>
         /// Gets a value indicating whether a Storage is open.
         /// </summary>
-        public bool IsOpen
-        {
-            get { return _isOpen; }
-        }
+        public bool IsOpen => _isOpen;
 
         #endregion
 
-        protected IPageManager PageManager
-        {
-            get { return _pageManager; }
-        }
+        protected IPageManager PageManager { get; }
 
         /// <summary> Initializes a new instance of the Storage.
         /// </summary>
@@ -343,7 +328,7 @@
             _flushTimer = new TimerHelper();
             _flushTimer.Elapsed += (timer, o) => Flush();
 
-            _pageManager = pageManager;
+            PageManager = pageManager;
             pageManager.Storage = this;
         }
 
@@ -364,12 +349,7 @@
                 {
                     _flushTimer.Dispose();
                     Flush();
-                    if(PageManager != null)
-                    {
-                        var disposablePageManager = PageManager as IDisposable;
-                        if(disposablePageManager != null)
-                            disposablePageManager.Dispose();
-                    }
+                    (PageManager as IDisposable)?.Dispose();
                 }
                 _disposed = true;
             }

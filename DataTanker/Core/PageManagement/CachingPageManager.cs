@@ -279,8 +279,8 @@
         public IPage FetchPage(long pageIndex, byte[] content)
         {
             CheckDisposed();
-            if (content == null) throw new ArgumentNullException("content");
-            if (content.Length != _underlyingPageManager.PageSize) throw new ArgumentException("content");
+            if (content == null) throw new ArgumentNullException(nameof(content));
+            if (content.Length != _underlyingPageManager.PageSize) throw new ArgumentException(nameof(content));
 
             Lock();
             try
@@ -521,9 +521,7 @@
                 if (disposing)
                 {
                     Flush();
-                    var pm = _underlyingPageManager as IDisposable;
-                    if (pm != null)
-                        pm.Dispose();
+                    (_underlyingPageManager as IDisposable)?.Dispose();
                 }
                 _disposed = true;
             }
@@ -538,15 +536,15 @@
         internal CachingPageManager(IPageManager underlyingManager, int maxCachedPages, int maxDirtyPages)
         {
             if (underlyingManager == null)
-                throw new ArgumentNullException("underlyingManager");
+                throw new ArgumentNullException(nameof(underlyingManager));
 
             _underlyingPageManager = underlyingManager;
 
             if(maxCachedPages <= 0)
-                throw new ArgumentOutOfRangeException("maxCachedPages");
+                throw new ArgumentOutOfRangeException(nameof(maxCachedPages));
 
             if (maxDirtyPages < 0 || maxDirtyPages > maxCachedPages)
-                throw new ArgumentOutOfRangeException("maxDirtyPages");
+                throw new ArgumentOutOfRangeException(nameof(maxDirtyPages));
 
             _maxCachedPages = maxCachedPages;
             _maxDirtyPages = maxDirtyPages;

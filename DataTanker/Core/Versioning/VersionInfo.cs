@@ -12,16 +12,9 @@ namespace DataTanker.Versioning
 
         public DbItemReference VersionReference { get; set; }
 
-        public static int BytesLength 
-        {
-            get
-            {
-                return
-                    sizeof (int) + // CreateChangeNumber
-                    sizeof (int) + // ExpireChangeNumber
-                    DbItemReference.BytesLength;
-            }
-        }
+        public static int BytesLength => sizeof (int) + // CreateChangeNumber
+                                         sizeof (int) + // ExpireChangeNumber
+                                         DbItemReference.BytesLength;
 
         public void Write(Stream stream)
         {

@@ -125,7 +125,7 @@ namespace DataTanker
         public TransactionState GetState(int number)
         {
             if (_transactions.Count <= number)
-                throw new ArgumentOutOfRangeException("number");
+                throw new ArgumentOutOfRangeException(nameof(number));
 
             return _transactions[number].State;
         }

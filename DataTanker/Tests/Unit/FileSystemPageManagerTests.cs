@@ -19,7 +19,7 @@ namespace Tests
             StoragePath = "..\\..\\Storages";
         }
 
-        private List<IPage> _sharedPages = new List<IPage>();
+        private readonly List<IPage> _sharedPages = new List<IPage>();
         private FileSystemPageManager _sharedManager;
         private static readonly object _locker = new object();
 

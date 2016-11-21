@@ -822,8 +822,7 @@
                     var child = FetchNode(entry.Value.PageIndex);
                     if (child == null)
                     {
-                        message = string.Format("Invalid reference ({0}) to child in node: {1}", entry.Value.PageIndex,
-                                                node.Index);
+                        message = $"Invalid reference ({entry.Value.PageIndex}) to child in node: {node.Index}";
                         return false;
                     }
 

@@ -72,7 +72,7 @@
                 var header = new MultipageItemPageHeader
                                  {
                                      StartPageIndex = startPageIndex, 
-                                     PreviousPageIndex = previousPage != null ? previousPage.Index : -1,
+                                     PreviousPageIndex = previousPage?.Index ?? -1,
                                      NextPageIndex = -1,
                                      SizeClass = SizeClass.MultiPage
                                  };
@@ -240,7 +240,7 @@
 
         private byte[] GetLargeItemSegment(PageHeaderBase header, IPage page, DbItemReference reference, long startIndex, long endIndex)
         {
-            if (PageFormatter.ReadMultipageItemLength(page) <= endIndex) throw new ArgumentOutOfRangeException("endIndex");
+            if (PageFormatter.ReadMultipageItemLength(page) <= endIndex) throw new ArgumentOutOfRangeException(nameof(endIndex));
 
             var length = endIndex - startIndex + 1;
             var result = new byte[length];
@@ -286,7 +286,7 @@
 
             var item = PageFormatter.ReadFixedSizeItem(page, reference.ItemIndex);
             if (item.RawData.Length >= endIndex)
-                throw new ArgumentOutOfRangeException("endIndex");
+                throw new ArgumentOutOfRangeException(nameof(endIndex));
 
             var length = endIndex - startIndex + 1;
             var result = new byte[length];
@@ -305,8 +305,8 @@
         /// <returns>The array of bytes containing specified segment of db item</returns>
         public byte[] GetItemSegment(DbItemReference reference, long startIndex, long endIndex)
         {
-            if (startIndex < 0) throw new ArgumentOutOfRangeException("startIndex");
-            if (endIndex < 0) throw new ArgumentOutOfRangeException("endIndex");
+            if (startIndex < 0) throw new ArgumentOutOfRangeException(nameof(startIndex));
+            if (endIndex < 0) throw new ArgumentOutOfRangeException(nameof(endIndex));
 
             if(endIndex < startIndex)
                 throw new ArgumentException("End index should be qreater than or equal to start index");

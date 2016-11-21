@@ -19,18 +19,12 @@
         /// <summary>
         /// Gets the storage instance that owns this page.
         /// </summary>
-        public IStorage Storage
-        {
-            get { return _manager.Storage; }
-        }
+        public IStorage Storage => _manager.Storage;
 
         /// <summary>
         /// Gets the index of this page.
         /// </summary>
-        public long Index
-        {
-            get { return _index; }
-        }
+        public long Index => _index;
 
         /// <summary>
         /// Gets the content of this page.
@@ -84,10 +78,7 @@
         /// <summary>
         /// Gets the byte length of this page.
         /// </summary>
-        public int Length 
-        {
-            get { return _manager.PageSize; }
-        }
+        public int Length => _manager.PageSize;
 
         #endregion
 
@@ -100,13 +91,13 @@
         internal Page(IPageManager manager, long index, byte[] content)
         {
             if (content == null)
-                throw new ArgumentNullException("content");
+                throw new ArgumentNullException(nameof(content));
 
             if (manager == null)
-                throw new ArgumentNullException("manager");
+                throw new ArgumentNullException(nameof(manager));
 
             if (index < 0)
-                throw new ArgumentOutOfRangeException("index", "Page index should not be negative");
+                throw new ArgumentOutOfRangeException(nameof(index), "Page index should not be negative");
 
             _index = index;
             _content = content;
@@ -138,13 +129,13 @@
         internal Page(IPageManager manager, long index, Func<byte[]> getContent, object backingObject)
         {
             if (getContent == null)
-                throw new ArgumentNullException("getContent");
+                throw new ArgumentNullException(nameof(getContent));
 
             if (manager == null)
-                throw new ArgumentNullException("manager");
+                throw new ArgumentNullException(nameof(manager));
 
             if (index < 0)
-                throw new ArgumentOutOfRangeException("index", "Page index should not be negative");
+                throw new ArgumentOutOfRangeException(nameof(index), "Page index should not be negative");
 
             _index = index;
             _getContent = getContent;

@@ -23,10 +23,7 @@
         /// <summary>
         /// Gets the names of counters
         /// </summary>
-        public static string[] CounterNames
-        {
-            get { return Counters.Keys.ToArray(); }
-        }
+        public static string[] CounterNames => Counters.Keys.ToArray();
 
         /// <summary>
         /// Gets the result of unnamed measure.

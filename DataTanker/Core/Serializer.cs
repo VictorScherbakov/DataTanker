@@ -19,10 +19,10 @@
         public Serializer(Func<T, byte[]> serialize, Func<byte[], T> deserialize)
         {
             if (serialize == null) 
-                throw new ArgumentNullException("serialize");
+                throw new ArgumentNullException(nameof(serialize));
 
             if (deserialize == null) 
-                throw new ArgumentNullException("deserialize");
+                throw new ArgumentNullException(nameof(deserialize));
 
             _serialize = serialize;
             _deserialize = deserialize;

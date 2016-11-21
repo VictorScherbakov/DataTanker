@@ -16,6 +16,9 @@
 
         public bool Equals(DbItemReference other)
         {
+            if (other == null)
+                return false;
+
             return PageIndex == other.PageIndex && ItemIndex == other.ItemIndex;
         }
 
@@ -26,7 +29,7 @@
 
         public override string ToString()
         {
-            return string.Format("{0}_{1}", PageIndex, ItemIndex);
+            return $"{PageIndex}_{ItemIndex}";
         }
 
         public object Clone()
@@ -36,7 +39,7 @@
 
         public static DbItemReference Parse(string value)
         {
-            var entries = value.Split(new[]{'_'});
+            var entries = value.Split('_');
             return new DbItemReference(long.Parse(entries[0]), short.Parse(entries[1]));
         }
 
@@ -72,23 +75,16 @@
             return new DbItemReference(pageIndex, itemIndex);
         }
 
-        public static int BytesLength
-        {
-            get
-            {
-                return
-                    sizeof(Int64) + // PageIndex
-                    sizeof(Int16); // ItemIndex
-            }
-        }
+        public static int BytesLength => sizeof(Int64) + // PageIndex
+                                         sizeof(Int16);
 
         public static DbItemReference FromBytes(byte[] bytes, int offset = 0)
         {
             if (bytes == null)
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
 
             if (bytes.Length < BytesLength + offset)
-                throw new ArgumentException("bytes");
+                throw new ArgumentException(nameof(bytes));
 
             return new DbItemReference(BitConverter.ToInt64(bytes, offset), BitConverter.ToInt16(bytes, offset + sizeof(Int64)));
         }

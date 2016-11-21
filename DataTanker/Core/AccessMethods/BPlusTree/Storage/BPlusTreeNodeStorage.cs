@@ -58,12 +58,9 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
 
         private IBPlusTreeNode<TKey> PageToNode(IPage page)
         {
-            if (page.BackingObject != null)
-            {
-                var node = page.BackingObject as IBPlusTreeNode<TKey>;
-                if (node != null)
-                    return node;
-            }
+            var node = page.BackingObject as IBPlusTreeNode<TKey>;
+            if (node != null)
+                return node;
 
             var header = (BPlusTreeNodePageHeader)PageFormatter.GetPageHeader(page);
             List<DbItem> items = PageFormatter.ReadFixedSizeItems(page);
@@ -239,13 +236,13 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
         public BPlusTreeNodeStorage(IPageManager pageManager, ISerializer<TKey> keySerializer, int maxKeySize)
         {
             if (pageManager == null) 
-                throw new ArgumentNullException("pageManager");
+                throw new ArgumentNullException(nameof(pageManager));
 
             if (keySerializer == null) 
-                throw new ArgumentNullException("keySerializer");
+                throw new ArgumentNullException(nameof(keySerializer));
 
             if(maxKeySize <= 0)
-                throw new ArgumentException("ComparableComparableKeyOf size should be positive", "maxKeySize");
+                throw new ArgumentException("ComparableComparableKeyOf size should be positive", nameof(maxKeySize));
 
             _pageManager = pageManager;
             _keySerializer = keySerializer;
@@ -253,7 +250,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
             _nodeEntrySizeClass = DbItem.GetSizeClass(_maxKeySize + DbItemReference.BytesLength);
 
             if (NodeCapacity <= 2)
-                throw new ArgumentException("Too large key size", "maxKeySize");
+                throw new ArgumentException("Too large key size", nameof(maxKeySize));
 
             _dbItems = new DbItem[NodeCapacity];
             var bytes = new byte[_maxKeySize + DbItemReference.BytesLength];

@@ -6,8 +6,6 @@
     [System.Diagnostics.DebuggerDisplay("Reference: {Reference} Entries: {Entries.Count} Prefix: {Prefix}")]
     internal class RadixTreeNode : IRadixTreeNode
     {
-        private readonly IList<KeyValuePair<byte, DbItemReference>> _entries;
-
         /// <summary>
         /// Gets or sets common prefix bytes stored in this node.
         /// </summary>
@@ -21,10 +19,7 @@
         /// <summary>
         /// Gets a collection of entries of this node
         /// </summary>
-        public IList<KeyValuePair<byte, DbItemReference>> Entries
-        {
-            get { return _entries; }
-        }
+        public IList<KeyValuePair<byte, DbItemReference>> Entries { get; }
 
         /// <summary>
         /// Gets a reference to this node.
@@ -39,7 +34,7 @@
 
         public RadixTreeNode(int capacity)
         {
-            _entries = new List<KeyValuePair<byte, DbItemReference>>(capacity);
+            Entries = new List<KeyValuePair<byte, DbItemReference>>(capacity);
         }
     }
 }

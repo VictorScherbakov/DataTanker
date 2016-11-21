@@ -20,7 +20,7 @@
         private readonly IValueStorage<TValue> _valueStorage;
         private readonly ISerializer<TKey> _keySerializer;
 
-        public int MaxPrefixLength { get; private set; }
+        public int MaxPrefixLength { get; }
 
         private static KeyValuePair<byte, DbItemReference>? FindSuitableEntry(IList<KeyValuePair<byte, DbItemReference>> entries, byte b, out int index)
         {
@@ -820,13 +820,13 @@
             {
                 if(!node.Entries.Any() && node.ValueReference == null)
                 {
-                    message = string.Format("Node: {0} has no value and child nodes", node.Reference);
+                    message = $"Node: {node.Reference} has no value and child nodes";
                     return false;
                 }
 
                 if (_nodeStorage.Fetch(node.ParentNodeReference) == null)
                 {
-                    message = string.Format("Node: {0} has invalid reference ({1}) to parent node.", node.Reference, node.ParentNodeReference);
+                    message = $"Node: {node.Reference} has invalid reference ({node.ParentNodeReference}) to parent node.";
                     return false;
                 }
 
@@ -837,7 +837,7 @@
                 var childNode = _nodeStorage.Fetch(entry.Value);
                 if (childNode == null)
                 {
-                    message = string.Format("Invalid reference ({0}) to child in node: {1}", entry.Value, node.Reference);
+                    message = $"Invalid reference ({entry.Value}) to child in node: {node.Reference}";
                     return false;
                 }
 
@@ -852,7 +852,7 @@
             nodePrefixOffset = 0;
             var currentNode = _nodeStorage.FetchRoot();
 
-            if (processNode != null) processNode(currentNode);
+            processNode?.Invoke(currentNode);
 
             var currentPrefix = currentNode.Prefix;
             while(true)
@@ -885,7 +885,7 @@
                     {
                         currentNode = _nodeStorage.Fetch(currentNode.Entries[index].Value);
 
-                        if (processNode != null) processNode(currentNode);
+                        processNode?.Invoke(currentNode);
 
                         currentPrefix = currentNode.Prefix;
                         nodePrefixOffset = 0;

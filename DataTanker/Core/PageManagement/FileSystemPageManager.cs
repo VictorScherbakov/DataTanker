@@ -28,7 +28,6 @@
 
         private readonly object _locker = new object();
 
-        private readonly bool _forcedWrites;
         private readonly int _writeBufferSize;
 
         // storage content file
@@ -232,7 +231,7 @@
             set
             {
                 if (value < 0)
-                    throw new ArgumentException("Maximum empty pages should not be negative", "value");
+                    throw new ArgumentException("Maximum empty pages should not be negative", nameof(value));
                 _maxEmptyPages = value;
             }
         }
@@ -323,7 +322,7 @@
         public bool PageExists(long pageIndex)
         {
             if (pageIndex < 0)
-                throw new ArgumentException("Page index should not be negative", "pageIndex");
+                throw new ArgumentException("Page index should not be negative", nameof(pageIndex));
 
             CheckDisposed();
 
@@ -375,7 +374,7 @@
                         return new Page(this, pageIndex, _recoveryFile.GetUpdatedPageContent(pageIndex));
 
                     if(_recoveryFile.DeletedPageIndexes.Contains(pageIndex))
-                        throw new PageMapException(string.Format("Page {0} is removed", pageIndex));
+                        throw new PageMapException($"Page {pageIndex} is removed");
                 }
 
                 long pageAllocation = _pagemap.GetPageAllocation(pageIndex);
@@ -409,9 +408,9 @@
         {
             CheckDisposed();
 
-            if (content == null) throw new ArgumentNullException("content");
+            if (content == null) throw new ArgumentNullException(nameof(content));
             if(content.Length != _pageSize)
-                throw new ArgumentException("content");
+                throw new ArgumentException(nameof(content));
 
             Lock();
             try
@@ -424,7 +423,7 @@
                         return new Page(this, pageIndex, _recoveryFile.GetUpdatedPageContent(pageIndex));
 
                     if (_recoveryFile.DeletedPageIndexes.Contains(pageIndex))
-                        throw new PageMapException(string.Format("Page {0} is removed", pageIndex));
+                        throw new PageMapException($"Page {pageIndex} is removed");
                 }
 
                 long pageAllocation = _pagemap.GetPageAllocation(pageIndex);
@@ -453,7 +452,7 @@
             CheckDisposed();
 
             if (page == null)
-                throw new ArgumentNullException("page");
+                throw new ArgumentNullException(nameof(page));
 
             Lock();
             try
@@ -658,18 +657,12 @@
         /// <summary>
         /// Gets a page size in bytes.
         /// </summary>
-        public int PageSize
-        {
-            get { return _pageSize; }
-        }
+        public int PageSize => _pageSize;
 
         /// <summary>
         /// Gets the value indicating whether all write operations perform immediately to file storage
         /// </summary>
-        public bool ForcedWrites
-        {
-            get { return _forcedWrites; }
-        }
+        public bool ForcedWrites { get; }
 
         /// <summary>
         /// Checks if this page manager instance can
@@ -708,12 +701,10 @@
                     Lock();
                     try
                     {
-                        if (_storageStream != null)
-                            _storageStream.Close();
+                        _storageStream?.Close();
 
                         _pagemap.Dispose();
-                        if(_recoveryFile != null)
-                            _recoveryFile.Dispose();
+                        _recoveryFile?.Dispose();
                     }
                     finally
                     {
@@ -759,10 +750,10 @@
         internal FileSystemPageManager(int pageSize, bool forcedWrites, int writeBufferSize, bool useRecoveryFile)
         {
             if (pageSize < 4096)
-                throw new ArgumentOutOfRangeException("pageSize", "Too small page size");
+                throw new ArgumentOutOfRangeException(nameof(pageSize), "Too small page size");
 
             _pageSize = pageSize;
-            _forcedWrites = forcedWrites;
+            ForcedWrites = forcedWrites;
             _writeBufferSize = forcedWrites || writeBufferSize < 1 ? 1 : writeBufferSize;
 
             _pagemap = new PageMap(this);

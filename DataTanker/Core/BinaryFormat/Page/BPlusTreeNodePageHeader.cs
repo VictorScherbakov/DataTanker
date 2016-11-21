@@ -39,10 +39,7 @@ namespace DataTanker.BinaryFormat.Page
             return PageType.BPlusTree;
         }
 
-        public short DefaultSize
-        {
-            get { return 30; }
-        }
+        public short DefaultSize => 30;
 
         public override void WriteToPage(IPage page)
         {

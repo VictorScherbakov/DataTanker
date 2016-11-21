@@ -11,14 +11,10 @@
         private static DataTankerTransaction _current;
 
         private readonly ITransactionInventory _inventory;
-        private readonly int _id;
 
         public ISnapshotData SnapshotData { get; private set; }
 
-        public int Id
-        {
-            get { return _id; }
-        }
+        public int Id { get; }
 
         public TransactionState State { get; set; }
 
@@ -46,14 +42,14 @@
         public DataTankerTransaction(ITransactionInventory inventory, ISnapshotData snapshotData, int id)
         {
             if (snapshotData == null) 
-                throw new ArgumentNullException("snapshotData");
+                throw new ArgumentNullException(nameof(snapshotData));
 
             if(id == int.MaxValue)
                 throw new DataTankerException("Transaction number overflow");
 
             _inventory = inventory;
             SnapshotData = snapshotData;
-            _id = id;
+            Id = id;
 
             State = TransactionState.Active;
         }

@@ -6,10 +6,6 @@ namespace DataTanker.BinaryFormat.Page
 
     internal abstract class PageHeaderBase
     {
-        private short _length = 4;
-        private PageType _pageType = PageType.FixedSizeItem;
-        private SizeClass _sizeClass = SizeClass.Class0;
-
         protected virtual PageType GetActualPageType()
         {
             return PageType.FixedSizeItem;
@@ -38,23 +34,11 @@ namespace DataTanker.BinaryFormat.Page
             return BitConverter.ToInt16(page.Content, OnPageOffsets.HeaderLength);
         }
 
-        public virtual SizeClass SizeClass
-        {
-            get { return _sizeClass; }
-            set { _sizeClass = value; }
-        }
+        public virtual SizeClass SizeClass { get; set; } = SizeClass.Class0;
 
-        public PageType PageType
-        {
-            get { return _pageType; }
-            protected set { _pageType = value; }
-        }
+        public PageType PageType { get; protected set; } = PageType.FixedSizeItem;
 
-        public short Length
-        {
-            get { return _length; }
-            protected set { _length = value; }
-        }
+        public short Length { get; protected set; } = 4;
 
         public virtual void Read(IPage page)
         {

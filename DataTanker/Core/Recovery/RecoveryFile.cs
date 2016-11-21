@@ -79,18 +79,12 @@ namespace DataTanker.Recovery
         /// <summary>
         /// Returns a list of all pages presented in the recovery file as updated
         /// </summary>
-        public IList<long> UpdatedPageIndexes
-        {
-            get { return _updatedPages.Keys.ToList(); }
-        }
+        public IList<long> UpdatedPageIndexes => _updatedPages.Keys.ToList();
 
         /// <summary>
         /// Returns a set of all pages presented in the recovery file as deleted
         /// </summary>
-        public HashSet<long> DeletedPageIndexes
-        {
-            get { return _deletedPages; }
-        }
+        public HashSet<long> DeletedPageIndexes => _deletedPages;
 
         private static void EnsureFileExists(string fileName)
         {
@@ -108,7 +102,7 @@ namespace DataTanker.Recovery
         /// <param name="pageSize"></param>
         public RecoveryFile(FileSystemPageManager pageManager, int pageSize)
         {
-            if (pageManager == null) throw new ArgumentNullException("pageManager");
+            if (pageManager == null) throw new ArgumentNullException(nameof(pageManager));
 
 
             _pageManager = pageManager;
@@ -259,10 +253,7 @@ namespace DataTanker.Recovery
         /// <summary>
         /// Gets a value indicating whether the recovery file exists
         /// </summary>
-        public bool Exists 
-        {
-            get { return File.Exists(RecoveryFileName()); }
-        }
+        public bool Exists => File.Exists(RecoveryFileName());
 
         /// <summary>
         /// Cancels all records in the recovery file (if any) and start 
@@ -413,8 +404,8 @@ namespace DataTanker.Recovery
         {
             if (!_disposed)
             {
-                if (disposing && _stream != null)
-                    _stream.Close();
+                if (disposing)
+                    _stream?.Close();
 
                 _disposed = true;
             }

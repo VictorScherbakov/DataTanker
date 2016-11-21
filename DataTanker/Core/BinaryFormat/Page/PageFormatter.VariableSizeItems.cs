@@ -304,7 +304,7 @@
                 items.Count * OnPagePointerSize + OnPagePointerSize;    // subtract markers array and its length
 
             if (remainingSpace < 0)
-                throw new ArgumentException("Page have no space to add specified items", "items");
+                throw new ArgumentException("Page have no space to add specified items", nameof(items));
 
             var content = page.Content;
             int contentLength = page.Length;

@@ -22,7 +22,7 @@
         public static int WriteMultipageItemBlock(IPage page, DbItem item, long offset)
         {
             if (offset < 0 || offset >= item.RawData.LongLength)
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
 
             MultipageItemPageHeader header = GetMultipageItemPageHeader(page);
 

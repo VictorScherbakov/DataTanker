@@ -28,7 +28,7 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
 
         internal static short GetNodeSize(short prefixLength, int entryCount)
         {
-            if(entryCount < 0 || entryCount > 256) throw new ArgumentOutOfRangeException("entryCount");
+            if(entryCount < 0 || entryCount > 256) throw new ArgumentOutOfRangeException(nameof(entryCount));
 
             var size =
              (short)(PageFormatter.OnPagePointerSize + // overall size
@@ -320,7 +320,7 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
         public void Remove(DbItemReference reference)
         {
             if (_rootNodeReference.Equals(reference))
-                throw new ArgumentOutOfRangeException("reference", "Unable to delete the root node");
+                throw new ArgumentOutOfRangeException(nameof(reference), "Unable to delete the root node");
 
             var page = _pageManager.FetchPage(reference.PageIndex);
 

@@ -20,7 +20,7 @@ namespace DataTanker.AccessMethods.RadixTree
 
         private TReturnValue WrapWithReadLock<TReturnValue>(Func<TKey, TReturnValue> method, TKey key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             EnterReadWrap();
             try
@@ -106,7 +106,7 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <summary>
         /// Gets the access method implemented by this storage
         /// </summary>
-        public override AccessMethod AccessMethod { get { return AccessMethod.RadixTree; } }
+        public override AccessMethod AccessMethod => AccessMethod.RadixTree;
 
         public TValue Get(TKey key)
         {
@@ -125,8 +125,8 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <param name="value">ValueOf value :)</param>
         public void Set(TKey key, TValue value)
         {
-            if (key == null) throw new ArgumentNullException("key");
-            if (value == null) throw new ArgumentNullException("value");
+            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             EnterWriteWrap();
             try
@@ -146,7 +146,7 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <param name="key">The key of value to remove</param>
         public void Remove(TKey key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             EnterWriteWrap();
             try
@@ -205,7 +205,7 @@ namespace DataTanker.AccessMethods.RadixTree
             : base(pageManager, autoFlushInterval, autoFlishInterval)
         {
             if (tree == null)
-                throw new ArgumentNullException("tree");
+                throw new ArgumentNullException(nameof(tree));
 
             _tree = tree;
 

@@ -11,10 +11,7 @@ namespace DataTanker.Versioning
         public bool IsComittedTransaction(int number)
         {
             var tr = _transactions.SingleOrDefault(t => t.Id == number);
-            if (tr != null)
-                return tr.State == TransactionState.Commited;
-
-            return false;
+            return tr?.State == TransactionState.Commited;
         }
 
         public bool IsRolledBackTransaction(int number)

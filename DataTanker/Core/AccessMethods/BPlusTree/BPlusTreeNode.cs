@@ -8,10 +8,6 @@ namespace DataTanker.AccessMethods.BPlusTree
     internal class BPlusTreeNode<TKey> : IBPlusTreeNode<TKey> 
         where TKey : IComparableKey
     {
-        private readonly long _index;
-
-        private readonly IList<KeyValuePair<TKey, DbItemReference>> _entries;
-
         /// <summary>
         /// Gets or sets a value indicating whether this node is leaf.
         /// </summary>
@@ -25,26 +21,17 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <summary>
         /// Gets a value indicating whether this node has a next node.
         /// </summary>
-        public bool HasNext
-        {
-            get { return NextNodeIndex != -1; }
-        }
+        public bool HasNext => NextNodeIndex != -1;
 
         /// <summary>
         /// Gets a value indicating whether this node has a previous node.
         /// </summary>
-        public bool HasPrevious
-        {
-            get { return PreviousNodeIndex != -1; }
-        }
+        public bool HasPrevious => PreviousNodeIndex != -1;
 
         /// <summary>
         /// Gets a value indicating whether this node has parent node.
         /// </summary>
-        public bool HasParent
-        {
-            get { return ParentNodeIndex != -1; }
-        }
+        public bool HasParent => ParentNodeIndex != -1;
 
         /// <summary>
         /// For leaf nodes gets or sets an index of previous sibling node.
@@ -59,18 +46,12 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <summary>
         /// Gets a collection of entries of this node
         /// </summary>
-        public IList<KeyValuePair<TKey, DbItemReference>> Entries
-        {
-            get { return _entries; }
-        }
+        public IList<KeyValuePair<TKey, DbItemReference>> Entries { get; }
 
         /// <summary>
         /// Gets an index of this node.
         /// </summary>
-        public long Index
-        {
-            get { return _index; }
-        }
+        public long Index { get; }
 
         /// <summary>
         /// Initializes a new instance of the BPlusTreeNode.
@@ -88,8 +69,8 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <param name="capacity">Capacity of node</param>
         public BPlusTreeNode(long index, int capacity)
         {
-            _entries = new List<KeyValuePair<TKey, DbItemReference>>(capacity);
-            _index = index;
+            Entries = new List<KeyValuePair<TKey, DbItemReference>>(capacity);
+            Index = index;
             NextNodeIndex = -1;
             PreviousNodeIndex = -1;
             ParentNodeIndex = -1;

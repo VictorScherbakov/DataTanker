@@ -27,7 +27,7 @@ namespace Tests
                    && bytes1.SequenceEqual(bytes2);
         }
 
-        private static Random _r = new Random();
+        private static readonly Random _r = new Random();
 
         private byte[] GenerateRandomSequence(SizeClass sizeClass)
         {
