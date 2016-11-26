@@ -53,9 +53,14 @@ namespace Tests
         }
 
         [Test]
-        public void SinglePage()
+        [TestCase(4096)]
+        [TestCase(8192)]
+        [TestCase(16384)]
+        [TestCase(32768)]
+        [TestCase(65536)]
+        public void SinglePage(int pageSize)
         {
-            var manager = new FileSystemPageManager(4096);
+            var manager = new FileSystemPageManager(pageSize);
             using (var storage = new Storage(manager))
             {
                 storage.CreateNew(StoragePath);
@@ -96,9 +101,14 @@ namespace Tests
         }
 
         [Test]
-        public void MultiPage()
+        [TestCase(4096)]
+        [TestCase(8192)]
+        [TestCase(16384)]
+        [TestCase(32768)]
+        [TestCase(65536)]
+        public void MultiPage(int pageSize)
         {
-            var manager = new FileSystemPageManager(4096);
+            var manager = new FileSystemPageManager(pageSize);
             using (var storage = new Storage(manager))
             {
                 storage.CreateNew(StoragePath);

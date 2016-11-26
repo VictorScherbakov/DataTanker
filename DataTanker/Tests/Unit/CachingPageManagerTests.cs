@@ -40,9 +40,14 @@ namespace Tests
 
 
         [Test]
-        public void SinglePage()
+        [TestCase(4096)]
+        [TestCase(8192)]
+        [TestCase(16384)]
+        [TestCase(32768)]
+        [TestCase(65536)]
+        public void SinglePage(int pageSize)
         {
-            var fsManager = new FileSystemPageManager(4096);
+            var fsManager = new FileSystemPageManager(pageSize);
             var manager = new CachingPageManager(fsManager, 100, 100);
 
             using (var storage = new Storage(manager))
@@ -74,9 +79,14 @@ namespace Tests
         }
 
         [Test]
-        public void MultiPage()
+        [TestCase(4096)]
+        [TestCase(8192)]
+        [TestCase(16384)]
+        [TestCase(32768)]
+        [TestCase(65536)]
+        public void MultiPage(int pageSize)
         {
-            var fsManager = new FileSystemPageManager(4096);
+            var fsManager = new FileSystemPageManager(pageSize);
             var manager = new CachingPageManager(fsManager, 500, 100);
 
             using (var storage = new Storage(manager))
@@ -132,9 +142,11 @@ namespace Tests
         }
 
         [Test]
-        public void RandomAccess()
+        [TestCase(4096)]
+        [TestCase(8192)]
+        public void RandomAccess(int pageSize)
         {
-            var fsManager = new FileSystemPageManager(4096);
+            var fsManager = new FileSystemPageManager(pageSize);
             var manager = new CachingPageManager(fsManager, 1000, 500);
 
             var pages = new List<IPage>();
@@ -153,7 +165,7 @@ namespace Tests
                     manager.UpdatePage(pages[i]);
                 }
 
-                int operationCount = 1000;
+                int operationCount = 10000;
                 for (int k = 0; k < operationCount; k++)
                 {
                     int op = r.Next(4);
@@ -183,7 +195,7 @@ namespace Tests
                 }
             }
 
-            var m = new FileSystemPageManager(4096);
+            var m = new FileSystemPageManager(pageSize);
             using (var storage = new Storage(m))
             {
                 storage.OpenExisting(StoragePath);

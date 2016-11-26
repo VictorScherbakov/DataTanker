@@ -164,9 +164,12 @@ namespace Tests
         Dictionary<int, int> _sharedPairs = new Dictionary<int, int>();
 
         [Test]
-        public void ConcurrentAccess()
+        [TestCase(100000, 5)]
+        [TestCase(100000, 10)]
+        [TestCase(100000, 20)]
+        [TestCase(1000000, 4)]
+        public void ConcurrentAccess(int count, int threadCount)
         {
-            var count = 100000;
             var r = new Random();
             var pairs = new Dictionary<int, int>();
             for (int i = 0; i < count; i++)
@@ -181,15 +184,15 @@ namespace Tests
 
                 // create threads
                 var threads = new List<Thread>();
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < threadCount; i++)
                     threads.Add(new Thread(WorkerRoutine));
 
                 int startNumber = 0;
                 // and start them
                 foreach (Thread thread in threads)
                 {
-                    thread.Start(startNumber);
-                    startNumber += 20000;
+                    thread.Start(new Tuple<int, int>(startNumber, count / threadCount));
+                    startNumber += count / threadCount;
                 }
 
                 // wait for the end of work
@@ -204,13 +207,14 @@ namespace Tests
             }
         }
 
-        private void WorkerRoutine(object startNumberObject)
+        private void WorkerRoutine(object startInfo)
         {
-            var startNumber = (int) startNumberObject;
+            var range = (Tuple<int, int>) startInfo;
+            var startNumber = range.Item1;
 
             var storage = _sharedStorage;
 
-            for (int i = startNumber; i < startNumber + 20000; i++)
+            for (int i = startNumber; i < startNumber + range.Item2; i++)
                 storage.Set(i.ToString(CultureInfo.InvariantCulture), _sharedPairs[i].ToString(CultureInfo.InvariantCulture));
         }
     }
