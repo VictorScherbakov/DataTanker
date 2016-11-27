@@ -12,11 +12,7 @@ namespace Performance
         private static IKeyValueStorage<ComparableKeyOf<int>, ValueOf<byte[]>> GetByteArrayStorage()
         {
             var factory = new StorageFactory();
-
-            return factory.CreateBPlusTreeByteArrayStorage<int>(
-                BitConverter.GetBytes,
-                p => BitConverter.ToInt32(p, 0),
-                BPlusTreeStorageSettings.Default(sizeof(int)));
+            return factory.CreateBPlusTreeByteArrayStorage<int>(BPlusTreeStorageSettings.Default(sizeof(int)));
         }
 
         private static IKeyValueStorage<ComparableKeyOf<int>, ValueOf<int>> GetIntStorage()
@@ -24,8 +20,6 @@ namespace Performance
             var factory = new StorageFactory();
 
             return factory.CreateBPlusTreeStorage<int, int>(
-                BitConverter.GetBytes,
-                p => BitConverter.ToInt32(p, 0),
                 BitConverter.GetBytes,
                 p => BitConverter.ToInt32(p, 0),
                 BPlusTreeStorageSettings.Default(sizeof(int)));

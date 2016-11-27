@@ -88,6 +88,7 @@
     <Compile Include="BinaryFormat\Page\FreeSpaceMapPageHeader.cs" />
     <Compile Include="BinaryFormat\Page\PageFormatter.Common.cs" />
     <Compile Include="MemoryManagement\DbItemType.cs" />
+    <Compile Include="NativeSerializer.cs" />
     <Compile Include="PageManagement\MemoryPageManager.cs" />
     <Compile Include="AccessMethods\RadixTree\RadixTreeKeyValueStorage.cs" />
     <Compile Include="Recovery\RecoveryFile.cs" />

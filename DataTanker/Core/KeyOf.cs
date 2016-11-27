@@ -1,7 +1,7 @@
 ﻿namespace DataTanker
 {
     /// <summary>
-    /// Simple wrapping class for comparable keys used by DataTanker storage.
+    /// Simple wrapping class for keys used by DataTanker storage.
     /// </summary>
     /// <typeparam name="T">The type of key</typeparam>
     public class KeyOf<T> : IKey

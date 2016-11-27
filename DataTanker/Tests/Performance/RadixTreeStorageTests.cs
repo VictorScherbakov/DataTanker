@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using DataTanker;
 using DataTanker.Settings;
 
@@ -15,10 +14,7 @@ namespace Performance
         {
             var factory = new StorageFactory();
 
-            return factory.CreateRadixTreeByteArrayStorage<string>(
-                p => Encoding.UTF8.GetBytes(p),
-                p => Encoding.UTF8.GetString(p),
-                RadixTreeStorageSettings.Default());
+            return factory.CreateRadixTreeByteArrayStorage<string>(RadixTreeStorageSettings.Default());
         }
 
         public static void EnglishWords(Action<string> writeInfo)

@@ -13,17 +13,12 @@ namespace DataTanker.Examples.WinForms
     {
         private static IKeyValueStorage<ComparableKeyOf<int>, ValueOf<string>> GetStorage()
         {
-            var settings = BPlusTreeStorageSettings.Default(4); // use default settings with 4-bytes keys
+            var settings = BPlusTreeStorageSettings.Default(4); // use default settings with 4-byte keys
 
             settings.CacheSettings.MaxCachedPages = 10000; // speedup massive insert operations
             settings.CacheSettings.MaxDirtyPages = 1000;   // by increasing cache size
 
-            return new StorageFactory().CreateBPlusTreeStorage<int, string>(
-                    BitConverter.GetBytes,               // key serialization
-                    p => BitConverter.ToInt32(p, 0),     // key deserialization
-                    p => Encoding.UTF8.GetBytes(p),      // value serialization
-                    p => Encoding.UTF8.GetString(p),     // value deserialization
-                    settings);
+            return new StorageFactory().CreateBPlusTreeStorage<int, string>(settings);
         }
 
         public MainForm()
@@ -38,8 +33,7 @@ namespace DataTanker.Examples.WinForms
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             _storageClosing = true;
-            if(_storage != null)
-                _storage.Close();
+            _storage?.Close();
         }
 
         private readonly Random _random = new Random();
@@ -73,7 +67,7 @@ namespace DataTanker.Examples.WinForms
 
                     if (i % 1000 == 0)
                     {
-                        lblState.Text = string.Format("Inserting value {0}...", i);
+                        lblState.Text = $"Inserting value {i}...";
                         Application.DoEvents();
                     }
                 }
@@ -90,7 +84,7 @@ namespace DataTanker.Examples.WinForms
                 TimeMeasure.Stop();
             }
 
-            lblState.Text =  string.Format("Done! Elapsed time: {0}", TimeMeasure.Result());
+            lblState.Text = $"Done! Elapsed time: {TimeMeasure.Result()}";
             TimeMeasure.Reset();
         }
 
