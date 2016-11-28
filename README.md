@@ -23,36 +23,91 @@ Any feedback is welcome. Feel free to ask a question, send a bug report or featu
 
 ## Usage
 ```c#
-            var factory = new StorageFactory();
+    [Serializable]
+    class Employee
+    {
+        public int Id { get; set; }
 
-            // create storage with integer keys and byte[] values
-            using (var storage = factory.CreateBPlusTreeByteArrayStorage<int>(
-                BitConverter.GetBytes,            // key serialization
-                p => BitConverter.ToInt32(p, 0),  // key deserialization
-                BPlusTreeStorageSettings.Default(sizeof(int))))
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+        public decimal Salary { get; set; }
+
+        public override string ToString()
+        {
+            return $"Id: {Id}, Name: {FirstName} {LastName}, Salary {Salary}";
+        }
+    }
+
+    class Program
+    {
+        public static void SaveEmployee(StorageFactory factory, Employee emp)
+        {
+            // create storage with integer keys and Employee values
+            using (var storage = factory.CreateBPlusTreeStorage<int, Employee>(BPlusTreeStorageSettings.Default(sizeof(int))))
             {
                 storage.OpenOrCreate(Directory.GetCurrentDirectory());
-
-                var r = new Random();
-                var bytes = new byte[20];
-                const int count = 1000000;
-
-                for (int i = 0; i < count; i++)
-                {
-                    // fill value with random bytes
-                    r.NextBytes(bytes);
-
-                    // insert
-                    storage.Set(i, bytes);
-                }
-
-                for (int i = 0; i < count; i++)
-                {
-                    // read
-                    bytes = storage.Get(i);
-                }
+                storage.Set(emp.Id, emp);
             }
+        }
+
+        public static Employee ReadEmployee(StorageFactory factory, int id)
+        {
+            using (var storage = factory.CreateBPlusTreeStorage<int, Employee>(BPlusTreeStorageSettings.Default(sizeof(int))))
+            {
+                storage.OpenOrCreate(Directory.GetCurrentDirectory());
+                return storage.Get(id);
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            var emp1 = new Employee { Id = 1, FirstName = "John", LastName = "Smith", Salary = new decimal(100000) };
+            var emp2 = new Employee { Id = 2, FirstName = "Steve", LastName = "Barret", Salary = new decimal(150000) };
+
+            var factory = new StorageFactory();
+            SaveEmployee(factory, emp1);
+            SaveEmployee(factory, emp2);
+
+            var emp3 = ReadEmployee(factory, 1);
+            var emp4 = ReadEmployee(factory, 2);
+
+            Console.WriteLine(emp3);
+            Console.WriteLine(emp4);
+        }
+    }
 ```
+Integer keys have a built-in serializers, so you don't have to worry about it. Here is a list of types having built-in serializers for keys:
+Int32, Int64, UInt32, UInt64, Double, Single, DateTime, String
+
+To use any other type just implement serialize/deserialize routines for it.
+
+The values use BinaryFormatter serialization by default. In this case, classes should be marked with [Serializable] attribute. However, serialization using BinaryFormatter implies too much overhead in time and disc space. 
+You can easily provide your own serializer based on BSON, Protobuf or other appropriate proto. All you have to do is just implement two methods like this:
+
+```c#
+    public class ProtobufSerializer<T> : ISerializer<T>
+    {
+        public T Deserialize(byte[] bytes)
+        {
+            using (var ms = new MemoryStream(bytes))
+            {
+                var result = Serializer.Deserialize(typeof(T), ms);
+                return (T)result;
+            }
+        }
+
+        public byte[] Serialize(T obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+                Serializer.Serialize(ms, obj);
+                return ms.ToArray();
+            }
+        }
+    }
+```
+
 ## Where should I use it? 
 
 In cases where the data storage is required, but the file system is not suitable, and large DBMSs have too much overhead. For example: query caches, message queues, large amount of temporary data etc.
