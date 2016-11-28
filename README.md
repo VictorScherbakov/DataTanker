@@ -77,14 +77,37 @@ Any feedback is welcome. Feel free to ask a question, send a bug report or featu
         }
     }
 ```
-Integer keys have a built-in serializers, so you don't have to worry about it. Here is a list of types having built-in serializers for keys:
+## Where should I use it? 
+
+In cases where the data storage is required, but the file system is not suitable, and large DBMSs have too much overhead. For example: query caches, message queues, large amount of temporary data etc.
+
+## Access methods
+
+Now DataTanker support two access methods: B+Tree and RadixTree.
+B+Tree have a good fill factor and demonstrates best performance on small sized keys without hierarchy.
+RadixTree is well suited for storing long hierarchical keys like filepaths.
+
+## Keys
+Existing key always corresponds to a single value. Integer keys have a built-in serializers, so you don't have to worry about it. Here is a list of types having built-in serializers for keys:
 Int32, Int64, UInt32, UInt64, Double, Single, DateTime, String
 
-To use any other type just implement serialize/deserialize routines for it.
+To use any other type just implement serialize/deserialize routines for it. Other features depend on the access method.
+
+**B+Tree storage**
+
+Binary representation of key has size limit, which depends on selected page size. Each index page must have a place for at least three keys in binary format. This requirement follows from the B+Tree properties.
+Keys must implement the _IComparable_ interface. 
+
+**RadixTree storage**
+
+Key has no reasonable size limit. Implementation of _IComparable_ and _IEquatable_ interfaces are not required. However, key set is ordered by comparing byte sequences of serialized keys. So, care must be taken to the serialization.
+
+## Values
+
+Values ​​have no restrictions on type. The size of value have no reasonable limit. In most cases large values will be limited by the drive size.
 
 The values use BinaryFormatter serialization by default. In this case, classes should be marked with [Serializable] attribute. However, serialization using BinaryFormatter implies too much overhead in time and disc space. 
 You can easily provide your own serializer based on BSON, Protobuf or other appropriate proto. All you have to do is just implement two methods like this:
-
 ```c#
     public class ProtobufSerializer<T> : ISerializer<T>
     {
@@ -107,33 +130,6 @@ You can easily provide your own serializer based on BSON, Protobuf or other appr
         }
     }
 ```
-
-## Where should I use it? 
-
-In cases where the data storage is required, but the file system is not suitable, and large DBMSs have too much overhead. For example: query caches, message queues, large amount of temporary data etc.
-
-## Access methods
-
-Now DataTanker support two access methods: B+Tree and RadixTree.
-B+Tree have a good fill factor and demonstrates best performance on small sized keys without hierarchy.
-RadixTree is well suited for storing long hierarchical keys like filepaths.
-
-## Keys
-Serialization and deserialization methods should be provided for the objects used as keys. Existing key always corresponds to a single value. 
-Other features depend on the access method.
-
-**B+Tree storage**
-
-Binary representation of key has size limit, which depends on selected page size. Each index page must have a place for at least three keys in binary format. This requirement follows from the B+Tree properties.
-Keys must implement the _IComparable_ interface. 
-
-**RadixTree storage**
-
-Key has no reasonable size limit. Implementation of _IComparable_ and _IEquatable_ interfaces are not required. However, key set is ordered by comparing byte sequences of serialized keys. So, care must be taken to the serialization.
-
-## Values
-
-Values ​​have no restrictions on type. Serialization and deserialization methods should also be provided. The size of value have no reasonable limit. In most cases large values will be limited by the drive size.
 
 ## What about ACID?
 * _atomicity_ - any single operation is atomic
