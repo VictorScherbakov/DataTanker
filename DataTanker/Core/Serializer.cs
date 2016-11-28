@@ -6,7 +6,7 @@
     /// Simple implementation of ISerializer using specified  methods.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class Serializer<T> : ISerializer<T>
+    public class Serializer<T> : ISerializer<T>
     {
         private readonly Func<T, byte[]> _serialize;
         private readonly Func<byte[], T> _deserialize;
