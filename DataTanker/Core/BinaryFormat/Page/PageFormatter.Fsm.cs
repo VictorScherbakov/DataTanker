@@ -12,7 +12,7 @@
         private static FreeSpaceMapPageHeader GetFsmPageHeader(IPage page)
         {
             PageHeaderBase result = GetPageHeader(page);
-            if (result.SizeClass != SizeClass.MultiPage ||
+            if (result.SizeRange != SizeRange.MultiPage ||
                 result.PageType != PageType.FreeSpaceMap)
                 throw new PageFormatException("Page is not dedicated to free-space-map.");
 

@@ -32,7 +32,7 @@ namespace Tests
             Assert.IsInstanceOf<HeadingPageHeader>(phb);
             Assert.AreEqual(hph.Length, phb.Length);
             Assert.AreEqual(hph.PageType, phb.PageType);
-            Assert.AreEqual(hph.SizeClass, phb.SizeClass);
+            Assert.AreEqual(hph.SizeRange, phb.SizeRange);
 
             var fsiph = new FixedSizeItemsPageHeader();
 
@@ -41,7 +41,7 @@ namespace Tests
             Assert.IsInstanceOf<FixedSizeItemsPageHeader>(phb);
             Assert.AreEqual(fsiph.Length, phb.Length);
             Assert.AreEqual(fsiph.PageType, phb.PageType);
-            Assert.AreEqual(fsiph.SizeClass, phb.SizeClass);
+            Assert.AreEqual(fsiph.SizeRange, phb.SizeRange);
 
             var mpph = new MultipageItemPageHeader();
 
@@ -50,7 +50,7 @@ namespace Tests
             Assert.IsInstanceOf<MultipageItemPageHeader>(phb);
             Assert.AreEqual(mpph.Length, phb.Length);
             Assert.AreEqual(mpph.PageType, phb.PageType);
-            Assert.AreEqual(mpph.SizeClass, phb.SizeClass);
+            Assert.AreEqual(mpph.SizeRange, phb.SizeRange);
             Assert.AreEqual(mpph.StartPageIndex, ((MultipageItemPageHeader)phb).StartPageIndex);
             Assert.AreEqual(mpph.PreviousPageIndex, ((MultipageItemPageHeader)phb).PreviousPageIndex);
             Assert.AreEqual(mpph.NextPageIndex, ((MultipageItemPageHeader)phb).NextPageIndex);
@@ -62,7 +62,7 @@ namespace Tests
             Assert.IsInstanceOf<FreeSpaceMapPageHeader>(phb);
             Assert.AreEqual(fsmph.Length, phb.Length);
             Assert.AreEqual(fsmph.PageType, phb.PageType);
-            Assert.AreEqual(fsmph.SizeClass, phb.SizeClass);
+            Assert.AreEqual(fsmph.SizeRange, phb.SizeRange);
             Assert.AreEqual(fsmph.BasePageIndex, ((FreeSpaceMapPageHeader)phb).BasePageIndex);
 
             var tnph = new BPlusTreeNodePageHeader();
@@ -72,7 +72,7 @@ namespace Tests
             Assert.IsInstanceOf<BPlusTreeNodePageHeader>(phb);
             Assert.AreEqual(tnph.Length, phb.Length);
             Assert.AreEqual(tnph.PageType, phb.PageType);
-            Assert.AreEqual(tnph.SizeClass, phb.SizeClass);
+            Assert.AreEqual(tnph.SizeRange, phb.SizeRange);
             Assert.AreEqual(tnph.ParentPageIndex, ((BPlusTreeNodePageHeader)phb).ParentPageIndex);
             Assert.AreEqual(tnph.PreviousPageIndex, ((BPlusTreeNodePageHeader)phb).PreviousPageIndex);
             Assert.AreEqual(tnph.NextPageIndex, ((BPlusTreeNodePageHeader)phb).NextPageIndex);
@@ -84,7 +84,7 @@ namespace Tests
             Assert.IsInstanceOf<RadixTreeNodesPageHeader>(phb);
             Assert.AreEqual(rtnph.Length, phb.Length);
             Assert.AreEqual(rtnph.PageType, phb.PageType);
-            Assert.AreEqual(rtnph.SizeClass, phb.SizeClass);
+            Assert.AreEqual(rtnph.SizeRange, phb.SizeRange);
             Assert.AreEqual(rtnph.FreeSpace, ((RadixTreeNodesPageHeader)phb).FreeSpace);
         }
 
@@ -98,13 +98,13 @@ namespace Tests
             var header = new FixedSizeItemsPageHeader();
             var r = new Random();
 
-            foreach (var sizeClass in EnumHelper.FixedSizeItemsSizeClasses())
+            foreach (var sizeRange in EnumHelper.FixedSizeItemsSizeRanges())
             {
-                header.SizeClass = sizeClass;
+                header.SizeRange = sizeRange;
 
                 PageFormatter.InitPage(p, header);
 
-                var item = new DbItem(new byte[DbItem.GetMaxSize(header.SizeClass)]);
+                var item = new DbItem(new byte[DbItem.GetMaxSize(header.SizeRange)]);
                 r.NextBytes(item.RawData);
 
                 // fill the page with the items

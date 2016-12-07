@@ -13,7 +13,7 @@
         private static MultipageItemPageHeader GetMultipageItemPageHeader(IPage page)
         {
             PageHeaderBase result = GetPageHeader(page);
-            if (result.SizeClass != SizeClass.MultiPage)
+            if (result.SizeRange != SizeRange.MultiPage)
                 throw new PageFormatException("Page is not dedicated to multipage items.");
 
             return (MultipageItemPageHeader)result;

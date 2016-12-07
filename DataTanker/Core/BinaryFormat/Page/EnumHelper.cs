@@ -4,60 +4,60 @@ namespace DataTanker.BinaryFormat.Page
 
     internal static class EnumHelper
     {
-        public static FsmValue FsmValueFromSizeClass(SizeClass value)
+        public static FsmValue FsmValueFromSizeRange(SizeRange value)
         {
             switch (value)
             {
-                case SizeClass.Class0: return FsmValue.Class0;
-                case SizeClass.Class1: return FsmValue.Class1;
-                case SizeClass.Class2: return FsmValue.Class2;
-                case SizeClass.Class3: return FsmValue.Class3;
-                case SizeClass.Class4: return FsmValue.Class4;
-                case SizeClass.Class5: return FsmValue.Class5;
-                case SizeClass.Class6: return FsmValue.Class6;
-                case SizeClass.Class7: return FsmValue.Class7;
-                case SizeClass.Class8: return FsmValue.Class8;
-                case SizeClass.Class9: return FsmValue.Class9;
-                case SizeClass.Class10: return FsmValue.Class10;
-                case SizeClass.Class11: return FsmValue.Class11;
+                case SizeRange.Range0: return FsmValue.Class0;
+                case SizeRange.Range1: return FsmValue.Class1;
+                case SizeRange.Range2: return FsmValue.Class2;
+                case SizeRange.Range3: return FsmValue.Class3;
+                case SizeRange.Range4: return FsmValue.Class4;
+                case SizeRange.Range5: return FsmValue.Class5;
+                case SizeRange.Range6: return FsmValue.Class6;
+                case SizeRange.Range7: return FsmValue.Class7;
+                case SizeRange.Range8: return FsmValue.Class8;
+                case SizeRange.Range9: return FsmValue.Class9;
+                case SizeRange.Range10: return FsmValue.Class10;
+                case SizeRange.Range11: return FsmValue.Class11;
 
                 default: return FsmValue.Full;
             }
         }
 
-        public static IEnumerable<SizeClass> FixedSizeItemsSizeClasses()
+        public static IEnumerable<SizeRange> FixedSizeItemsSizeRanges()
         {
-            yield return SizeClass.Class0;
-            yield return SizeClass.Class1;
-            yield return SizeClass.Class2;
-            yield return SizeClass.Class3;
-            yield return SizeClass.Class4;
-            yield return SizeClass.Class5;
-            yield return SizeClass.Class6;
-            yield return SizeClass.Class7;
-            yield return SizeClass.Class8;
-            yield return SizeClass.Class9;
-            yield return SizeClass.Class10;
-            yield return SizeClass.Class11;
+            yield return SizeRange.Range0;
+            yield return SizeRange.Range1;
+            yield return SizeRange.Range2;
+            yield return SizeRange.Range3;
+            yield return SizeRange.Range4;
+            yield return SizeRange.Range5;
+            yield return SizeRange.Range6;
+            yield return SizeRange.Range7;
+            yield return SizeRange.Range8;
+            yield return SizeRange.Range9;
+            yield return SizeRange.Range10;
+            yield return SizeRange.Range11;
         }
 
-        public static IEnumerable<SizeClass> AllSizeClasses()
+        public static IEnumerable<SizeRange> AllSizeRanges()
         {
-            yield return SizeClass.Class0;
-            yield return SizeClass.Class1;
-            yield return SizeClass.Class2;
-            yield return SizeClass.Class3;
-            yield return SizeClass.Class4;
-            yield return SizeClass.Class5;
-            yield return SizeClass.Class6;
-            yield return SizeClass.Class7;
-            yield return SizeClass.Class8;
-            yield return SizeClass.Class9;
-            yield return SizeClass.Class10;
-            yield return SizeClass.Class11;
+            yield return SizeRange.Range0;
+            yield return SizeRange.Range1;
+            yield return SizeRange.Range2;
+            yield return SizeRange.Range3;
+            yield return SizeRange.Range4;
+            yield return SizeRange.Range5;
+            yield return SizeRange.Range6;
+            yield return SizeRange.Range7;
+            yield return SizeRange.Range8;
+            yield return SizeRange.Range9;
+            yield return SizeRange.Range10;
+            yield return SizeRange.Range11;
 
-            yield return SizeClass.MultiPage;
-            yield return SizeClass.NotApplicable;
+            yield return SizeRange.MultiPage;
+            yield return SizeRange.NotApplicable;
         }
 
         public static IEnumerable<FsmValue> FixedSizeItemsFsmValues()

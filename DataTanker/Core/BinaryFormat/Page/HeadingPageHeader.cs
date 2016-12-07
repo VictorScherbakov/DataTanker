@@ -11,15 +11,15 @@ namespace DataTanker.BinaryFormat.Page
         public int OnDiskStructureVersion { get; set; }
         public short AccessMethod { get; set; }
 
-        public override SizeClass SizeClass
+        public override SizeRange SizeRange
         {
-            get { return base.SizeClass; }
+            get { return base.SizeRange; }
             set 
             {
-                if (value != SizeClass.NotApplicable)
-                    throw new InvalidOperationException("SizeClass is not applicable to heading page.");
+                if (value != SizeRange.NotApplicable)
+                    throw new InvalidOperationException("SizeRange is not applicable to heading page.");
 
-                base.SizeClass = value; 
+                base.SizeRange = value; 
             }
         }
 
@@ -67,7 +67,7 @@ namespace DataTanker.BinaryFormat.Page
 
         public HeadingPageHeader()
         {
-            base.SizeClass = SizeClass.NotApplicable;
+            base.SizeRange = SizeRange.NotApplicable;
         }
     }
 }

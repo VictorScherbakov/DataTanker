@@ -10,15 +10,15 @@ namespace DataTanker.BinaryFormat.Page
         public long PreviousPageIndex { get; set; }
         public long NextPageIndex { get; set; }
 
-        public override SizeClass SizeClass
+        public override SizeRange SizeRange
         {
-            get { return base.SizeClass; }
+            get { return base.SizeRange; }
             set
             {
-                if (value != SizeClass.MultiPage)
-                    throw new InvalidOperationException("Invalid SizeClass.");
+                if (value != SizeRange.MultiPage)
+                    throw new InvalidOperationException("Invalid SizeRange.");
 
-                base.SizeClass = value;
+                base.SizeRange = value;
             }
         }
 
@@ -55,7 +55,7 @@ namespace DataTanker.BinaryFormat.Page
 
         public MultipageItemPageHeaderBase()
         {
-            base.SizeClass = SizeClass.MultiPage;
+            base.SizeRange = SizeRange.MultiPage;
         }
     }
 }

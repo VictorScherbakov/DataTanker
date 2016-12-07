@@ -10,16 +10,16 @@ namespace DataTanker.BinaryFormat.Page
 
         public short EmptySlotCount { get; set; }
 
-        public override SizeClass SizeClass
+        public override SizeRange SizeRange
         {
-            get { return base.SizeClass; }
+            get { return base.SizeRange; }
             set
             {
-                if (value == SizeClass.NotApplicable ||
-                    value == SizeClass.MultiPage)
-                    throw new InvalidOperationException("Invalid SizeClass.");
+                if (value == SizeRange.NotApplicable ||
+                    value == SizeRange.MultiPage)
+                    throw new InvalidOperationException("Invalid SizeRange.");
 
-                base.SizeClass = value;
+                base.SizeRange = value;
             }
         }
 
@@ -39,7 +39,7 @@ namespace DataTanker.BinaryFormat.Page
         {
             Length = FixedSizeItemsHeaderLength;
 
-            CheckSizeClass(page.Length);
+            CheckSizeRange(page.Length);
 
             base.WriteToPage(page);
 
@@ -50,7 +50,7 @@ namespace DataTanker.BinaryFormat.Page
 
         public FixedSizeItemsPageHeader()
         {
-            base.SizeClass = SizeClass.Class0;
+            base.SizeRange = SizeRange.Range0;
         }
     }
 }

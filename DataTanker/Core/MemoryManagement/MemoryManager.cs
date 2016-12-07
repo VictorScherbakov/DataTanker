@@ -18,7 +18,7 @@
             DbItemReference result;
             IPage page;
 
-            var fsmValue = EnumHelper.FsmValueFromSizeClass(item.SizeClass);
+            var fsmValue = EnumHelper.FsmValueFromSizeRange(item.SizeRange);
 
             var index = _fsm.GetFreePageIndex(fsmValue);
 
@@ -38,7 +38,7 @@
             {
                 // allocate on a new page
                 page = _pageManager.CreatePage();
-                var header = new FixedSizeItemsPageHeader { SizeClass = item.SizeClass };
+                var header = new FixedSizeItemsPageHeader { SizeRange = item.SizeRange };
                 
                 PageFormatter.InitPage(page, header);
                 result = PageFormatter.AddFixedSizeItem(page, item, out spaceRemains);
@@ -74,7 +74,7 @@
                                      StartPageIndex = startPageIndex, 
                                      PreviousPageIndex = previousPage?.Index ?? -1,
                                      NextPageIndex = -1,
-                                     SizeClass = SizeClass.MultiPage
+                                     SizeRange = SizeRange.MultiPage
                                  };
 
                 PageFormatter.InitPage(page, header);
@@ -118,7 +118,7 @@
         {
             IPage page = _pageManager.FetchPage(reference.PageIndex);
             var header = PageFormatter.GetPageHeader(page);
-            if(header.SizeClass == SizeClass.MultiPage)
+            if(header.SizeRange == SizeRange.MultiPage)
             {
                 while (page != null)
                 {
@@ -140,7 +140,7 @@
                 {
                     PageFormatter.DeleteFixedSizeItem(page, reference.ItemIndex);
                     _pageManager.UpdatePage(page);
-                    _fsm.Set(page.Index, EnumHelper.FsmValueFromSizeClass(header.SizeClass));
+                    _fsm.Set(page.Index, EnumHelper.FsmValueFromSizeRange(header.SizeRange));
                 }
             }
         }
@@ -157,7 +157,7 @@
             if (item.GetAllocationType(_pageManager.PageSize) == AllocationType.SinglePage)
             {
                 IPage page = _pageManager.FetchPage(reference.PageIndex);
-                if (PageFormatter.GetPageHeader(page).SizeClass == item.SizeClass)
+                if (PageFormatter.GetPageHeader(page).SizeRange == item.SizeRange)
                 {
                     PageFormatter.RewriteFixedSizeItem(page, reference.ItemIndex, item);
 
@@ -187,7 +187,7 @@
             IPage page = _pageManager.FetchPage(reference.PageIndex);
 
             var header = PageFormatter.GetPageHeader(page);
-            if (header.SizeClass == SizeClass.MultiPage)
+            if (header.SizeRange == SizeRange.MultiPage)
             {
                 var length = PageFormatter.ReadMultipageItemLength(page);
                 var content = new byte[length];
@@ -230,7 +230,7 @@
             IPage page = _pageManager.FetchPage(reference.PageIndex);
 
             var header = PageFormatter.GetPageHeader(page);
-            if (header.SizeClass == SizeClass.MultiPage)
+            if (header.SizeRange == SizeRange.MultiPage)
                 return PageFormatter.ReadMultipageItemLength(page);
 
             return PageFormatter.IsFixedSizeItemAllocated(page, reference.ItemIndex)
@@ -317,7 +317,7 @@
             IPage page = _pageManager.FetchPage(reference.PageIndex);
 
             var header = PageFormatter.GetPageHeader(page);
-            if (header.SizeClass == SizeClass.MultiPage)
+            if (header.SizeRange == SizeRange.MultiPage)
                 return GetLargeItemSegment(header, page, reference, startIndex, endIndex);
 
             return GetFixedSizeItemSegment(header, page, reference, startIndex, endIndex);

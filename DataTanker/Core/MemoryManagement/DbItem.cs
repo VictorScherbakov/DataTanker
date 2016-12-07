@@ -13,7 +13,7 @@
     {
         private static readonly short _baseSize = 10;
 
-        private readonly SizeClass _sizeClass;
+        private readonly SizeRange _sizeRange;
 
         private byte[] _rawData;
 
@@ -21,26 +21,26 @@
 
         static DbItem()
         {
-            _maxSizes = new short[(int)(SizeClass.Class11 + 1)];
+            _maxSizes = new short[(int)(SizeRange.Range11 + 1)];
 
             int i = 0;
-            foreach (var sizeClass in EnumHelper.FixedSizeItemsSizeClasses())
+            foreach (var sizeRange in EnumHelper.FixedSizeItemsSizeRanges())
             {
-                var scb = (byte)sizeClass;
+                var scb = (byte)sizeRange;
                 _maxSizes[i++] = (short)(_baseSize * (short)Math.Pow(2, scb));
             }
         }
 
-        public static short GetMaxSize(SizeClass sizeClass)
+        public static short GetMaxSize(SizeRange sizeRange)
         {
-            if (sizeClass == SizeClass.NotApplicable ||
-                sizeClass == SizeClass.MultiPage)
-                throw new ArgumentOutOfRangeException(nameof(sizeClass));
+            if (sizeRange == SizeRange.NotApplicable ||
+                sizeRange == SizeRange.MultiPage)
+                throw new ArgumentOutOfRangeException(nameof(sizeRange));
 
-            return _maxSizes[(int) sizeClass];
+            return _maxSizes[(int) sizeRange];
         }
 
-        public static SizeClass GetSizeClass(long length)
+        public static SizeRange GetSizeRange(long length)
         {
             if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
@@ -48,10 +48,10 @@
             for (int i = 0; i < _maxSizes.Length; i++)
             {
                 if (_maxSizes[i] >= length)
-                    return (SizeClass)i;
+                    return (SizeRange)i;
             }
 
-            return SizeClass.MultiPage;
+            return SizeRange.MultiPage;
         }
 
 
@@ -68,19 +68,19 @@
         /// <returns></returns>
         public AllocationType GetAllocationType(int pageSize)
         {
-            if(_sizeClass == SizeClass.MultiPage)
+            if(_sizeRange == SizeRange.MultiPage)
                 return AllocationType.MultiPage;
 
-            return GetMaxSize(SizeClass) > pageSize - 8 
+            return GetMaxSize(SizeRange) > pageSize - 8 
                 ? AllocationType.MultiPage 
                 : AllocationType.SinglePage; 
         }
 
         /// <summary>
-        /// Gets a size class of this item.
-        /// Items unable to change its size classes.
+        /// Gets a size range of this item.
+        /// Items unable to change its size ranges.
         /// </summary>
-        public SizeClass SizeClass => _sizeClass;
+        public SizeRange SizeRange => _sizeRange;
 
 
         /// <summary>
@@ -98,7 +98,7 @@
             if (other == null)
                 return false;
 
-            return _sizeClass == other.SizeClass &&
+            return _sizeRange == other.SizeRange &&
                    _rawData.Length == other.RawData.Length &&
                    _rawData.SequenceEqual(other.RawData);
         }
@@ -110,7 +110,7 @@
 
             _rawData = rawData;
 
-            _sizeClass = GetSizeClass(rawData.Length);
+            _sizeRange = GetSizeRange(rawData.Length);
         }
     }
 }

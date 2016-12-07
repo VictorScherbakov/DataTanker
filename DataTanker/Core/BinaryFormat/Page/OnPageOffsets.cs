@@ -7,7 +7,7 @@ namespace DataTanker.BinaryFormat.Page
     {
         public static readonly int HeaderLength = 0;
         public static readonly int PageType = 2;
-        public static readonly int SizeClass = 3;
+        public static readonly int SizeRange = 3;
 
         public static class MultipageItem
         {

@@ -25,7 +25,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
 
         private readonly DbItem[] _dbItems;
 
-        private readonly SizeClass _nodeEntrySizeClass;
+        private readonly SizeRange _nodeEntrySizeRange;
 
         private readonly bool _pageCacheEnabled;
 
@@ -79,7 +79,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
 
             page.BackingObject = result;
 
-            if (_nodeEntrySizeClass != header.SizeClass)
+            if (_nodeEntrySizeRange != header.SizeRange)
                 throw new DataTankerException("Mismatch key size"); // TODO: specify possible size range
 
             return result;
@@ -93,7 +93,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
                 NextPageIndex = node.NextNodeIndex,
                 PreviousPageIndex = node.PreviousNodeIndex,
                 ParentPageIndex = node.ParentNodeIndex,
-                SizeClass = _nodeEntrySizeClass
+                SizeRange = _nodeEntrySizeRange
             };
 
             var page = new Page(_pageManager, node.Index, new byte[_pageManager.PageSize]);
@@ -183,7 +183,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
             {
                 if(_nodeCapacity == 0)
                 {
-                    var itemSize = DbItem.GetMaxSize(DbItem.GetSizeClass(DbItemReference.BytesLength + _maxKeySize + _keyLengthSize));
+                    var itemSize = DbItem.GetMaxSize(DbItem.GetSizeRange(DbItemReference.BytesLength + _maxKeySize + _keyLengthSize));
                     var usefulSize = _pageManager.PageSize - new BPlusTreeNodePageHeader().DefaultSize - 2;
                     _nodeCapacity = usefulSize / (itemSize + 2);
                 }
@@ -247,7 +247,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
             _pageManager = pageManager;
             _keySerializer = keySerializer;
             _maxKeySize = maxKeySize;
-            _nodeEntrySizeClass = DbItem.GetSizeClass(_maxKeySize + DbItemReference.BytesLength);
+            _nodeEntrySizeRange = DbItem.GetSizeRange(_maxKeySize + DbItemReference.BytesLength);
 
             if (NodeCapacity <= 2)
                 throw new ArgumentException("Too large key size", nameof(maxKeySize));

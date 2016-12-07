@@ -22,15 +22,15 @@ namespace DataTanker.BinaryFormat.Page
             bytes.CopyTo(page.Content, OnPageOffsets.RadixTreeNodes.FreeSpace);
         }
 
-        public override SizeClass SizeClass
+        public override SizeRange SizeRange
         {
-            get { return SizeClass.NotApplicable; }
+            get { return SizeRange.NotApplicable; }
             set
             {
-                if (value != SizeClass.NotApplicable)
-                    throw new InvalidOperationException("Invalid SizeClass.");
+                if (value != SizeRange.NotApplicable)
+                    throw new InvalidOperationException("Invalid SizeRange.");
 
-                base.SizeClass = value;
+                base.SizeRange = value;
             }
         }
 
@@ -57,7 +57,7 @@ namespace DataTanker.BinaryFormat.Page
 
         public RadixTreeNodesPageHeader()
         {
-            base.SizeClass = SizeClass.Class0;
+            base.SizeRange = SizeRange.Range0;
         }
     }
 }

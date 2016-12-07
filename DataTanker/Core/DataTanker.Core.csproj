@@ -81,7 +81,7 @@
     <Compile Include="BinaryFormat\Page\OnPageOffsets.cs" />
     <Compile Include="BinaryFormat\Page\PageHeaderBase.cs" />
     <Compile Include="BinaryFormat\Page\PageType.cs" />
-    <Compile Include="BinaryFormat\Page\SizeClass.cs" />
+    <Compile Include="BinaryFormat\Page\SizeRange.cs" />
     <Compile Include="BinaryFormat\Page\FixedSizeItemsPageHeader.cs" />
     <Compile Include="MemoryManagement\DbItem.cs" />
     <Compile Include="MemoryManagement\DbItemReference.cs" />

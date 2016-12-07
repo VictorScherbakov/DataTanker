@@ -29,12 +29,12 @@ namespace Tests
 
         private static readonly Random _r = new Random();
 
-        private byte[] GenerateRandomSequence(SizeClass sizeClass)
+        private byte[] GenerateRandomSequence(SizeRange sizeRange)
         {
             return
-                GenerateRandomSequence(sizeClass == SizeClass.MultiPage
+                GenerateRandomSequence(sizeRange == SizeRange.MultiPage
                                            ? _r.Next(327681)
-                                           : DbItem.GetMaxSize(sizeClass));
+                                           : DbItem.GetMaxSize(sizeRange));
         }
 
         private byte[] GenerateRandomSequence(int length)
@@ -45,14 +45,14 @@ namespace Tests
             return result;
         }
 
-        private SizeClass GetRandomFixedSizeItemsSizeClass()
+        private SizeRange GetRandomFixedSizeItemsSizeRange()
         {
-            return (SizeClass) _r.Next((int) SizeClass.Class8);
+            return (SizeRange) _r.Next((int) SizeRange.Range8);
         }
 
-        private SizeClass GetRandomMultipageItemsSizeClass()
+        private SizeRange GetRandomMultipageItemsSizeRange()
         {
-            return (SizeClass) _r.Next((int) SizeClass.Class9, (int) SizeClass.MultiPage);
+            return (SizeRange) _r.Next((int) SizeRange.Range9, (int) SizeRange.MultiPage);
         }
 
         [Test]
@@ -74,8 +74,8 @@ namespace Tests
                 // allocate items
                 for (int i = 0; i < count; i++)
                 {
-                    var sizeClass = GetRandomFixedSizeItemsSizeClass();
-                    var content = GenerateRandomSequence(DbItem.GetMaxSize(sizeClass));
+                    var sizeRange = GetRandomFixedSizeItemsSizeRange();
+                    var content = GenerateRandomSequence(DbItem.GetMaxSize(sizeRange));
                     var reference = memoryManager.Allocate(content);
                     items[reference] = content;
                 }
@@ -125,7 +125,7 @@ namespace Tests
                 // allocate items
                 for (int i = 0; i < count; i++)
                 {
-                    var content = GenerateRandomSequence(GetRandomMultipageItemsSizeClass());
+                    var content = GenerateRandomSequence(GetRandomMultipageItemsSizeRange());
                     var reference = memoryManager.Allocate(content);
                     items[reference] = content;
                 }
@@ -176,7 +176,7 @@ namespace Tests
                 // allocate items
                 for (int i = 0; i < count; i++)
                 {
-                    var content = GenerateRandomSequence(GetRandomMultipageItemsSizeClass());
+                    var content = GenerateRandomSequence(GetRandomMultipageItemsSizeRange());
                     var reference = memoryManager.Allocate(content);
                     items[reference] = content;
                 }
@@ -208,8 +208,8 @@ namespace Tests
                 // allocate items
                 for (int i = 0; i < count; i++)
                 {
-                    var sizeClass = GetRandomFixedSizeItemsSizeClass();
-                    var content = GenerateRandomSequence(DbItem.GetMaxSize(sizeClass) - r.Next(5));
+                    var sizeRange = GetRandomFixedSizeItemsSizeRange();
+                    var content = GenerateRandomSequence(DbItem.GetMaxSize(sizeRange) - r.Next(5));
                     var reference = memoryManager.Allocate(content);
                     items[reference] = content;
                 }

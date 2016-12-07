@@ -11,16 +11,16 @@ namespace DataTanker.BinaryFormat.Page
         public long NextPageIndex { get; set; }
         public bool IsLeaf { get; set; }
 
-        public override SizeClass SizeClass
+        public override SizeRange SizeRange
         {
-            get { return base.SizeClass; }
+            get { return base.SizeRange; }
             set
             {
-                if (value == SizeClass.NotApplicable ||
-                    value == SizeClass.MultiPage)
-                    throw new InvalidOperationException("Invalid SizeClass."); 
+                if (value == SizeRange.NotApplicable ||
+                    value == SizeRange.MultiPage)
+                    throw new InvalidOperationException("Invalid SizeRange."); 
 
-                base.SizeClass = value;
+                base.SizeRange = value;
             }
         }
 
@@ -44,7 +44,7 @@ namespace DataTanker.BinaryFormat.Page
         public override void WriteToPage(IPage page)
         {
             Length = DefaultSize;
-            CheckSizeClass(page.Content.Length);
+            CheckSizeRange(page.Content.Length);
 
             base.WriteToPage(page);
 
@@ -67,7 +67,7 @@ namespace DataTanker.BinaryFormat.Page
 
         public BPlusTreeNodePageHeader()
         {
-            base.SizeClass = SizeClass.Class0;
+            base.SizeRange = SizeRange.Range0;
         }
     }
 }

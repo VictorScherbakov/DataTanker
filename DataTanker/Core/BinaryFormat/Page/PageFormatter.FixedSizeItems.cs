@@ -26,9 +26,9 @@
 
         public static short ReadFixedSizeItemMarkersLength(IPage page)
         {
-            SizeClass sc = PageHeaderBase.GetSizeClass(page);
+            SizeRange sc = PageHeaderBase.GetSizeRange(page);
 
-            if (sc == SizeClass.MultiPage || sc == SizeClass.NotApplicable)
+            if (sc == SizeRange.MultiPage || sc == SizeRange.NotApplicable)
                 throw new PageFormatException("Page is not dedicated to fixed size items.");
 
             short headerLength = BitConverter.ToInt16(page.Content, OnPageOffsets.HeaderLength);
@@ -53,9 +53,9 @@
 
         public static short[] ReadFixedSizeItemLengths(IPage page)
         {
-            SizeClass sc = PageHeaderBase.GetSizeClass(page);
+            SizeRange range = PageHeaderBase.GetSizeRange(page);
 
-            if (sc == SizeClass.MultiPage || sc == SizeClass.NotApplicable)
+            if (range == SizeRange.MultiPage || range == SizeRange.NotApplicable)
                 throw new PageFormatException("Page is not dedicated to fixed size items.");
 
             short headerLength = PageHeaderBase.GetHeaderLength(page);
@@ -76,9 +76,9 @@
 
         public static short ReadFixedSizeItemLength(IPage page, short itemIndex)
         {
-            SizeClass sc = PageHeaderBase.GetSizeClass(page);
+            SizeRange range = PageHeaderBase.GetSizeRange(page);
 
-            if (sc == SizeClass.MultiPage || sc == SizeClass.NotApplicable)
+            if (range == SizeRange.MultiPage || range == SizeRange.NotApplicable)
                 throw new PageFormatException("Page is not dedicated to fixed size items.");
 
             short headerLength = BitConverter.ToInt16(page.Content, OnPageOffsets.HeaderLength);
@@ -93,9 +93,9 @@
 
         public static bool IsFixedSizeItemAllocated(IPage page, short itemIndex)
         {
-            SizeClass sc = PageHeaderBase.GetSizeClass(page);
+            SizeRange sc = PageHeaderBase.GetSizeRange(page);
 
-            if (sc == SizeClass.MultiPage || sc == SizeClass.NotApplicable)
+            if (sc == SizeRange.MultiPage || sc == SizeRange.NotApplicable)
                 throw new PageFormatException("Page is not dedicated to fixed size items.");
 
             short headerLength = BitConverter.ToInt16(page.Content, OnPageOffsets.HeaderLength);
@@ -115,7 +115,7 @@
                 throw new PageFormatException("Item has been deleted.");
 
             var itemBytes = new byte[itemLength];
-            short slotSize = DbItem.GetMaxSize(PageHeaderBase.GetSizeClass(page));
+            short slotSize = DbItem.GetMaxSize(PageHeaderBase.GetSizeRange(page));
             int offset = page.Content.Length - slotSize * (itemIndex + 1);
 
             for (int j = 0; j < itemBytes.Length; j++)
@@ -129,7 +129,7 @@
             short[] itemLengths = ReadFixedSizeItemLengths(page);
             var result = new List<DbItem>(itemLengths.Length);
 
-            short maxSize = DbItem.GetMaxSize(PageHeaderBase.GetSizeClass(page));
+            short maxSize = DbItem.GetMaxSize(PageHeaderBase.GetSizeRange(page));
             int offset = page.Content.Length - maxSize;
             var content = page.Content;
             int cnt = itemLengths.Length;
@@ -152,11 +152,11 @@
 
         public static void FormatFixedSizeItemsPage(IPage page, PageHeaderBase header, DbItem[] items)
         {
-            var sizeClass = header.SizeClass;
+            var sizeRange = header.SizeRange;
             if (items.Any())
             {
-                if (items.Any(item => item.SizeClass != sizeClass))
-                    throw new ArgumentException("Size classes should be equal", nameof(items));
+                if (items.Any(item => item.SizeRange != sizeRange))
+                    throw new ArgumentException("Size ranges should be equal", nameof(items));
             }
 
             header.WriteToPage(page);
@@ -169,7 +169,7 @@
             if (remainingSpace < 0)
                 throw new ArgumentException("Page have no space to add specified items", nameof(items));
 
-            var maxSize = DbItem.GetMaxSize(sizeClass);
+            var maxSize = DbItem.GetMaxSize(sizeRange);
             var content = page.Content;
             int contentLength = page.Length;
             int cnt = items.Length;
@@ -194,15 +194,15 @@
         public static DbItemReference AddFixedSizeItem(IPage page, DbItem item, out bool hasRemainingSpace)
         {
             var header = (FixedSizeItemsPageHeader)GetPageHeader(page);
-            if (header.SizeClass == SizeClass.MultiPage ||
-               header.SizeClass == SizeClass.NotApplicable)
+            if (header.SizeRange == SizeRange.MultiPage ||
+               header.SizeRange == SizeRange.NotApplicable)
                 throw new PageFormatException("Page is not dedicated to fixed size items.");
 
             if (item.GetAllocationType(page.Length) == AllocationType.MultiPage)
                 throw new PageFormatException("Unable to add item on page. Item is too large.");
 
-            if (header.SizeClass != item.SizeClass)
-                throw new PageFormatException("Unable to add item on page. Mismatch size classes.");
+            if (header.SizeRange != item.SizeRange)
+                throw new PageFormatException("Unable to add item on page. Mismatch size ranges.");
 
             hasRemainingSpace = false;
 
@@ -225,7 +225,7 @@
                 Buffer.BlockCopy(item.RawData,
                                  0,
                                  page.Content,
-                                 page.Length - DbItem.GetMaxSize(header.SizeClass) * (slotIndex + 1),
+                                 page.Length - DbItem.GetMaxSize(header.SizeRange) * (slotIndex + 1),
                                  item.RawData.Length);
 
                 if (header.EmptySlotCount > 1)
@@ -260,7 +260,7 @@
             Buffer.BlockCopy(item.RawData,
                 0,
                 page.Content,
-                page.Length - DbItem.GetMaxSize(header.SizeClass) * (itemLengthsLength + 1),
+                page.Length - DbItem.GetMaxSize(header.SizeRange) * (itemLengthsLength + 1),
                 item.RawData.Length);
 
             if (newSlotCount > 1)
@@ -275,8 +275,8 @@
                 throw new ArgumentOutOfRangeException(nameof(itemIndex));
 
             var header = (FixedSizeItemsPageHeader)GetPageHeader(page);
-            if (header.SizeClass == SizeClass.MultiPage ||
-               header.SizeClass == SizeClass.NotApplicable)
+            if (header.SizeRange == SizeRange.MultiPage ||
+               header.SizeRange == SizeRange.NotApplicable)
                 throw new PageFormatException("Page is not dedicated to fixed size items.");
 
             short itemLengths = ReadFixedSizeItemLength(page, itemIndex);
@@ -298,8 +298,8 @@
                 throw new ArgumentOutOfRangeException(nameof(itemIndex));
 
             PageHeaderBase header = GetPageHeader(page);
-            if (header.SizeClass == SizeClass.MultiPage ||
-               header.SizeClass == SizeClass.NotApplicable)
+            if (header.SizeRange == SizeRange.MultiPage ||
+               header.SizeRange == SizeRange.NotApplicable)
                 throw new PageFormatException("Page is not dedicated to fixed size items.");
 
             if (ReadFixedSizeItemMarkersLength(page) - 1 < itemIndex)
@@ -316,15 +316,15 @@
             Buffer.BlockCopy(item.RawData,
                 0,
                 page.Content,
-                page.Length - DbItem.GetMaxSize(header.SizeClass) * (itemIndex + 1),
+                page.Length - DbItem.GetMaxSize(header.SizeRange) * (itemIndex + 1),
                 item.RawData.Length);
         }
 
         public static void DeleteFixedSizeItems(IPage page)
         {
             PageHeaderBase header = GetPageHeader(page);
-            if (header.SizeClass == SizeClass.MultiPage ||
-               header.SizeClass == SizeClass.NotApplicable)
+            if (header.SizeRange == SizeRange.MultiPage ||
+               header.SizeRange == SizeRange.NotApplicable)
                 throw new PageFormatException("Page is not dedicated to fixed size items.");
 
             // set length of item markers to zero
@@ -340,7 +340,7 @@
         {
             short fixedSizeItemMarkersLength = BitConverter.ToInt16(page.Content, FixedSizeItemsPageHeader.FixedSizeItemsHeaderLength);
 
-            short slotSize = DbItem.GetMaxSize(header.SizeClass);
+            short slotSize = DbItem.GetMaxSize(header.SizeRange);
 
             int remainingSpace =
                 page.Length -                                                                 // full page length
@@ -354,13 +354,13 @@
         public static bool HasFreeSpaceForFixedSizeItem(IPage page)
         {
             PageHeaderBase header = GetPageHeader(page);
-            if (header.SizeClass == SizeClass.NotApplicable ||
-               header.SizeClass == SizeClass.MultiPage)
+            if (header.SizeRange == SizeRange.NotApplicable ||
+               header.SizeRange == SizeRange.MultiPage)
                 return false;
 
             short fixedSizeItemMarkersLength = ReadFixedSizeItemMarkersLength(page);
 
-            short slotSize = DbItem.GetMaxSize(header.SizeClass);
+            short slotSize = DbItem.GetMaxSize(header.SizeRange);
 
             int remainingSpace =
                 page.Length -                                                                 // full page length

@@ -76,7 +76,7 @@ namespace DataTanker.AccessMethods.BPlusTree
                 PreviousPageIndex = -1,
                 NextPageIndex = -1,
                 IsLeaf = true,
-                SizeClass = DbItem.GetSizeClass(_maxKeySize + sizeof(Int64) + sizeof(Int16))
+                SizeRange = DbItem.GetSizeRange(_maxKeySize + sizeof(Int64) + sizeof(Int16))
             };
 
             PageFormatter.InitPage(amPage, tnph);
