@@ -15,7 +15,7 @@
         /// <typeparam name="TKey">The type of key</typeparam>
         /// <param name="settings">Setiings of creating storage</param>
         /// <returns>New storage instance</returns>
-        IKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<byte[]>> CreateBPlusTreeByteArrayStorage<TKey>(BPlusTreeStorageSettings settings)
+        IBPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<byte[]>> CreateBPlusTreeByteArrayStorage<TKey>(BPlusTreeStorageSettings settings)
             where TKey : IComparable;
 
         /// <summary>
@@ -27,7 +27,7 @@
         /// <param name="valueSerializer">Object implementing ISerializer interface for value serialization</param>
         /// <param name="settings">Setiings of creraating storage</param>
         /// <returns>New storage instance</returns>
-        IKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(ISerializer<TValue> valueSerializer, 
+        IBPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(ISerializer<TValue> valueSerializer, 
                                                                                                       BPlusTreeStorageSettings settings)
             where TKey : IComparable;
 
@@ -40,7 +40,7 @@
         /// <typeparam name="TValue">The type of value</typeparam>
         /// <param name="settings">Setiings of creraating storage</param>
         /// <returns>New storage instance</returns>
-        IKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(BPlusTreeStorageSettings settings)
+        IBPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(BPlusTreeStorageSettings settings)
             where TKey : IComparable;
 
         /// <summary>
@@ -53,7 +53,7 @@
         /// <param name="deserializeValue">Value deserialization method</param>
         /// <param name="settings">Setiings of creraating storage</param>
         /// <returns>New storage instance</returns>
-        IKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(Func<TValue, byte[]> serializeValue,
+        IBPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(Func<TValue, byte[]> serializeValue,
                                                                                                       Func<byte[], TValue> deserializeValue,
                                                                                                       BPlusTreeStorageSettings settings)
             where TKey : IComparable;
@@ -112,7 +112,7 @@
         /// <param name="valueSerializer">Object implementing ISerializer interface for value serialization</param>
         /// <param name="settings">Setiings of creating storage</param>
         /// <returns>New storage instance</returns>
-        IKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(
+        IBPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(
             ISerializer<TKey> keySerializer, ISerializer<TValue> valueSerializer, BPlusTreeStorageSettings settings)
             where TKey : IComparable;
 
@@ -139,7 +139,7 @@
         /// <param name="deserializeValue">Value deserialization method</param>
         /// <param name="settings">Setiings of creating storage</param>
         /// <returns>New storage instance</returns>
-        IKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(
+        IBPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<TValue>> CreateBPlusTreeStorage<TKey, TValue>(
             Func<TKey, byte[]> serializeKey,
             Func<byte[], TKey> deserializeKey,
             Func<TValue, byte[]> serializeValue,
@@ -174,7 +174,7 @@
         /// <param name="deserializeKey">Key deserialization method</param>
         /// <param name="settings">Setiings of creating storage</param>
         /// <returns>New storage instance</returns>
-        IKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<byte[]>> CreateBPlusTreeByteArrayStorage<TKey>(
+        IBPlusTreeKeyValueStorage<ComparableKeyOf<TKey>, ValueOf<byte[]>> CreateBPlusTreeByteArrayStorage<TKey>(
             Func<TKey, byte[]> serializeKey,
             Func<byte[], TKey> deserializeKey,
             BPlusTreeStorageSettings settings)
