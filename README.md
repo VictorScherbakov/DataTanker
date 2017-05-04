@@ -1,4 +1,4 @@
-# DataTanker
+# DataTanker [![NuGet Pre Release](https://img.shields.io/nuget/vpre/DataTanker.svg?style=plastic)](https://www.nuget.org/packages/DataTanker/1.1.0-beta)
 Embedded persistent key-value store for .NET.
 Pure C# code, B+Tree and RadixTree features, MIT License.
 
