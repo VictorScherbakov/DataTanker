@@ -19,6 +19,13 @@ namespace Tests
             StoragePath = "..\\..\\Storages";
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            // ReSharper disable once InconsistentlySynchronizedField
+                _sharedPages.Clear();
+        }
+
         private readonly List<IPage> _sharedPages = new List<IPage>();
         private FileSystemPageManager _sharedManager;
         private static readonly object _locker = new object();
@@ -267,7 +274,10 @@ namespace Tests
             for (int i = 0; i < pageCount; i++)
             {
                 var page = manager.CreatePage();
-                _sharedPages.Add(page);
+                lock (_locker)
+                {
+                    _sharedPages.Add(page);
+                }
                 r.NextBytes(page.Content);
                 manager.UpdatePage(page);
             }
@@ -283,27 +293,33 @@ namespace Tests
             for (int k = 0; k < operationCount; k++)
             {
                 int op = r.Next(3);
-                lock (_locker)
+                switch (op)
                 {
-                    switch (op)
-                    {
-                        case 0: // update
+                    case 0: // update
+                        lock (_locker)
+                        {
                             int index = r.Next(_sharedPages.Count - 1);
                             r.NextBytes(_sharedPages[index].Content);
                             manager.UpdatePage(_sharedPages[index]);
-                            break;
-                        case 1: // add
-                            IPage page = manager.CreatePage();
-                            r.NextBytes(page.Content);
-                            manager.UpdatePage(page);
+                        }
+                        break;
+                    case 1: // add
+                        IPage page = manager.CreatePage();
+                        r.NextBytes(page.Content);
+                        manager.UpdatePage(page);
+                        lock (_locker)
+                        {
                             _sharedPages.Add(page);
-                            break;
-                        case 2: // remove
-                            index = r.Next(_sharedPages.Count - 1);
-                            manager.RemovePage(_sharedPages[index].Index);
-                            _sharedPages.RemoveAt(index);
-                            break;
-                    }
+                        }
+                        break;
+                    case 2: // remove
+                        lock (_locker)
+                        {
+                            int index1 = r.Next(_sharedPages.Count - 1);
+                            manager.RemovePage(_sharedPages[index1].Index);
+                            _sharedPages.RemoveAt(index1);
+                        }
+                        break;
                 }
             }
         }
