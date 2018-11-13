@@ -150,7 +150,7 @@
             long index = GetMaxValueNodeIndex();
             var node = FetchNode(index);
 
-            return !node.Entries.Any() ? node.Entries.Last().Key : default(TKey);
+            return node.Entries.Any() ? node.Entries.Last().Key : default(TKey);
         }
 
         /// <summary>
@@ -254,7 +254,7 @@
             long index = GetMaxValueNodeIndex();
             var node = FetchNode(index);
 
-            return !node.Entries.Any()
+            return node.Entries.Any()
                 ? _valueStorage.Fetch(node.Entries.Last().Value)
                 : default(TValue);
         }
