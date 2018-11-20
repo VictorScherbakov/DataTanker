@@ -18,8 +18,8 @@
 
         public int CompareTo(object obj)
         {
-            if (obj is T)
-                return Value.CompareTo(((T)obj));
+            if (obj is T variable)
+                return Value.CompareTo(variable);
 
             return Value.CompareTo(((ComparableKeyOf<T>)obj).Value);
         }
