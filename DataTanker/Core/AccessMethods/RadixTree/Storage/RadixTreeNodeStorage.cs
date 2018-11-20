@@ -160,8 +160,7 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
 
             var items = backingObject.Items.Select(item =>
                                                        {
-                                                           var bytes = item as byte[];
-                                                           if (bytes != null) return bytes;
+                                                           if (item is byte[] bytes) return bytes;
                                                            if (item == null) return new byte[0];
                                                            return GetNodeBytes((IRadixTreeNode) item, 0);
                                                        }).ToList();
@@ -206,9 +205,7 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
 
             var obj = backingObject.Items[reference.ItemIndex];
 
-            var result = obj as IRadixTreeNode;
-
-            if (result == null)
+            if (!(obj is IRadixTreeNode result))
             {
                 result = NodeFromBytes((byte[]) obj);
                 result.Reference = (DbItemReference)reference.Clone();
