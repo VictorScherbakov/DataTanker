@@ -4,7 +4,6 @@ using NUnit.Framework;
 
 using DataTanker.PageManagement;
 using DataTanker.Transactions;
-using DataTanker.Versioning;
 using DataTanker;
 
 namespace Tests
