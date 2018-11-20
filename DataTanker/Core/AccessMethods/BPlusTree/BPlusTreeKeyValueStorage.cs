@@ -105,8 +105,8 @@ namespace DataTanker.AccessMethods.BPlusTree
             Info.MaxKeyLength = _maxKeySize;
         }
 
-        public Type KeyType { get; private set; }
-        public Type ValueType { get; private set; }
+        public Type KeyType { get; }
+        public Type ValueType { get; }
 
         /// <summary>
         /// Gets the access method implemented by this storage

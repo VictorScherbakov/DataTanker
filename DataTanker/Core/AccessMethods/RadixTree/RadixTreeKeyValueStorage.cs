@@ -100,8 +100,8 @@ namespace DataTanker.AccessMethods.RadixTree
             Info.ValueClrTypeName = typeof(TValue).FullName;
         }
 
-        public Type KeyType { get; private set; }
-        public Type ValueType { get; private set; }
+        public Type KeyType { get; }
+        public Type ValueType { get; }
 
         /// <summary>
         /// Gets the access method implemented by this storage

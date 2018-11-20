@@ -12,7 +12,7 @@
 
         private readonly ITransactionInventory _inventory;
 
-        public ISnapshotData SnapshotData { get; private set; }
+        public ISnapshotData SnapshotData { get; }
 
         public int Id { get; }
 
