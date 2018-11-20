@@ -21,10 +21,10 @@ namespace Tests.Emulation
         private void CheckNode(IBPlusTreeNode<TKey> node)
         {
             if(!_nodes.ContainsKey(node.Index))
-                throw new ArgumentException("B+Tree node has an invalid index", "node");
+                throw new ArgumentException("B+Tree node has an invalid index", nameof(node));
 
             if(node.Entries.Count > _nodeCapacity)
-                throw new ArgumentException("B+Tree node has too many entries", "node");
+                throw new ArgumentException("B+Tree node has too many entries", nameof(node));
         }
 
         public IDictionary<long, IBPlusTreeNode<TKey>> Nodes
@@ -73,7 +73,7 @@ namespace Tests.Emulation
         public void Remove(long nodeIndex)
         {
             if(nodeIndex == _rootNodeIndex)
-                throw new ArgumentOutOfRangeException("nodeIndex", "Unable to delete the root node");
+                throw new ArgumentOutOfRangeException(nameof(nodeIndex), "Unable to delete the root node");
 
             _nodes.Remove(nodeIndex);
         }
@@ -98,7 +98,7 @@ namespace Tests.Emulation
         public BPlusTreeNodeMemoryStorage(int nodeCapacity)
         {
             if (nodeCapacity < 3)
-                throw new ArgumentOutOfRangeException("nodeCapacity", "Node capacity should be greater than 3");
+                throw new ArgumentOutOfRangeException(nameof(nodeCapacity), "Node capacity should be greater than 3");
 
             _nodeCapacity = nodeCapacity;
 

@@ -328,7 +328,7 @@
                     {
                         // check if page exists
                         if(!_underlyingPageManager.PageExists(page.Index))
-                            throw new ArgumentException("Page does not exists in storage", "page");
+                            throw new ArgumentException("Page does not exists in storage", nameof(page));
                     }
 #endif
                     _entries.Add(page.Index, new PageCacheEntry { Page = page });
