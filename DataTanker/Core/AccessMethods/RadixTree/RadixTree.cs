@@ -127,10 +127,8 @@
         public bool HasSubkeys(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
-            int nodePrefixOffset;
             bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
 
             return isFullMatch && node.Entries.Any();
         }
@@ -144,10 +142,8 @@
         public long SubkeysCount(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
-            int nodePrefixOffset;
             bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
 
             long result = 0;
 
@@ -273,9 +269,8 @@
         {
             var binaryKey = _keySerializer.Serialize(key);
             int keyOffset;
-            int nodePrefixOffset;
             bool isFullMatch;
-            IRadixTreeNode targetNode = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode targetNode = FindMostSuitableNode(binaryKey, out keyOffset, out _, out isFullMatch);
 
             if (isFullMatch || keyOffset == binaryKey.Length)
             {
@@ -331,11 +326,9 @@
         public TValue Get(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
-            int nodePrefixOffset;
             bool isFullMatch;
 
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch/*, treeNode => references.Add(treeNode.Reference)*/);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch/*, treeNode => references.Add(treeNode.Reference)*/);
 
             if (isFullMatch)
             {
@@ -427,10 +420,9 @@
         public void Remove(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
             int nodePrefixOffset;
             bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out nodePrefixOffset, out isFullMatch);
 
             if (isFullMatch)
             {
@@ -455,8 +447,7 @@
                             child.ParentNodeReference = node.ParentNodeReference;
 
                             _nodeStorage.Remove(node.Reference);
-                            bool reallocated;
-                            child = UpdateOrReallocateNode(child, out reallocated);
+                            child = UpdateOrReallocateNode(child, out _);
 
                             var parent = _nodeStorage.Fetch(child.ParentNodeReference);
                             int index;
@@ -711,10 +702,9 @@
         public bool Exists(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
             int nodePrefixOffset;
             bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out nodePrefixOffset, out isFullMatch);
 
             if (isFullMatch)
             {
@@ -760,10 +750,8 @@
         public long GetRawDataLength(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
-            int nodePrefixOffset;
             bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
 
             if (isFullMatch)
             {
@@ -785,10 +773,8 @@
         public byte[] GetRawDataSegment(TKey key, long startIndex, long endIndex)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
-            int nodePrefixOffset;
             bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
 
             if (!isFullMatch) return null;
 

@@ -224,7 +224,7 @@
             _fsmPageIndexes.Add(_firstFsmPageIndex);
 
             IPage firstFsmPage = _pageManager.FetchPage(_firstFsmPageIndex);
-            if (!(PageFormatter.GetPageHeader(firstFsmPage) is FreeSpaceMapPageHeader fsmHeader))
+            if (!(PageFormatter.GetPageHeader(firstFsmPage) is FreeSpaceMapPageHeader))
                 throw new StorageFormatException("Free space map page not found");
 
             _entryPerPage = PageFormatter.GetFsmEntryCount(firstFsmPage);

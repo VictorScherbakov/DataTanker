@@ -68,9 +68,7 @@
             if (node == null) 
                 return null;
 
-            int index;
-
-            return FindSuitableEntry(node.Entries, key, out index);
+            return FindSuitableEntry(node.Entries, key, out _);
         }
 
         private IBPlusTreeNode<TKey> NextNodeForKey(TKey key, IBPlusTreeNode<TKey> node, bool returnNullIfOutOfRange = false)
