@@ -204,10 +204,7 @@ namespace DataTanker.AccessMethods.RadixTree
         internal RadixTreeKeyValueStorage(IPageManager pageManager, IRadixTree<TKey, TValue> tree, int autoFlushInterval, TimeSpan autoFlishInterval)
             : base(pageManager, autoFlushInterval, autoFlishInterval)
         {
-            if (tree == null)
-                throw new ArgumentNullException(nameof(tree));
-
-            _tree = tree;
+            _tree = tree ?? throw new ArgumentNullException(nameof(tree));
 
             ValueType = typeof(TKey);
             KeyType = typeof(TValue);

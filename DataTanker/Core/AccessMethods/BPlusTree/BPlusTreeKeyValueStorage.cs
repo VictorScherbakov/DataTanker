@@ -288,11 +288,8 @@ namespace DataTanker.AccessMethods.BPlusTree
         internal BPlusTreeKeyValueStorage(IPageManager pageManager, IBPlusTree<TKey, TValue> tree, int maxKeySize, int autoFlushInterval, TimeSpan autoFlushTimeout) 
             : base(pageManager, autoFlushInterval, autoFlushTimeout)
         {
-            if (tree == null) 
-                throw new ArgumentNullException(nameof(tree));
-
             _maxKeySize = maxKeySize;
-            _tree = tree;
+            _tree = tree ?? throw new ArgumentNullException(nameof(tree));
 
             ValueType = typeof(TKey);
             KeyType = typeof(TValue);

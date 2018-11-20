@@ -535,10 +535,7 @@
 
         internal CachingPageManager(IPageManager underlyingManager, int maxCachedPages, int maxDirtyPages)
         {
-            if (underlyingManager == null)
-                throw new ArgumentNullException(nameof(underlyingManager));
-
-            _underlyingPageManager = underlyingManager;
+            _underlyingPageManager = underlyingManager ?? throw new ArgumentNullException(nameof(underlyingManager));
 
             if(maxCachedPages <= 0)
                 throw new ArgumentOutOfRangeException(nameof(maxCachedPages));

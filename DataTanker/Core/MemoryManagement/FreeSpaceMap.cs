@@ -237,10 +237,7 @@
 
         public FreeSpaceMap(IPageManager pageManager)
         {
-            if (pageManager == null) 
-                throw new ArgumentNullException(nameof(pageManager));
-
-            _pageManager = pageManager;
+            _pageManager = pageManager ?? throw new ArgumentNullException(nameof(pageManager));
         }
     }
 }

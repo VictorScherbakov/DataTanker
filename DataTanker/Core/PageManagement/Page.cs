@@ -90,18 +90,12 @@
         /// <param name="content"></param>
         internal Page(IPageManager manager, long index, byte[] content)
         {
-            if (content == null)
-                throw new ArgumentNullException(nameof(content));
-
-            if (manager == null)
-                throw new ArgumentNullException(nameof(manager));
-
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index), "Page index should not be negative");
 
             _index = index;
-            _content = content;
-            _manager = manager;
+            _content = content ?? throw new ArgumentNullException(nameof(content));
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
 
             if (!manager.CheckPage(this))
                 throw new InvalidOperationException("Page manager does not accept page");
@@ -128,19 +122,13 @@
         /// <param name="backingObject"></param>
         internal Page(IPageManager manager, long index, Func<byte[]> getContent, object backingObject)
         {
-            if (getContent == null)
-                throw new ArgumentNullException(nameof(getContent));
-
-            if (manager == null)
-                throw new ArgumentNullException(nameof(manager));
-
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index), "Page index should not be negative");
 
             _index = index;
-            _getContent = getContent;
+            _getContent = getContent ?? throw new ArgumentNullException(nameof(getContent));
             _backingObject = backingObject;
-            _manager = manager;
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
         }
 
         public object Clone()

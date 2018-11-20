@@ -235,17 +235,11 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
 
         public BPlusTreeNodeStorage(IPageManager pageManager, ISerializer<TKey> keySerializer, int maxKeySize)
         {
-            if (pageManager == null) 
-                throw new ArgumentNullException(nameof(pageManager));
-
-            if (keySerializer == null) 
-                throw new ArgumentNullException(nameof(keySerializer));
-
             if(maxKeySize <= 0)
                 throw new ArgumentException("ComparableComparableKeyOf size should be positive", nameof(maxKeySize));
 
-            _pageManager = pageManager;
-            _keySerializer = keySerializer;
+            _pageManager = pageManager ?? throw new ArgumentNullException(nameof(pageManager));
+            _keySerializer = keySerializer ?? throw new ArgumentNullException(nameof(keySerializer));
             _maxKeySize = maxKeySize;
             _nodeEntrySizeRange = DbItem.GetSizeRange(_maxKeySize + DbItemReference.BytesLength);
 
