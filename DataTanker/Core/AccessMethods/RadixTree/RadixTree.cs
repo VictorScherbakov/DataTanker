@@ -420,9 +420,8 @@
         public void Remove(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int nodePrefixOffset;
             bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
 
             if (isFullMatch)
             {
@@ -702,9 +701,8 @@
         public bool Exists(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int nodePrefixOffset;
             bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
 
             if (isFullMatch)
             {

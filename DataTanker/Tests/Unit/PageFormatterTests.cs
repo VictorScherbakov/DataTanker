@@ -209,10 +209,9 @@ namespace Tests
                 Assert.IsTrue(AreEqualByteArrays(items[i], item));
             }
 
-            bool hasRemainingItems;
-            PageFormatter.DeleteVariableSizeItem(p, 0, out hasRemainingItems);
-            PageFormatter.DeleteVariableSizeItem(p, 2, out hasRemainingItems);
-            PageFormatter.DeleteVariableSizeItem(p, (short)(items.Count - 1), out hasRemainingItems);
+            PageFormatter.DeleteVariableSizeItem(p, 0, out _);
+            PageFormatter.DeleteVariableSizeItem(p, 2, out _);
+            PageFormatter.DeleteVariableSizeItem(p, (short)(items.Count - 1), out _);
 
             Assert.Throws<PageFormatException>(() => PageFormatter.ReadVariableSizeItem(p, 0));
             Assert.Throws<PageFormatException>(() => PageFormatter.ReadVariableSizeItem(p, 2));
@@ -251,17 +250,15 @@ namespace Tests
                 r.NextBytes(item);
             }
 
-            bool hasRemainingItems;
-
             // replace with the same
-            PageFormatter.DeleteVariableSizeItem(p, 1, out hasRemainingItems);
+            PageFormatter.DeleteVariableSizeItem(p, 1, out _);
             Assert.AreEqual(1, PageFormatter.AddVariableSizeItem(p, items[1]));
 
             item = PageFormatter.ReadVariableSizeItem(p, 1);
             Assert.IsTrue(AreEqualByteArrays(items[1], item));
 
             // replace with smaller one
-            PageFormatter.DeleteVariableSizeItem(p, 1, out hasRemainingItems);
+            PageFormatter.DeleteVariableSizeItem(p, 1, out _);
             var smallItem = new byte[items[1].Length / 2 + 1];
             r.NextBytes(smallItem);
             Assert.AreEqual(1, PageFormatter.AddVariableSizeItem(p, smallItem));
@@ -270,7 +267,7 @@ namespace Tests
             Assert.IsTrue(AreEqualByteArrays(smallItem, item));
 
             // and put original again
-            PageFormatter.DeleteVariableSizeItem(p, 1, out hasRemainingItems);
+            PageFormatter.DeleteVariableSizeItem(p, 1, out _);
             PageFormatter.AddVariableSizeItem(p, items[1]);
 
             item = PageFormatter.ReadVariableSizeItem(p, 1);

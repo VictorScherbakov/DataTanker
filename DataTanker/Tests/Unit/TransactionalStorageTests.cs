@@ -23,8 +23,7 @@ namespace Tests
             using (var storage = new TransactionalStorage(new FileSystemPageManager(4096)))
             {
                 storage.CreateNew(StoragePath);
-                ISnapshotData snapshotData;
-                var number = storage.CreateTransaction(out snapshotData);
+                var number = storage.CreateTransaction(out _);
                 Assert.AreEqual(TransactionState.Active, storage.GetState(number));
             }
         }
@@ -36,8 +35,7 @@ namespace Tests
             {
                 storage.CreateNew(StoragePath);
 
-                ISnapshotData snapshotData;
-                var number = storage.CreateTransaction(out snapshotData);
+                var number = storage.CreateTransaction(out _);
 
                 storage.Mark(number, TransactionState.Commited);
                 Assert.AreEqual(TransactionState.Commited, storage.GetState(number));
@@ -62,8 +60,7 @@ namespace Tests
 
                 for (int i = 0; i < count; i++)
                 {
-                    ISnapshotData snapshotData;
-                    dictionary.Add(storage.CreateTransaction(out snapshotData), TransactionState.Active);
+                    dictionary.Add(storage.CreateTransaction(out _), TransactionState.Active);
                 }
 
                 // check that all are active
