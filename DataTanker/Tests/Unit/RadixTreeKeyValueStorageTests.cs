@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using DataTanker.Settings;
-using System.IO;
-
 using NUnit.Framework;
 
 using DataTanker;

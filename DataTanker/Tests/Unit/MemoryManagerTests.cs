@@ -4,8 +4,6 @@ using System.Linq;
 using DataTanker.MemoryManagement;
 using DataTanker.BinaryFormat.Page;
 using DataTanker.PageManagement;
-using System.IO;
-
 using NUnit.Framework;
 
 using DataTanker;
