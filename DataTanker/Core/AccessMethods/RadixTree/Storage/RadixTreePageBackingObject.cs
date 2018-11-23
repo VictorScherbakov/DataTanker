@@ -18,14 +18,12 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
             if (item == null)
                 return 0;
 
-            var bytes = item as byte[];
-            if (bytes != null)
+            if (item is byte[] bytes)
             {
                 return (short)bytes.Length;
             }
 
-            var radixTreeNode = item as IRadixTreeNode;
-            if (radixTreeNode != null)
+            if (item is IRadixTreeNode radixTreeNode)
             {
                 var prefixLength = (short)(radixTreeNode.Prefix?.Length ?? 0);
                 return RadixTreeNodeStorage.GetNodeSize(prefixLength, radixTreeNode.Entries.Count);

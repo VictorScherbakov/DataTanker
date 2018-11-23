@@ -102,10 +102,7 @@ namespace DataTanker.Recovery
         /// <param name="pageSize"></param>
         public RecoveryFile(FileSystemPageManager pageManager, int pageSize)
         {
-            if (pageManager == null) throw new ArgumentNullException(nameof(pageManager));
-
-
-            _pageManager = pageManager;
+            _pageManager = pageManager ?? throw new ArgumentNullException(nameof(pageManager));
             _pageSize = pageSize;
         }
 

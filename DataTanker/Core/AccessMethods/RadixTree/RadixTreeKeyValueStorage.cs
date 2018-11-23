@@ -100,8 +100,8 @@ namespace DataTanker.AccessMethods.RadixTree
             Info.ValueClrTypeName = typeof(TValue).FullName;
         }
 
-        public Type KeyType { get; private set; }
-        public Type ValueType { get; private set; }
+        public Type KeyType { get; }
+        public Type ValueType { get; }
 
         /// <summary>
         /// Gets the access method implemented by this storage
@@ -204,10 +204,7 @@ namespace DataTanker.AccessMethods.RadixTree
         internal RadixTreeKeyValueStorage(IPageManager pageManager, IRadixTree<TKey, TValue> tree, int autoFlushInterval, TimeSpan autoFlishInterval)
             : base(pageManager, autoFlushInterval, autoFlishInterval)
         {
-            if (tree == null)
-                throw new ArgumentNullException(nameof(tree));
-
-            _tree = tree;
+            _tree = tree ?? throw new ArgumentNullException(nameof(tree));
 
             ValueType = typeof(TKey);
             KeyType = typeof(TValue);

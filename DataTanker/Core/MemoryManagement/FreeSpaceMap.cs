@@ -47,8 +47,7 @@
 
             while (true)
             {
-                var header = PageFormatter.GetPageHeader(fsmPage) as FreeSpaceMapPageHeader;
-                if(header == null)
+                if(!(PageFormatter.GetPageHeader(fsmPage) is FreeSpaceMapPageHeader header))
                     throw new StorageFormatException("Free space map page not found");
 
                 _lastFsmPage = fsmPage;
@@ -218,16 +217,14 @@
         private void Init()
         {
             IPage headingPage = _pageManager.FetchPage(0);
-            var header = PageFormatter.GetPageHeader(headingPage) as HeadingPageHeader;
-            if (header == null)
+            if (!(PageFormatter.GetPageHeader(headingPage) is HeadingPageHeader header))
                 throw new StorageFormatException("Heading page not found");
 
             _firstFsmPageIndex = header.FsmPageIndex;
             _fsmPageIndexes.Add(_firstFsmPageIndex);
 
             IPage firstFsmPage = _pageManager.FetchPage(_firstFsmPageIndex);
-            var fsmHeader = PageFormatter.GetPageHeader(firstFsmPage) as FreeSpaceMapPageHeader;
-            if (fsmHeader == null)
+            if (!(PageFormatter.GetPageHeader(firstFsmPage) is FreeSpaceMapPageHeader))
                 throw new StorageFormatException("Free space map page not found");
 
             _entryPerPage = PageFormatter.GetFsmEntryCount(firstFsmPage);
@@ -237,10 +234,7 @@
 
         public FreeSpaceMap(IPageManager pageManager)
         {
-            if (pageManager == null) 
-                throw new ArgumentNullException(nameof(pageManager));
-
-            _pageManager = pageManager;
+            _pageManager = pageManager ?? throw new ArgumentNullException(nameof(pageManager));
         }
     }
 }

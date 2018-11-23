@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using DataTanker.BinaryFormat.Page;
 using DataTanker.MemoryManagement;
 using DataTanker.PageManagement;

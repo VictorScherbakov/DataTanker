@@ -23,7 +23,7 @@
         {
             return new Dictionary<Type, object>
             {
-                  { typeof (int), new Serializer<Int32>(obj => BitConverter.GetBytes((Int32)obj), bytes => BitConverter.ToInt32(bytes, 0)) },
+                  { typeof (int), new Serializer<Int32>(BitConverter.GetBytes, bytes => BitConverter.ToInt32(bytes, 0)) },
                   { typeof (long), new Serializer<Int64>(BitConverter.GetBytes, bytes => BitConverter.ToInt64(bytes, 0)) },
                   { typeof (uint), new Serializer<UInt32>(BitConverter.GetBytes, bytes => BitConverter.ToUInt32(bytes, 0)) },
                   { typeof (ulong), new Serializer<UInt64>(BitConverter.GetBytes, bytes => BitConverter.ToUInt64(bytes, 0)) },

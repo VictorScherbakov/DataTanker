@@ -328,7 +328,7 @@
                     {
                         // check if page exists
                         if(!_underlyingPageManager.PageExists(page.Index))
-                            throw new ArgumentException("Page does not exists in storage", "page");
+                            throw new ArgumentException("Page does not exists in storage", nameof(page));
                     }
 #endif
                     _entries.Add(page.Index, new PageCacheEntry { Page = page });
@@ -535,10 +535,7 @@
 
         internal CachingPageManager(IPageManager underlyingManager, int maxCachedPages, int maxDirtyPages)
         {
-            if (underlyingManager == null)
-                throw new ArgumentNullException(nameof(underlyingManager));
-
-            _underlyingPageManager = underlyingManager;
+            _underlyingPageManager = underlyingManager ?? throw new ArgumentNullException(nameof(underlyingManager));
 
             if(maxCachedPages <= 0)
                 throw new ArgumentOutOfRangeException(nameof(maxCachedPages));

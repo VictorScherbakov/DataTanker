@@ -18,7 +18,7 @@ namespace Tests.Emulation
         private void CheckNode(IRadixTreeNode node)
         {
             if (!_nodes.ContainsKey(node.Reference.ToString()))
-                throw new ArgumentException("Radix tree node has an invalid index", "node");
+                throw new ArgumentException("Radix tree node has an invalid index", nameof(node));
         }
 
         public IDictionary<string, IRadixTreeNode> Nodes
@@ -61,7 +61,7 @@ namespace Tests.Emulation
         public void Remove(DbItemReference reference)
         {
             if (_rootNodeReference.Equals(reference))
-                throw new ArgumentOutOfRangeException("reference", "Unable to delete the root node");
+                throw new ArgumentOutOfRangeException(nameof(reference), "Unable to delete the root node");
 
             _nodes.Remove(reference.ToString());
         }

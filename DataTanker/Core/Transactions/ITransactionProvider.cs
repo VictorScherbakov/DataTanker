@@ -1,7 +1,5 @@
 namespace DataTanker.Transactions
 {
-    using Versioning;
-
     internal interface ITransactionProvider
     {
         DataTankerTransaction Current { get; set; }

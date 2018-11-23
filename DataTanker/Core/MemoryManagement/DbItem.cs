@@ -105,10 +105,7 @@
 
         public DbItem(byte[] rawData)
         {
-            if(rawData == null)
-                throw new ArgumentNullException(nameof(rawData));
-
-            _rawData = rawData;
+            _rawData = rawData ?? throw new ArgumentNullException(nameof(rawData));
 
             _sizeRange = GetSizeRange(rawData.Length);
         }

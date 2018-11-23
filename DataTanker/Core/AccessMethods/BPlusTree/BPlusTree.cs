@@ -68,9 +68,7 @@
             if (node == null) 
                 return null;
 
-            int index;
-
-            return FindSuitableEntry(node.Entries, key, out index);
+            return FindSuitableEntry(node.Entries, key, out _);
         }
 
         private IBPlusTreeNode<TKey> NextNodeForKey(TKey key, IBPlusTreeNode<TKey> node, bool returnNullIfOutOfRange = false)
@@ -701,8 +699,7 @@
             {
                 if (FetchNode(node.ParentNodeIndex) == null)
                 {
-                    message = string.Format("Node: {0} has invalid reference ({1}) to parent node.", node.Index,
-                                            node.ParentNodeIndex);
+                    message = $"Node: {node.Index} has invalid reference ({node.ParentNodeIndex}) to parent node.";
                     return false;
                 }
             }
@@ -712,16 +709,13 @@
                 var previous = FetchNode(node.PreviousNodeIndex);
                 if (previous == null)
                 {
-                    message = string.Format("Node: {0} has invalid reference ({1}) to previous node.", node.Index,
-                                            node.PreviousNodeIndex);
+                    message = $"Node: {node.Index} has invalid reference ({node.PreviousNodeIndex}) to previous node.";
                     return false;
                 }
                 if(previous.NextNodeIndex != node.Index)
                 {
-                    message = string.Format("Node: {0} has reference to previous node: {1}. But this node references to next node: {2}", 
-                        node.Index,
-                        node.PreviousNodeIndex,
-                        previous.NextNodeIndex);
+                    message =
+                        $"Node: {node.Index} has reference to previous node: {node.PreviousNodeIndex}. But this node references to next node: {previous.NextNodeIndex}";
                     return false;
                 }
             }
@@ -732,16 +726,13 @@
 
                 if (next == null)
                 {
-                    message = string.Format("Node: {0} has invalid reference ({1}) to next node.", node.Index,
-                                            node.NextNodeIndex);
+                    message = $"Node: {node.Index} has invalid reference ({node.NextNodeIndex}) to next node.";
                     return false;
                 }
                 if (next.PreviousNodeIndex != node.Index)
                 {
-                    message = string.Format("Node: {0} has reference to next node: {1}. But this node references to previous node: {2}",
-                        node.Index,
-                        node.NextNodeIndex,
-                        next.PreviousNodeIndex);
+                    message =
+                        $"Node: {node.Index} has reference to next node: {node.NextNodeIndex}. But this node references to previous node: {next.PreviousNodeIndex}";
                     return false;
                 }
             }
@@ -756,7 +747,7 @@
             {
                 if (node.Entries[i].Key.CompareTo(node.Entries[i + 1].Key) != -1)
                 {
-                    message = string.Format("Disordered entries in node: {0}", node.Index);
+                    message = $"Disordered entries in node: {node.Index}";
                     return false;
                 }
             }
@@ -789,8 +780,8 @@
 
                 if (previous.Entries.Last().Key.CompareTo(node.Entries.First().Key) != -1)
                 {
-                    message = string.Format("Smallest key ({0}) of node: {1} is smaller than the largest key ({2}) of previous node: {3}",
-                                smallestKey, node.Index, largestKey, node.PreviousNodeIndex);
+                    message =
+                        $"Smallest key ({smallestKey}) of node: {node.Index} is smaller than the largest key ({largestKey}) of previous node: {node.PreviousNodeIndex}";
                     return false;
                 }
             }
@@ -802,7 +793,7 @@
         {
             if(node.Entries.Count == 0 && node.HasParent)
             {
-                message = string.Format("Empty node: {0}", node.Index);
+                message = $"Empty node: {node.Index}";
                 return false;
             }
 

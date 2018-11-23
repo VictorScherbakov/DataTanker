@@ -18,14 +18,8 @@
         /// <param name="deserialize"></param>
         public Serializer(Func<T, byte[]> serialize, Func<byte[], T> deserialize)
         {
-            if (serialize == null) 
-                throw new ArgumentNullException(nameof(serialize));
-
-            if (deserialize == null) 
-                throw new ArgumentNullException(nameof(deserialize));
-
-            _serialize = serialize;
-            _deserialize = deserialize;
+            _serialize = serialize ?? throw new ArgumentNullException(nameof(serialize));
+            _deserialize = deserialize ?? throw new ArgumentNullException(nameof(deserialize));
         }
 
         /// <summary>

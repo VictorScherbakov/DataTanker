@@ -238,7 +238,7 @@
                     : 0;
         }
 
-        private byte[] GetLargeItemSegment(PageHeaderBase header, IPage page, DbItemReference reference, long startIndex, long endIndex)
+        private byte[] GetLargeItemSegment(PageHeaderBase header, IPage page, long startIndex, long endIndex)
         {
             if (PageFormatter.ReadMultipageItemLength(page) <= endIndex) throw new ArgumentOutOfRangeException(nameof(endIndex));
 
@@ -279,7 +279,7 @@
             }
         }
 
-        private byte[] GetFixedSizeItemSegment(PageHeaderBase header, IPage page, DbItemReference reference, long startIndex, long endIndex)
+        private byte[] GetFixedSizeItemSegment(IPage page, DbItemReference reference, long startIndex, long endIndex)
         {
             if (!PageFormatter.IsFixedSizeItemAllocated(page, reference.ItemIndex))
                 return new byte[] { };
@@ -318,9 +318,9 @@
 
             var header = PageFormatter.GetPageHeader(page);
             if (header.SizeRange == SizeRange.MultiPage)
-                return GetLargeItemSegment(header, page, reference, startIndex, endIndex);
+                return GetLargeItemSegment(header, page, startIndex, endIndex);
 
-            return GetFixedSizeItemSegment(header, page, reference, startIndex, endIndex);
+            return GetFixedSizeItemSegment(page, reference, startIndex, endIndex);
         }
 
         public MemoryManager(FreeSpaceMap fsm, IPageManager pageManager)

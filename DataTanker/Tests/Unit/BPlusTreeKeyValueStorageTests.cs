@@ -29,7 +29,7 @@ namespace Tests
             settings.MaxKeySize = 16;
             settings.PageSize = PageSize._4096;
 
-            return (IBPlusTreeKeyValueStorage<ComparableKeyOf<String>, ValueOf<String>>)factory.CreateBPlusTreeStorage(
+            return factory.CreateBPlusTreeStorage(
                 p => Encoding.UTF8.GetBytes(p),
                 p => Encoding.UTF8.GetString(p),
                 p => Encoding.UTF8.GetBytes(p),

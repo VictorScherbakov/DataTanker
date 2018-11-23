@@ -123,14 +123,8 @@ namespace DataTanker.AccessMethods
 
         public ValueStorage(IMemoryManager memoryManager, ISerializer<TValue> valueSerializer)
         {
-            if (memoryManager == null) 
-                throw new ArgumentNullException(nameof(memoryManager));
-
-            if (valueSerializer == null) 
-                throw new ArgumentNullException(nameof(valueSerializer));
-
-            _memoryManager = memoryManager;
-            _valueSerializer = valueSerializer;
+            _memoryManager = memoryManager ?? throw new ArgumentNullException(nameof(memoryManager));
+            _valueSerializer = valueSerializer ?? throw new ArgumentNullException(nameof(valueSerializer));
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataTanker.PageManagement;
-using System.IO;
 using System.Threading;
 
 using NUnit.Framework;
