@@ -32,13 +32,13 @@
                 return null;
             }
 
-            if (entries[0].Key.CompareTo(key) == 1)
+            if (entries[0].Key.CompareTo(key) > 0)
             {
                 index = 0;
                 return null;
             }
 
-            if (entries[last - 1].Key.CompareTo(key) == -1)
+            if (entries[last - 1].Key.CompareTo(key) < 0)
             {
                 index = last;
                 return null;
@@ -745,7 +745,7 @@
             message = string.Empty;
             for (int i = 0; i < node.Entries.Count - 1; i++)
             {
-                if (node.Entries[i].Key.CompareTo(node.Entries[i + 1].Key) != -1)
+                if (node.Entries[i].Key.CompareTo(node.Entries[i + 1].Key) >= 0)
                 {
                     message = $"Disordered entries in node: {node.Index}";
                     return false;
@@ -778,7 +778,7 @@
                 var smallestKey = node.Entries.First().Key;
                 var largestKey = previous.Entries.Last().Key;
 
-                if (previous.Entries.Last().Key.CompareTo(node.Entries.First().Key) != -1)
+                if (previous.Entries.Last().Key.CompareTo(node.Entries.First().Key) >= 0)
                 {
                     message =
                         $"Smallest key ({smallestKey}) of node: {node.Index} is smaller than the largest key ({largestKey}) of previous node: {node.PreviousNodeIndex}";
