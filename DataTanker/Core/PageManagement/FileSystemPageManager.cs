@@ -725,7 +725,7 @@
         /// </summary>
         /// <param name="pageSize"></param>
         internal FileSystemPageManager(int pageSize) 
-            : this (pageSize, false, 100)
+            : this (pageSize, false, 1)
         {
         }
 
