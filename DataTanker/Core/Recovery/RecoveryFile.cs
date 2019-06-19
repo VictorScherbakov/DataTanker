@@ -13,7 +13,7 @@ namespace DataTanker.Recovery
     /// Represents a file used to collect all the changes before they are applied to the primary file.
     /// This prevents corruption in cases of partial writes, inconsistently removed pages etc.
     /// </summary>
-    internal class RecoveryFile
+    internal class RecoveryFile : IDisposable
     {
         private readonly FileSystemPageManager _pageManager;
         private readonly int _pageSize;
@@ -21,7 +21,7 @@ namespace DataTanker.Recovery
         private FileStream _stream;
         private bool _writeDisabled;
 
-        private const string _fileName = "recovery";
+        private string _fileName = "recovery";
 
         private class UpdateRecord
         {
@@ -38,7 +38,7 @@ namespace DataTanker.Recovery
             {
                 if (_stream == null)
                 {
-                    if (new FileInfo(RecoveryFileName()).Length > 0)
+                    if (new FileInfo(FileName).Length > 0)
                         _writeDisabled = true; //prohibit writing when already exists non-empty file
 
                     FileOptions options = _pageManager.ForcedWrites ? FileOptions.WriteThrough : FileOptions.None;
@@ -51,10 +51,7 @@ namespace DataTanker.Recovery
             }
         }
 
-        private string RecoveryFileName()
-        {
-            return _pageManager.Storage.Path + Path.DirectorySeparatorChar + _fileName;
-        }
+        public string FileName => _pageManager.Storage.Path + Path.DirectorySeparatorChar + _fileName;
 
         /// <summary>
         /// Determine if the page is present in recovery file as updated
@@ -115,7 +112,7 @@ namespace DataTanker.Recovery
             CheckDisposed();
             CheckWriteEnabled();
 
-            EnsureFileExists(RecoveryFileName());
+            EnsureFileExists(FileName);
 
             var record = new RecoveryRecord
             {
@@ -124,16 +121,14 @@ namespace DataTanker.Recovery
                 PageContent = page.ContentCopy
             };
 
+            var updateRecord = new UpdateRecord { Content = record.PageContent, Offset = Stream.Length};
+
             if (_updatedPages.ContainsKey(page.Index))
-            {
-                _updatedPages[page.Index].Content = record.PageContent;
-                WriteRecordToDisk(record, _updatedPages[page.Index].Offset);
-            }
+                _updatedPages[page.Index] = updateRecord;
             else
-            {
-                _updatedPages.Add(page.Index,  new UpdateRecord { Content = record.PageContent, Offset = Stream.Length });
-                WriteRecordToDisk(record);
-            }
+                _updatedPages.Add(page.Index, new UpdateRecord { Content = record.PageContent, Offset = Stream.Length });
+
+            WriteRecordToDisk(record);
         }
 
         private void WriteRecordToDisk(RecoveryRecord record, long? offset = null)
@@ -173,7 +168,7 @@ namespace DataTanker.Recovery
         {
             CheckDisposed();
             CheckWriteEnabled();
-            EnsureFileExists(RecoveryFileName());
+            EnsureFileExists(FileName);
 
             if (!_deletedPages.Contains(pageIndex))
             {
@@ -209,7 +204,7 @@ namespace DataTanker.Recovery
             CheckDisposed();
 
             CheckWriteEnabled();
-            EnsureFileExists(RecoveryFileName());
+            EnsureFileExists(FileName);
 
             WriteRecordToDisk(new RecoveryRecord { RecordType = RecoveryRecordType.Final });
 
@@ -232,13 +227,13 @@ namespace DataTanker.Recovery
                 const int finalRecordSize = sizeof (int) + sizeof (long);
                 if (Stream.Length >= finalRecordSize)
                 {
-                    Stream.Seek(finalRecordSize, SeekOrigin.End);
+                    Stream.Seek(-finalRecordSize, SeekOrigin.End);
                     var intBytes = new byte[sizeof (int)];
-                    Stream.Read(intBytes, 0, intBytes.Length);
+                    Stream.BlockingRead(intBytes);
                     if ((RecoveryRecordType)BitConverter.ToInt32(intBytes, 0) == RecoveryRecordType.Final)
                     {
                         var longBytes = new byte[sizeof(long)];
-                        Stream.Read(longBytes, 0, longBytes.Length);
+                        Stream.BlockingRead(longBytes);
                         if (BitConverter.ToInt64(longBytes, 0) == Stream.Length)
                             return true;
                     }
@@ -250,7 +245,7 @@ namespace DataTanker.Recovery
         /// <summary>
         /// Gets a value indicating whether the recovery file exists
         /// </summary>
-        public bool Exists => File.Exists(RecoveryFileName());
+        public bool Exists => File.Exists(FileName);
 
         /// <summary>
         /// Cancels all records in the recovery file (if any) and start 
@@ -268,7 +263,7 @@ namespace DataTanker.Recovery
                 _deletedPages.Clear();
                 _updatedPages.Clear();
 
-                File.Delete(RecoveryFileName());
+                File.Delete(FileName);
             }
         }
 
@@ -277,7 +272,7 @@ namespace DataTanker.Recovery
         /// </summary>
         /// <param name="pageIndex">An index of page</param>
         /// <returns>A RecoveryRecord instance corresponding the requested index of page. 
-        /// Rerutns null if the record is not found</returns>
+        /// Returns null if the record is not found</returns>
         public RecoveryRecord GetRecoveryRecord(long pageIndex)
         {
             CheckDisposed();
@@ -311,12 +306,11 @@ namespace DataTanker.Recovery
             switch (rt)
             {
                 case RecoveryRecordType.Update:
-                    
                     Stream.BlockingRead(longBytes); // page index
                     Stream.BlockingRead(intBytes); // page length
                     var length = BitConverter.ToInt32(intBytes, 0);
                     var content = new byte[length];
-                    Stream.BlockingRead(length); // page content
+                    Stream.BlockingRead(content); // page content
                     return new RecoveryRecord
                     {
                         RecordType = RecoveryRecordType.Update,
@@ -369,7 +363,10 @@ namespace DataTanker.Recovery
                         if (_updatedPages.ContainsKey(record.PageIndex))
                             _updatedPages[record.PageIndex] = r;
                         else
-                        _updatedPages.Add(record.PageIndex, r);
+                            _updatedPages.Add(record.PageIndex, r);
+
+                        if (_deletedPages.Contains(record.PageIndex))
+                            _deletedPages.Remove(record.PageIndex);
                     }
                 }
             }

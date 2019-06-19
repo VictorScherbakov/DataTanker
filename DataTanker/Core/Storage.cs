@@ -120,9 +120,10 @@
 
             ReadInfo();
             CheckInfo();
-            
-            PageManager.OpenExistingPageSpace();
+
             _isOpen = true;
+            PageManager.OpenExistingPageSpace();
+
 
             IPage headingPage = PageManager.FetchPage(0);
             var header = PageFormatter.GetPageHeader(headingPage);
