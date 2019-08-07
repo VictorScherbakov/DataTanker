@@ -13,7 +13,7 @@ namespace DataTanker.BinaryFormat.Page
 
         public override SizeRange SizeRange
         {
-            get { return base.SizeRange; }
+            get => base.SizeRange;
             set
             {
                 if (value == SizeRange.NotApplicable ||

@@ -224,7 +224,7 @@
         /// </summary>
         public int MaxEmptyPages
         {
-            get { return _maxEmptyPages; }
+            get => _maxEmptyPages;
             set
             {
                 if (value < 0)

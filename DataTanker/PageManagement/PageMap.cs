@@ -19,7 +19,7 @@
             private long _pageCount;
             public long PageCount
             {
-                get { return _pageCount; }
+                get => _pageCount;
                 set
                 {
                     Changed = _pageCount != value;
@@ -30,7 +30,7 @@
             private long _releasedPageCount;
             public long ReleasedPageCount
             {
-                get { return _releasedPageCount; }
+                get => _releasedPageCount;
                 set
                 {
                     Changed = _releasedPageCount != value;
@@ -41,7 +41,7 @@
             private long _onDiskPageCount;
             public long OnDiskPageCount
             {
-                get { return _onDiskPageCount; }
+                get => _onDiskPageCount;
                 set
                 {
                     Changed = _onDiskPageCount != value;

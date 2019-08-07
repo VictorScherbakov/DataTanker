@@ -54,8 +54,8 @@
 
         public byte[] RawData
         {
-            get { return _rawData; }
-            set { _rawData = value; }
+            get => _rawData;
+            set => _rawData = value;
         }
 
         /// <summary>

@@ -35,8 +35,8 @@
 
         public static DataTankerTransaction Current
         {
-            get { return _current; }
-            set { _current = value; }
+            get => _current;
+            set => _current = value;
         }
 
         public DataTankerTransaction(ITransactionInventory inventory, ISnapshotData snapshotData, int id)

@@ -6,8 +6,8 @@ namespace DataTanker.Transactions
     {
         public DataTankerTransaction Current
         {
-            get { return DataTankerTransaction.Current; }
-            set { DataTankerTransaction.Current = value; }
+            get => DataTankerTransaction.Current;
+            set => DataTankerTransaction.Current = value;
         }
 
         public DataTankerTransaction Create(ITransactionInventory inventory)
