@@ -78,10 +78,10 @@
 
         private static string _fileName = "pagemap";
 
-        private const int _longSize = sizeof (long);
-        private const int _itemSize = sizeof(long) * 2;
+        private const int LongSize = sizeof (long);
+        private const int ItemSize = sizeof(long) * 2;
 
-        private const int _blockLength = 4096;
+        private const int BlockLength = 4096;
 
         private FileStream _fileStream;
 
@@ -153,8 +153,8 @@
             if (pageIndex < 0)
                 throw new ArgumentException("Page index should not be negative", nameof(pageIndex));
 
-            long blockIndex = pageIndex * _itemSize / _blockLength;
-            var blockOffset = (int)(pageIndex * _itemSize % _blockLength);
+            long blockIndex = pageIndex * ItemSize / BlockLength;
+            var blockOffset = (int)(pageIndex * ItemSize % BlockLength);
 
             var blockContent = FetchBlock(blockIndex);
 
@@ -172,9 +172,9 @@
         {
             CheckReleasedPageExists();
 
-            long absoluteOffset = _header.PageCount * _itemSize + (_header.ReleasedPageCount - 1) * _longSize;
-            long blockIndex = absoluteOffset / _blockLength;
-            var blockOffset = (int)(absoluteOffset % _blockLength);
+            long absoluteOffset = _header.PageCount * ItemSize + (_header.ReleasedPageCount - 1) * LongSize;
+            long blockIndex = absoluteOffset / BlockLength;
+            var blockOffset = (int)(absoluteOffset % BlockLength);
 
             var blockContent = FetchBlock(blockIndex);
 
@@ -207,9 +207,9 @@
 
         public void MarkPageAsFree(long index)
         {
-            long absoluteOffset = _header.PageCount * _itemSize + (_header.ReleasedPageCount) * _longSize;
-            long blockIndex = absoluteOffset / _blockLength;
-            var blockOffset = (int)(absoluteOffset % _blockLength);
+            long absoluteOffset = _header.PageCount * ItemSize + (_header.ReleasedPageCount) * LongSize;
+            long blockIndex = absoluteOffset / BlockLength;
+            var blockOffset = (int)(absoluteOffset % BlockLength);
 
             var blockContent = FetchBlock(blockIndex);
             GetBytes(index).CopyTo(blockContent, blockOffset);
@@ -240,18 +240,18 @@
                 _freePageIndexes = new List<long>();
 
                 int indexesRead = 0;
-                long absoluteOffset = _header.PageCount*_itemSize;
-                long blockIndex = absoluteOffset/_blockLength;
-                var blockOffset = (int) (absoluteOffset%_blockLength);
+                long absoluteOffset = _header.PageCount*ItemSize;
+                long blockIndex = absoluteOffset/BlockLength;
+                var blockOffset = (int) (absoluteOffset%BlockLength);
 
                 while (indexesRead < _header.ReleasedPageCount)
                 {
                     var blockContent = FetchBlock(blockIndex);
 
-                    while (blockOffset < _blockLength && indexesRead < _header.ReleasedPageCount)
+                    while (blockOffset < BlockLength && indexesRead < _header.ReleasedPageCount)
                     {
                         _freePageIndexes.Add(BitConverter.ToInt64(blockContent, blockOffset));
-                        blockOffset += _longSize;
+                        blockOffset += LongSize;
                         indexesRead++;
                     }
                     blockIndex++;
@@ -264,9 +264,9 @@
 
         public long ReadLastPageIndex()
         {
-            long absoluteOffset = (_header.OnDiskPageCount - 1) * _itemSize + _longSize;
-            long blockIndex =  absoluteOffset / _blockLength;
-            var blockOffset = (int)(absoluteOffset % _blockLength);
+            long absoluteOffset = (_header.OnDiskPageCount - 1) * ItemSize + LongSize;
+            long blockIndex =  absoluteOffset / BlockLength;
+            var blockOffset = (int)(absoluteOffset % BlockLength);
 
             var blockContent = FetchBlock(blockIndex);
 
@@ -297,8 +297,8 @@
             if (pageIndex < 0)
                 throw new ArgumentException("Page index should not be negative", nameof(pageIndex));
 
-            long blockIndex = pageIndex * _itemSize / _blockLength;
-            var blockOffset = (int)(pageIndex * _itemSize % _blockLength);
+            long blockIndex = pageIndex * ItemSize / BlockLength;
+            var blockOffset = (int)(pageIndex * ItemSize % BlockLength);
 
             var blockContent = FetchBlock(blockIndex);
 
@@ -313,9 +313,9 @@
 
         public void WritePageIndex(long pageIndex, long allocation)
         {
-            long absoluteOffset = allocation / _pageManager.PageSize * _itemSize + _longSize;
-            long blockIndex = absoluteOffset / _blockLength;
-            var blockOffset = (int)(absoluteOffset % _blockLength);
+            long absoluteOffset = allocation / _pageManager.PageSize * ItemSize + LongSize;
+            long blockIndex = absoluteOffset / BlockLength;
+            var blockOffset = (int)(absoluteOffset % BlockLength);
 
             var blockContent = FetchBlock(blockIndex);
             GetBytes(pageIndex).CopyTo(blockContent, blockOffset);
@@ -353,8 +353,8 @@
             if (_blockCache.ContainsKey(index))
                 return _blockCache[index];
 
-            var result = new byte[_blockLength];
-            var position = _blockLength + index * _blockLength;
+            var result = new byte[BlockLength];
+            var position = BlockLength + index * BlockLength;
 
             if (position == _fileStream.Length)
                 return result;
@@ -374,8 +374,8 @@
             {
                 foreach (var blockIndex in _dirtyBlockIndexes)
                 {
-                    _fileStream.Seek(_blockLength + blockIndex*_blockLength, SeekOrigin.Begin);
-                    _fileStream.Write(_blockCache[blockIndex], 0, _blockLength);
+                    _fileStream.Seek(BlockLength + blockIndex*BlockLength, SeekOrigin.Begin);
+                    _fileStream.Write(_blockCache[blockIndex], 0, BlockLength);
                 }
                 _dirtyBlockIndexes.Clear();
             }
@@ -407,9 +407,9 @@
         public void Create()
         {
             FileOptions options = _pageManager.ForcedWrites ? FileOptions.WriteThrough : FileOptions.None;
-            using (_fileStream = new FileStream(_pageManager.Storage.Path + Path.DirectorySeparatorChar + _fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, _blockLength, options))
+            using (_fileStream = new FileStream(_pageManager.Storage.Path + Path.DirectorySeparatorChar + _fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, BlockLength, options))
             {
-                _fileStream.SetLength(_blockLength);
+                _fileStream.SetLength(BlockLength);
                 _header = new PagemapHeader();
                 WriteHeader();
             }

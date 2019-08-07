@@ -21,10 +21,10 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
         private long _rootPageIndex;
 
         private readonly LinkedList<long> _recentPages = new LinkedList<long>();
-        private const int _maxRecentPages = 6;
+        private const int MaxRecentPages = 6;
 
         // this is used to reduce node reallocations
-        private static readonly short _gapSize = (short) ((DbItemReference.BytesLength + 2) * 2);
+        private static readonly short GapSize = (short) ((DbItemReference.BytesLength + 2) * 2);
 
         internal static short GetNodeSize(short prefixLength, int entryCount)
         {
@@ -39,7 +39,7 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
                      2 +                               // entryCount
                      entryCount * (DbItemReference.BytesLength + 1)); // child node reference + symbol
 
-            size += (short)(_gapSize - (size % _gapSize));
+            size += (short)(GapSize - (size % GapSize));
             return size;
         }
 
@@ -114,7 +114,7 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
                                     GetNodeSize(0, 256) -
                                     RadixTreeNodesPageHeader.RadixTreeNodesHeaderLength -
                                     PageFormatter.OnPagePointerSize * 2;
-                return remainingSize - (remainingSize % _gapSize);
+                return remainingSize - (remainingSize % GapSize);
 
             }
         }
@@ -181,7 +181,7 @@ namespace DataTanker.AccessMethods.RadixTree.Storage
             }
             else
             {
-                if (_recentPages.Count == _maxRecentPages)
+                if (_recentPages.Count == MaxRecentPages)
                     _recentPages.RemoveLast();
             }
 

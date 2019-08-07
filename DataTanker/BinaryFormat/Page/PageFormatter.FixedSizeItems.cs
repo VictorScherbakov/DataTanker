@@ -284,7 +284,7 @@
             if (itemLengths == -1)
                 throw new PageFormatException("A fixed size item is already deleted.");
 
-            _deletedMarkerBytes.CopyTo(page.Content, header.Length + OnPagePointerSize + itemIndex * OnPagePointerSize);
+            DeletedMarkerBytes.CopyTo(page.Content, header.Length + OnPagePointerSize + itemIndex * OnPagePointerSize);
 
             header.EmptySlotCount++;
 
@@ -328,13 +328,13 @@
                 throw new PageFormatException("Page is not dedicated to fixed size items.");
 
             // set length of item markers to zero
-            zeroBytesShort.CopyTo(page.Content, header.Length);
+            ZeroBytesShort.CopyTo(page.Content, header.Length);
 
             // set empty slot count to zero
-            zeroBytesShort.CopyTo(page.Content, OnPageOffsets.FixedSizeItem.EmptySlotCount);
+            ZeroBytesShort.CopyTo(page.Content, OnPageOffsets.FixedSizeItem.EmptySlotCount);
         }
 
-        private static readonly byte[] zeroBytesShort = BitConverter.GetBytes((short)0);
+        private static readonly byte[] ZeroBytesShort = BitConverter.GetBytes((short)0);
 
         private static int GetNewSlotCount(IPage page, PageHeaderBase header)
         {

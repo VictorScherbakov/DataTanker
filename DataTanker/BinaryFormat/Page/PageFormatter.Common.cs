@@ -9,7 +9,7 @@
     /// </summary>
     public static partial class PageFormatter
     {
-        private static readonly byte[] _deletedMarkerBytes = BitConverter.GetBytes((short)-1);
+        private static readonly byte[] DeletedMarkerBytes = BitConverter.GetBytes((short)-1);
 
         public static readonly int OnPagePointerSize = 2;
 

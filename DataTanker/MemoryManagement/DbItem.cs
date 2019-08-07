@@ -11,20 +11,20 @@
     /// </summary>
     public class DbItem : IEquatable<DbItem>
     {
-        private static readonly short _baseSize = 10;
+        private static readonly short BaseSize = 10;
         private byte[] _rawData;
 
-        private static readonly short[] _maxSizes;
+        private static readonly short[] MaxSizes;
 
         static DbItem()
         {
-            _maxSizes = new short[(int)(SizeRange.Range11 + 1)];
+            MaxSizes = new short[(int)(SizeRange.Range11 + 1)];
 
             int i = 0;
             foreach (var sizeRange in EnumHelper.FixedSizeItemsSizeRanges())
             {
                 var scb = (byte)sizeRange;
-                _maxSizes[i++] = (short)(_baseSize * (short)Math.Pow(2, scb));
+                MaxSizes[i++] = (short)(BaseSize * (short)Math.Pow(2, scb));
             }
         }
 
@@ -34,7 +34,7 @@
                 sizeRange == SizeRange.MultiPage)
                 throw new ArgumentOutOfRangeException(nameof(sizeRange));
 
-            return _maxSizes[(int) sizeRange];
+            return MaxSizes[(int) sizeRange];
         }
 
         public static SizeRange GetSizeRange(long length)
@@ -42,9 +42,9 @@
             if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
 
-            for (int i = 0; i < _maxSizes.Length; i++)
+            for (int i = 0; i < MaxSizes.Length; i++)
             {
-                if (_maxSizes[i] >= length)
+                if (MaxSizes[i] >= length)
                     return (SizeRange)i;
             }
 

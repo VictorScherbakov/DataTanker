@@ -328,7 +328,7 @@
                     Buffer.BlockCopy(item, 0, content, contentLength - offset, item.Length);
                 }
                 else
-                    bytes = zeroBytesShort;
+                    bytes = ZeroBytesShort;
 
                 // write the length marker
                 Buffer.BlockCopy(bytes, 0, content, headerLength + OnPagePointerSize * (index + 1), sizeof(short));

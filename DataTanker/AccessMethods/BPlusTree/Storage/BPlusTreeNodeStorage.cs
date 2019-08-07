@@ -16,7 +16,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
     internal class BPlusTreeNodeStorage<TKey> : INodeStorage<TKey>
         where TKey : IComparableKey
     {
-        private const short _keyLengthSize = sizeof(Int16);
+        private const short KeyLengthSize = sizeof(Int16);
 
         private readonly IPageManager _pageManager;
         private readonly ISerializer<TKey> _keySerializer;
@@ -37,19 +37,19 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
             short keyLength = BitConverter.ToInt16(bytes, 0);
             var keyBytes = new byte[keyLength];
             Buffer.BlockCopy(bytes, sizeof(Int16), keyBytes, 0, keyLength);
-            return new KeyValuePair<TKey, DbItemReference>(_keySerializer.Deserialize(keyBytes), DbItemReference.FromBytes(bytes, _maxKeySize + _keyLengthSize));
+            return new KeyValuePair<TKey, DbItemReference>(_keySerializer.Deserialize(keyBytes), DbItemReference.FromBytes(bytes, _maxKeySize + KeyLengthSize));
         }
 
         private byte[] GetIndexEntryBytes(KeyValuePair<TKey, DbItemReference> entry)
         {
-            var result = new byte[_keyLengthSize + _maxKeySize + DbItemReference.BytesLength];
+            var result = new byte[KeyLengthSize + _maxKeySize + DbItemReference.BytesLength];
             
             var serializedKey = _keySerializer.Serialize(entry.Key);
             if(serializedKey.Length > _maxKeySize)
                 throw new DataTankerException("Binary representation of key is too long");
 
             BitConverter.GetBytes((short)serializedKey.Length).CopyTo(result, 0);
-            Buffer.BlockCopy(serializedKey, 0, result, _keyLengthSize, serializedKey.Length);
+            Buffer.BlockCopy(serializedKey, 0, result, KeyLengthSize, serializedKey.Length);
 
             entry.Value.WriteBytes(result, result.Length - DbItemReference.BytesLength);
 
@@ -183,7 +183,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
             {
                 if(_nodeCapacity == 0)
                 {
-                    var itemSize = DbItem.GetMaxSize(DbItem.GetSizeRange(DbItemReference.BytesLength + _maxKeySize + _keyLengthSize));
+                    var itemSize = DbItem.GetMaxSize(DbItem.GetSizeRange(DbItemReference.BytesLength + _maxKeySize + KeyLengthSize));
                     var usefulSize = _pageManager.PageSize - new BPlusTreeNodePageHeader().DefaultSize - 2;
                     _nodeCapacity = usefulSize / (itemSize + 2);
                 }
