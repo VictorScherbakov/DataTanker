@@ -12,7 +12,7 @@ namespace DataTanker
     public class TransactionalStorage : Storage, ITransactionInventory
     {
         private readonly List<DataTankerTransaction> _transactions = new List<DataTankerTransaction>();
-        private int _lastCommited = -1;
+        private int _lastCommitted = -1;
 
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
@@ -102,8 +102,8 @@ namespace DataTanker
             if (_transactions.Count > number)
             {
                 _transactions[number].State = newState;
-                if (newState == TransactionState.Commited && number > _lastCommited)
-                    _lastCommited = number;
+                if (newState == TransactionState.Committed && number > _lastCommitted)
+                    _lastCommitted = number;
             }
         }
 

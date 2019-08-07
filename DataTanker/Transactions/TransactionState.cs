@@ -11,9 +11,9 @@
         Active,
 
         /// <summary>
-        /// Transaction is commited.
+        /// Transaction is committed.
         /// </summary>
-        Commited,
+        Committed,
 
         /// <summary>
         /// Transaction is rolled back.

@@ -69,7 +69,7 @@
                     result = new DbItemReference(page.Index, 0);
                 }
 
-                var header = new MultipageItemPageHeader
+                var header = new MultiPageItemPageHeader
                                  {
                                      StartPageIndex = startPageIndex, 
                                      PreviousPageIndex = previousPage?.Index ?? -1,
@@ -82,7 +82,7 @@
 
                 if (previousPage != null)
                 {
-                    header = (MultipageItemPageHeader)PageFormatter.GetPageHeader(previousPage);
+                    header = (MultiPageItemPageHeader)PageFormatter.GetPageHeader(previousPage);
                     header.NextPageIndex = page.Index;
                     header.WriteToPage(previousPage);
                     _pageManager.UpdatePage(previousPage);
@@ -123,7 +123,7 @@
                 while (page != null)
                 {
                     _pageManager.RemovePage(page.Index);
-                    var nextPageIndex = ((MultipageItemPageHeader)PageFormatter.GetPageHeader(page)).NextPageIndex;
+                    var nextPageIndex = ((MultiPageItemPageHeader)PageFormatter.GetPageHeader(page)).NextPageIndex;
                     page = nextPageIndex == -1 
                         ? null
                         : _pageManager.FetchPage(nextPageIndex);
@@ -198,7 +198,7 @@
                     var readBytes = PageFormatter.ReadMultipageItemBlock(page, Math.Min(_pageManager.PageSize, (int)(length - offset)));    
                     readBytes.CopyTo(content, offset);
                     offset += readBytes.Length;
-                    var nextPageIndex = ((MultipageItemPageHeader) header).NextPageIndex;
+                    var nextPageIndex = ((MultiPageItemPageHeader) header).NextPageIndex;
 
                     if (nextPageIndex != -1)
                     {
@@ -269,7 +269,7 @@
                         return result;
                 }
 
-                var nextPageIndex = ((MultipageItemPageHeader)header).NextPageIndex;
+                var nextPageIndex = ((MultiPageItemPageHeader)header).NextPageIndex;
 
                 if (nextPageIndex != -1)
                 {
@@ -309,7 +309,7 @@
             if (endIndex < 0) throw new ArgumentOutOfRangeException(nameof(endIndex));
 
             if(endIndex < startIndex)
-                throw new ArgumentException("End index should be qreater than or equal to start index");
+                throw new ArgumentException("End index should be greater than or equal to start index");
 
             if (!_pageManager.PageExists(reference.PageIndex))
                 return new byte[] {};

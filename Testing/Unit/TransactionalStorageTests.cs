@@ -36,8 +36,8 @@ namespace Tests
 
                 var number = storage.CreateTransaction(out _);
 
-                storage.Mark(number, TransactionState.Commited);
-                Assert.AreEqual(TransactionState.Commited, storage.GetState(number));
+                storage.Mark(number, TransactionState.Committed);
+                Assert.AreEqual(TransactionState.Committed, storage.GetState(number));
 
                 storage.Mark(number, TransactionState.RolledBack);
                 Assert.AreEqual(TransactionState.RolledBack, storage.GetState(number));
@@ -74,7 +74,7 @@ namespace Tests
                 {
                     switch (r.Next(0, 2))
                     {
-                        case 0: state = TransactionState.Commited;
+                        case 0: state = TransactionState.Committed;
                             break;
                         case 1: state = TransactionState.RolledBack;
                             break;

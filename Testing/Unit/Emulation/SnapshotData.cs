@@ -10,7 +10,7 @@ namespace Tests.Emulation
         private readonly List<int> _rolledBackTransactions;
         private readonly List<int> _commitedTransactions;
 
-        public bool IsComittedTransaction(int number)
+        public bool IsCommittedTransaction(int number)
         {
             return _commitedTransactions.Contains(number);
         }

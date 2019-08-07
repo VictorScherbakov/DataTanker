@@ -16,7 +16,7 @@ namespace DataTanker
         TValue Fetch(DbItemReference reference);
 
         /// <summary>
-        /// Retreives the length of value (in bytes) by its reference.
+        /// Retrieves the length of value (in bytes) by its reference.
         /// </summary>
         /// <param name="reference">Reference to the value</param>
         /// <returns>The length of referenced value</returns>

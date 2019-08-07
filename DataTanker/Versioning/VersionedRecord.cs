@@ -15,7 +15,7 @@
 
         private bool IsCommited(int transactionNumber)
         {
-            return _snapshotData.IsComittedTransaction(transactionNumber);
+            return _snapshotData.IsCommittedTransaction(transactionNumber);
         }
 
         private bool IsRolledBack(int transactionNumber)

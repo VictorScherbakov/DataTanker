@@ -23,7 +23,7 @@
 
         /// <summary>
         /// Gets or sets a value indicating whether a page is pinned.
-        /// Pinned pages cannot be writen out to disk.
+        /// Pinned pages cannot be written out to disk.
         /// </summary>
         public bool Pinned { get; set; }
     }

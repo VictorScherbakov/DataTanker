@@ -26,22 +26,6 @@
         void OpenOrCreate(string path);
 
         /// <summary>
-        /// Closes the storage if it is open.
-        /// </summary>
-        void Close();
-
-        /// <summary>
-        /// Clears buffers for this storage and causes any buffered data to be written.
-        /// </summary>
-        void Flush();
-
-        /// <summary>
-        /// Gets a page size in bytes.
-        /// Page is a data block that is written and read entirely.
-        /// </summary>
-        int PageSize { get; }
-
-        /// <summary>
         /// Gets a storage location.
         /// </summary>
         string Path { get; }
@@ -50,15 +34,5 @@
         /// Gets a value indicating whether a storage is open.
         /// </summary>
         bool IsOpen { get; }
-
-        /// <summary>
-        /// Gets the on-disk structure version.
-        /// </summary>
-        int OnDiskStructureVersion { get; }
-
-        /// <summary>
-        /// Gets the access method implemented by this storage
-        /// </summary>
-        Settings.AccessMethod AccessMethod { get; }
     }
 }

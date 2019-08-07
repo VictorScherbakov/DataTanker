@@ -8,10 +8,10 @@ namespace DataTanker.Versioning
     {
         private readonly List<DataTankerTransaction> _transactions;
 
-        public bool IsComittedTransaction(int number)
+        public bool IsCommittedTransaction(int number)
         {
             var tr = _transactions.SingleOrDefault(t => t.Id == number);
-            return tr?.State == TransactionState.Commited;
+            return tr?.State == TransactionState.Committed;
         }
 
         public bool IsRolledBackTransaction(int number)

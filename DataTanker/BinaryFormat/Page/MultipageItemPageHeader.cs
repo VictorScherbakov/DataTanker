@@ -2,7 +2,7 @@ namespace DataTanker.BinaryFormat.Page
 {
     using PageManagement;
 
-    public sealed class MultipageItemPageHeader : MultipageItemPageHeaderBase
+    public sealed class MultiPageItemPageHeader : MultipageItemPageHeaderBase
     {
         public override void WriteToPage(IPage page)
         {

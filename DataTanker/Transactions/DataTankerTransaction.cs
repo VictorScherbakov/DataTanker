@@ -20,7 +20,7 @@
 
         public void Commit()
         {
-            _inventory.Mark(Id, TransactionState.Commited);
+            _inventory.Mark(Id, TransactionState.Committed);
         }
 
         public void Rollback()

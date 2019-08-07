@@ -43,17 +43,17 @@ namespace Tests
             Assert.AreEqual(fsiph.PageType, phb.PageType);
             Assert.AreEqual(fsiph.SizeRange, phb.SizeRange);
 
-            var mpph = new MultipageItemPageHeader();
+            var mpph = new MultiPageItemPageHeader();
 
             PageFormatter.InitPage(p, mpph);
             phb = PageFormatter.GetPageHeader(p);
-            Assert.IsInstanceOf<MultipageItemPageHeader>(phb);
+            Assert.IsInstanceOf<MultiPageItemPageHeader>(phb);
             Assert.AreEqual(mpph.Length, phb.Length);
             Assert.AreEqual(mpph.PageType, phb.PageType);
             Assert.AreEqual(mpph.SizeRange, phb.SizeRange);
-            Assert.AreEqual(mpph.StartPageIndex, ((MultipageItemPageHeader)phb).StartPageIndex);
-            Assert.AreEqual(mpph.PreviousPageIndex, ((MultipageItemPageHeader)phb).PreviousPageIndex);
-            Assert.AreEqual(mpph.NextPageIndex, ((MultipageItemPageHeader)phb).NextPageIndex);
+            Assert.AreEqual(mpph.StartPageIndex, ((MultiPageItemPageHeader)phb).StartPageIndex);
+            Assert.AreEqual(mpph.PreviousPageIndex, ((MultiPageItemPageHeader)phb).PreviousPageIndex);
+            Assert.AreEqual(mpph.NextPageIndex, ((MultiPageItemPageHeader)phb).NextPageIndex);
 
             var fsmph = new FreeSpaceMapPageHeader();
 

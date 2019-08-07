@@ -106,7 +106,7 @@ namespace DataTanker.AccessMethods.RadixTree
         /// <summary>
         /// Gets the access method implemented by this storage
         /// </summary>
-        public override AccessMethod AccessMethod => AccessMethod.RadixTree;
+        public virtual AccessMethod AccessMethod => AccessMethod.RadixTree;
 
         public TValue Get(TKey key)
         {
@@ -115,7 +115,7 @@ namespace DataTanker.AccessMethods.RadixTree
 
         public bool HasSubkeys(TKey key)
         {
-            return WrapWithReadLock(_tree.HasSubkeys, key);
+            return WrapWithReadLock(_tree.HasSubKeys, key);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace DataTanker.AccessMethods.RadixTree
         }
 
         /// <summary>
-        /// Gets a value corresponing to the minimal key.
+        /// Gets a value corresponding to the minimal key.
         /// </summary>
         /// <returns>The value corresponding to the minimal key</returns>
         public TValue MinValue()
@@ -239,7 +239,7 @@ namespace DataTanker.AccessMethods.RadixTree
         }
 
         /// <summary>
-        /// Gets the value corresponing to the maximal key.
+        /// Gets the value corresponding to the maximal key.
         /// </summary>
         /// <returns>The value corresponding to the maximal key</returns>
         public TValue MaxValue()

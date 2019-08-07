@@ -39,7 +39,7 @@
                     ph.Read(page);
                     return ph;
                 case PageType.MultipageItem: 
-                    ph = new MultipageItemPageHeader();
+                    ph = new MultiPageItemPageHeader();
                     ph.Read(page);
                     return ph;
                 case PageType.FixedSizeItem:

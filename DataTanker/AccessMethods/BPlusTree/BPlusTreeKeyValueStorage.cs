@@ -111,7 +111,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         /// <summary>
         /// Gets the access method implemented by this storage
         /// </summary>
-        public override AccessMethod AccessMethod => AccessMethod.BPlusTree;
+        public virtual AccessMethod AccessMethod => AccessMethod.BPlusTree;
 
         /// <summary>
         /// Gets the minimal key.
@@ -132,7 +132,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         }
 
         /// <summary>
-        /// Gets a value corresponing to the minimal key.
+        /// Gets a value corresponding to the minimal key.
         /// </summary>
         /// <returns>The value corresponding to the minimal key</returns>
         public TValue MinValue()
@@ -141,7 +141,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         }
 
         /// <summary>
-        /// Gets the value corresponing to the maximal key.
+        /// Gets the value corresponding to the maximal key.
         /// </summary>
         /// <returns>The value corresponding to the maximal key</returns>
         public TValue MaxValue()
@@ -222,7 +222,7 @@ namespace DataTanker.AccessMethods.BPlusTree
         }
 
         /// <summary>
-        /// Cheks if key-value pair exists in storage.
+        /// Checks if key-value pair exists in storage.
         /// </summary>
         /// <param name="key">The key</param>
         /// <returns>True if key-value pair exists, false otherwise</returns>

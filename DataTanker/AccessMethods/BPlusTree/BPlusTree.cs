@@ -225,7 +225,7 @@
         }
 
         /// <summary>
-        /// Gets a value corresponing to the minimal key.
+        /// Gets a value corresponding to the minimal key.
         /// </summary>
         /// <returns>The value corresponding to the minimal key</returns>
         public TValue MinValue()
@@ -239,7 +239,7 @@
         }
 
         /// <summary>
-        /// Gets the value corresponing to the maximal key.
+        /// Gets the value corresponding to the maximal key.
         /// </summary>
         /// <returns>The value corresponding to the maximal key</returns>
         public TValue MaxValue()
@@ -818,7 +818,7 @@
         /// Checks the tree for consistency.
         /// </summary>
         /// <param name="message">Diagnostic message describing the specific inconsistencies</param>
-        /// <returns>True if the tree is consisternt, false otherwise</returns>
+        /// <returns>True if the tree is consistent, false otherwise</returns>
         public bool CheckConsistency(out string message)
         {
             var rootNode = FetchRoot();

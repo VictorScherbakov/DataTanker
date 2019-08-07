@@ -10,13 +10,13 @@
     /// </summary>
     public static partial class PageFormatter
     {
-        private static MultipageItemPageHeader GetMultipageItemPageHeader(IPage page)
+        private static MultiPageItemPageHeader GetMultipageItemPageHeader(IPage page)
         {
             PageHeaderBase result = GetPageHeader(page);
             if (result.SizeRange != SizeRange.MultiPage)
                 throw new PageFormatException("Page is not dedicated to multipage items.");
 
-            return (MultipageItemPageHeader)result;
+            return (MultiPageItemPageHeader)result;
         }
 
         public static int WriteMultipageItemBlock(IPage page, DbItem item, long offset)
@@ -24,7 +24,7 @@
             if (offset < 0 || offset >= item.RawData.LongLength)
                 throw new ArgumentOutOfRangeException(nameof(offset));
 
-            MultipageItemPageHeader header = GetMultipageItemPageHeader(page);
+            MultiPageItemPageHeader header = GetMultipageItemPageHeader(page);
 
             if (item.GetAllocationType(page.Length) == AllocationType.SinglePage)
                 throw new PageFormatException("Unable to add item block on page. Item allocation type is single page.");
@@ -50,7 +50,7 @@
 
         public static long ReadMultipageItemLength(IPage page)
         {
-            MultipageItemPageHeader header = GetMultipageItemPageHeader(page);
+            MultiPageItemPageHeader header = GetMultipageItemPageHeader(page);
 
             if (header.PreviousPageIndex != -1)
                 throw new PageFormatException("This page is not the start page of multipage item.");
@@ -70,7 +70,7 @@
 
         public static byte[] ReadMultipageItemBlock(IPage page, int length)
         {
-            MultipageItemPageHeader header = GetMultipageItemPageHeader(page);
+            MultiPageItemPageHeader header = GetMultipageItemPageHeader(page);
 
             var offset = header.Length;
 
