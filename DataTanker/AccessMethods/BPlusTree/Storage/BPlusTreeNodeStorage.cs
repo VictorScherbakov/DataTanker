@@ -58,8 +58,7 @@ namespace DataTanker.AccessMethods.BPlusTree.Storage
 
         private IBPlusTreeNode<TKey> PageToNode(IPage page)
         {
-            var node = page.BackingObject as IBPlusTreeNode<TKey>;
-            if (node != null)
+            if (page.BackingObject is IBPlusTreeNode<TKey> node)
                 return node;
 
             var header = (BPlusTreeNodePageHeader)PageFormatter.GetPageHeader(page);
