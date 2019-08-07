@@ -17,14 +17,9 @@
         private bool _disposed;
 
         private readonly TimeSpan _autoFlushTimeout;
-        private string _path = string.Empty;
-        private bool _isOpen;
-
         private string _infoFileName = "info";
 
-        private StorageInfo _info;
-
-        public StorageInfo Info => _info;
+        public StorageInfo Info { get; private set; }
 
         private string InfoFileName()
         {
@@ -113,15 +108,15 @@
             if (PageManager == null)
                 throw new InvalidOperationException("Page manager is not set");
 
-            if (_isOpen)
+            if (IsOpen)
                 throw new InvalidOperationException("Storage is already open");
 
-            _path = path;
+            Path = path;
 
             ReadInfo();
             CheckInfo();
 
-            _isOpen = true;
+            IsOpen = true;
             PageManager.OpenExistingPageSpace();
 
 
@@ -135,21 +130,21 @@
             if (headingHeader.PageSize != PageSize)
             {
                 var pageSize = PageSize;
-                _isOpen = false;
+                IsOpen = false;
                 Close();
                 throw new StorageFormatException($"Page size: {pageSize} bytes is set. But pages of the opening storage is {headingHeader.PageSize} bytes length");
             }
 
             if(headingHeader.OnDiskStructureVersion != OnDiskStructureVersion)
             {
-                _isOpen = false;
+                IsOpen = false;
                 Close();
                 throw new NotSupportedException($"On-disk structure version {headingHeader.OnDiskStructureVersion} is not supported.");
             }
 
             if (headingHeader.AccessMethod != (short) AccessMethod)
             {
-                _isOpen = false;
+                IsOpen = false;
                 Close();
                 throw new NotSupportedException($"Access method {headingHeader.AccessMethod} is not supported by this instance of storage.");
             }
@@ -164,12 +159,12 @@
                 throw new FileNotFoundException($"File '{infoFileName}' not found");
 
             var infoString = File.ReadAllText(infoFileName);
-            _info = StorageInfo.FromString(infoString);
+            Info = StorageInfo.FromString(infoString);
         }
 
         protected virtual void CheckInfo()
         {
-            if (_info.StorageClrTypeName != GetType().FullName)
+            if (Info.StorageClrTypeName != GetType().FullName)
                 throw new DataTankerException("Mismatch storage type");
         }
 
@@ -184,10 +179,10 @@
             if (PageManager == null)
                 throw new InvalidOperationException("Page manager is not set");
 
-            if (_isOpen)
+            if (IsOpen)
                 throw new InvalidOperationException("Storage is already open");
 
-            _path = path;
+            Path = path;
             PageManager.Lock();
             try
             {
@@ -214,15 +209,15 @@
             if (PageManager == null)
                 throw new InvalidOperationException("Page manager is not set");
 
-            if (_isOpen)
+            if (IsOpen)
                 throw new InvalidOperationException("Unable to create starage because this instance is using to operate with the other storage");
 
-            _path = path;
+            Path = path;
             FillInfo();
             WriteInfo();
             
             PageManager.CreateNewPageSpace();
-            _isOpen = true;
+            IsOpen = true;
 
             PageManager.Lock();
             try
@@ -243,13 +238,13 @@
         private void WriteInfo()
         {
             if (!File.Exists(InfoFileName()))
-                File.WriteAllText(InfoFileName(), _info.ToString());
+                File.WriteAllText(InfoFileName(), Info.ToString());
             else throw new DataTankerException("Storage cannot be created here. Files with names matching the names of storage files already exist. Try to call OpenExisting().");
         }
 
         protected virtual void FillInfo()
         {
-            _info = new StorageInfo
+            Info = new StorageInfo
             {
                 StorageClrTypeName = GetType().FullName
             };
@@ -261,7 +256,7 @@
         public void Close()
         {
             Dispose();
-            _isOpen = false;
+            IsOpen = false;
         }
 
         /// <summary>
@@ -293,16 +288,12 @@
         /// <summary>
         /// Gets a Storage location.
         /// </summary>
-        public string Path
-        {
-            get { return _path; }
-            internal set { _path = value; }
-        }
+        public string Path { get; internal set; } = string.Empty;
 
         /// <summary>
         /// Gets a value indicating whether a Storage is open.
         /// </summary>
-        public bool IsOpen => _isOpen;
+        public bool IsOpen { get; private set; }
 
         #endregion
 

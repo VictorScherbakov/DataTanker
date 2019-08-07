@@ -13,10 +13,6 @@
         private bool _disposed;
 
         private readonly Dictionary<long, IPage> _entries = new Dictionary<long, IPage>();
-
-        private IStorage _storage;
-        private readonly int _pageSize;
-
         private readonly object _locker = new object();
 
         [DebuggerNonUserCode]
@@ -28,10 +24,10 @@
 
         private void CheckStorage()
         {
-            if (_storage == null)
+            if (Storage == null)
                 throw new InvalidOperationException("Storage is null");
 
-            if (!_storage.IsOpen)
+            if (!Storage.IsOpen)
                 throw new InvalidOperationException("Storage is not open");
         }
 
@@ -39,7 +35,7 @@
 
         private IPage AppendPage()
         {
-            var page = new Page(this, _maxPageIndex, new byte[_pageSize]);
+            var page = new Page(this, _maxPageIndex, new byte[PageSize]);
             _entries.Add(_maxPageIndex, page);
             _maxPageIndex++;
             return page;
@@ -98,11 +94,7 @@
         /// <summary>
         /// Gets the storage instance that operates with storage pages via this page manager.
         /// </summary>
-        public IStorage Storage
-        {
-            get { return _storage; }
-            set { _storage = value; }
-        }
+        public IStorage Storage { get; set; }
 
         /// <summary>
         /// Checks if the page exists.
@@ -167,7 +159,7 @@
             CheckDisposed();
 
             if (content == null) throw new ArgumentNullException(nameof(content));
-            if (content.Length != _pageSize)
+            if (content.Length != PageSize)
                 throw new ArgumentException("content");
 
             Lock();
@@ -338,7 +330,7 @@
         /// <summary>
         /// Gets a page size in bytes.
         /// </summary>
-        public int PageSize => _pageSize;
+        public int PageSize { get; }
 
         /// <summary>
         /// Gets a value indicating whether all write operations perform immediately to file storage
@@ -359,7 +351,7 @@
             if (!(page is Page))
                 return false;
 
-            return page.Length == _pageSize;
+            return page.Length == PageSize;
         }
 
         #endregion
@@ -397,7 +389,7 @@
             if (pageSize < 4096)
                 throw new ArgumentOutOfRangeException(nameof(pageSize), "Too small page size");
 
-            _pageSize = pageSize;
+            PageSize = pageSize;
             ForcedWrites = forcedWrites;
         }
     }

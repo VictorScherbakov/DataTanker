@@ -8,11 +8,9 @@
     /// </summary>
     public class Page : IPage
     {
-        private readonly long _index;
         private Func<byte[]> _getContent;
         private readonly IPageManager _manager;
         private byte[] _content;
-        private object _backingObject;
 
         #region IPage Members
 
@@ -24,7 +22,7 @@
         /// <summary>
         /// Gets the index of this page.
         /// </summary>
-        public long Index => _index;
+        public long Index { get; }
 
         /// <summary>
         /// Gets the content of this page.
@@ -37,7 +35,7 @@
                 {
                     _content = _getContent(); // perform lazy serialization
                     _getContent = null;
-                    _backingObject = null;
+                    BackingObject = null;
 
                     if (!_manager.CheckPage(this))
                         throw new InvalidOperationException("Page manager does not accept page");
@@ -69,11 +67,7 @@
         /// <summary>
         /// Gets the object representing this page.
         /// </summary>
-        public object BackingObject
-        {
-            get { return _backingObject; }
-            set { _backingObject = value; }
-        }
+        public object BackingObject { get; set; }
 
         /// <summary>
         /// Gets the byte length of this page.
@@ -93,7 +87,7 @@
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index), "Page index should not be negative");
 
-            _index = index;
+            Index = index;
             _content = content ?? throw new ArgumentNullException(nameof(content));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
 
@@ -125,9 +119,9 @@
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index), "Page index should not be negative");
 
-            _index = index;
+            Index = index;
             _getContent = getContent ?? throw new ArgumentNullException(nameof(getContent));
-            _backingObject = backingObject;
+            BackingObject = backingObject;
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
         }
 
@@ -135,7 +129,7 @@
         {
             var cloneContent = new byte[Length];
             Buffer.BlockCopy(_content, 0, cloneContent, 0, _content.Length);
-            return new Page(_manager, _index, cloneContent);
+            return new Page(_manager, Index, cloneContent);
         }
     }
 }

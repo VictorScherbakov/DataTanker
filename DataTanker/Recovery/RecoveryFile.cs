@@ -30,7 +30,6 @@ namespace DataTanker.Recovery
         }
 
         private readonly Dictionary<long, UpdateRecord> _updatedPages = new Dictionary<long, UpdateRecord>();
-        private readonly HashSet<long> _deletedPages = new HashSet<long>();
 
         private FileStream Stream
         {
@@ -81,7 +80,7 @@ namespace DataTanker.Recovery
         /// <summary>
         /// Returns a set of all pages presented in the recovery file as deleted
         /// </summary>
-        public HashSet<long> DeletedPageIndexes => _deletedPages;
+        public HashSet<long> DeletedPageIndexes { get; } = new HashSet<long>();
 
         private static void EnsureFileExists(string fileName)
         {
@@ -170,9 +169,9 @@ namespace DataTanker.Recovery
             CheckWriteEnabled();
             EnsureFileExists(FileName);
 
-            if (!_deletedPages.Contains(pageIndex))
+            if (!DeletedPageIndexes.Contains(pageIndex))
             {
-                _deletedPages.Add(pageIndex);
+                DeletedPageIndexes.Add(pageIndex);
                 if (_updatedPages.ContainsKey(pageIndex))
                     _updatedPages.Remove(pageIndex);
             }
@@ -260,7 +259,7 @@ namespace DataTanker.Recovery
                 Stream.Close();
                 _stream = null;
 
-                _deletedPages.Clear();
+                DeletedPageIndexes.Clear();
                 _updatedPages.Clear();
 
                 File.Delete(FileName);
@@ -276,7 +275,7 @@ namespace DataTanker.Recovery
         public RecoveryRecord GetRecoveryRecord(long pageIndex)
         {
             CheckDisposed();
-            if(_deletedPages.Contains(pageIndex))
+            if(DeletedPageIndexes.Contains(pageIndex))
                 return new RecoveryRecord
                 {
                     PageIndex =  pageIndex, 
@@ -342,7 +341,7 @@ namespace DataTanker.Recovery
         public void ReadAllRecoveryRecords()
         {
             CheckDisposed();
-            _deletedPages.Clear();
+            DeletedPageIndexes.Clear();
             _updatedPages.Clear();
             Stream.Seek(0, SeekOrigin.Begin);
             try
@@ -353,7 +352,7 @@ namespace DataTanker.Recovery
                     var record = ReadRecord();
                     if (record.RecordType == RecoveryRecordType.Delete)
                     {
-                        _deletedPages.Add(record.PageIndex);
+                        DeletedPageIndexes.Add(record.PageIndex);
                         if (_updatedPages.ContainsKey(record.PageIndex))
                             _updatedPages.Remove(record.PageIndex);
                     }
@@ -365,8 +364,8 @@ namespace DataTanker.Recovery
                         else
                             _updatedPages.Add(record.PageIndex, r);
 
-                        if (_deletedPages.Contains(record.PageIndex))
-                            _deletedPages.Remove(record.PageIndex);
+                        if (DeletedPageIndexes.Contains(record.PageIndex))
+                            DeletedPageIndexes.Remove(record.PageIndex);
                     }
                 }
             }

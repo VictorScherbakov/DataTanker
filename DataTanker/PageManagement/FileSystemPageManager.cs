@@ -16,9 +16,6 @@
     public class FileSystemPageManager : IPageManager, IDisposable
     {
         private bool _disposed;
-
-        private IStorage _storage;
-        private readonly int _pageSize;
         private int _maxEmptyPages = 100;
 
         private readonly PageMap _pagemap;
@@ -48,12 +45,12 @@
 
         private string StorageFileName()
         {
-            return _storage.Path + Path.DirectorySeparatorChar + _storageFileName;
+            return Storage.Path + Path.DirectorySeparatorChar + _storageFileName;
         }
 
         private string RecoveryFileName()
         {
-            return _storage.Path + Path.DirectorySeparatorChar + _recoveryFileName;
+            return Storage.Path + Path.DirectorySeparatorChar + _recoveryFileName;
         }
 
         public void CheckIfStorageFilesExist(string path)
@@ -92,10 +89,10 @@
 
         private void CheckStorage()
         {
-            if (_storage == null)
+            if (Storage == null)
                 throw new InvalidOperationException("Storage is null");
 
-            if (!_storage.IsOpen)
+            if (!Storage.IsOpen)
                 throw new InvalidOperationException("Storage is not open");
         }
 
@@ -108,7 +105,7 @@
         private IPage AppendPage()
         {
             long pageIndex = _pagemap.GetMaxPageIndex() + 1;
-            var pageBytes = new byte[_pageSize];
+            var pageBytes = new byte[PageSize];
 
             // prevent ThreadAbortException
             try { }
@@ -120,7 +117,7 @@
 
                 _storageStream.Seek(0, SeekOrigin.End);
                
-                _storageStream.Write(pageBytes, 0, _pageSize);
+                _storageStream.Write(pageBytes, 0, PageSize);
                 Flush(_storageStream);
             }
 
@@ -136,7 +133,7 @@
             if (pageAllocation == -1)
                 throw new PageMapException("Page is removed");
 
-            var pageBytes = new byte[_pageSize];
+            var pageBytes = new byte[PageSize];
 
             // prevent ThreadAbortException
             try{ }
@@ -147,7 +144,7 @@
 
                 
                 _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
-                _storageStream.Write(pageBytes, 0, _pageSize);
+                _storageStream.Write(pageBytes, 0, PageSize);
                 Flush(_storageStream);
             }
 
@@ -165,7 +162,7 @@
             // sort allocations
             freePageData.Sort((p1, p2) => p1.Item1.CompareTo(p2.Item1));
 
-            var reallocatedPageBytes = new byte[_pageSize];
+            var reallocatedPageBytes = new byte[PageSize];
 
             // reallocate pages at the end of storage file
             while (freePageData.Any())
@@ -173,12 +170,12 @@
                 long lastPageIndex = _pagemap.ReadLastPageIndex();
 
                 // compute last page allocation
-                long lastPageAllocation = _storageStream.Length - _pageSize;
+                long lastPageAllocation = _storageStream.Length - PageSize;
                 if (freePageData.All(t => t.Item1 != lastPageAllocation))
                 {
                     // last page is occupied
                     // read its content
-                    _storageStream.Seek(-_pageSize, SeekOrigin.End);
+                    _storageStream.Seek(-PageSize, SeekOrigin.End);
                     _storageStream.BlockingRead(reallocatedPageBytes);
 
                     var firstFreePage = freePageData[0];
@@ -187,7 +184,7 @@
 
                     // write a page content to new place
                     _storageStream.Seek(newPageAllocation, SeekOrigin.Begin);
-                    _storageStream.Write(reallocatedPageBytes, 0, _pageSize);
+                    _storageStream.Write(reallocatedPageBytes, 0, PageSize);
 
                     // write an allocation marker of reallocated page
                     _pagemap.WritePageAllocation(lastPageIndex, newPageAllocation);
@@ -210,7 +207,7 @@
                 _pagemap.TruncateLastPageIndex();
 
                 // truncate storage file
-                _storageStream.SetLength(_storageStream.Length - _pageSize);
+                _storageStream.SetLength(_storageStream.Length - PageSize);
             }
 
             // clear free page indexes
@@ -308,11 +305,7 @@
         /// <summary>
         /// Gets the storage instance that operates with storage pages via this page manager.
         /// </summary>
-        public IStorage Storage
-        {
-            get { return _storage; }
-            set { _storage = value; }
-        }
+        public IStorage Storage { get; set; }
 
         /// <summary>
         /// Checks if the page exists.
@@ -384,7 +377,7 @@
                 CheckRemovalMarker(pageIndex);
 
                 _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
-                var pageContent = new byte[_pageSize];
+                var pageContent = new byte[PageSize];
 
                 _storageStream.BlockingRead(pageContent);
 
@@ -409,7 +402,7 @@
             CheckDisposed();
 
             if (content == null) throw new ArgumentNullException(nameof(content));
-            if(content.Length != _pageSize)
+            if(content.Length != PageSize)
                 throw new ArgumentException(nameof(content));
 
             Lock();
@@ -471,7 +464,7 @@
 
                     CheckRemovalMarker(page.Index);
                     _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
-                    _storageStream.Write(page.ContentCopy, 0, _pageSize);
+                    _storageStream.Write(page.ContentCopy, 0, PageSize);
 
                     _pagemap.Flush();
 
@@ -561,8 +554,8 @@
             Lock();
             try
             {
-                if (!Directory.Exists(_storage.Path))
-                    Directory.CreateDirectory(_storage.Path);
+                if (!Directory.Exists(Storage.Path))
+                    Directory.CreateDirectory(Storage.Path);
 
                 if (File.Exists(StorageFileName()) || !_pagemap.CanCreate())
                 {
@@ -593,7 +586,7 @@
             try
             {
                 FileOptions options = ForcedWrites ? FileOptions.WriteThrough : FileOptions.None;
-                _storageStream = new FileStream(StorageFileName(), FileMode.Open, FileAccess.ReadWrite, FileShare.Read, _pageSize * _writeBufferSize, options);
+                _storageStream = new FileStream(StorageFileName(), FileMode.Open, FileAccess.ReadWrite, FileShare.Read, PageSize * _writeBufferSize, options);
 
                 _pagemap.Open();
                 if (File.Exists(RecoveryFileName()))
@@ -657,7 +650,7 @@
         /// <summary>
         /// Gets a page size in bytes.
         /// </summary>
-        public int PageSize => _pageSize;
+        public int PageSize { get; }
 
         /// <summary>
         /// Gets the value indicating whether all write operations perform immediately to file storage
@@ -678,7 +671,7 @@
             if (!(page is Page))
                 return false;
 
-            return page.Length == _pageSize;
+            return page.Length == PageSize;
         }
 
         #endregion
@@ -752,7 +745,7 @@
             if (pageSize < 4096)
                 throw new ArgumentOutOfRangeException(nameof(pageSize), "Too small page size");
 
-            _pageSize = pageSize;
+            PageSize = pageSize;
             ForcedWrites = forcedWrites;
             _writeBufferSize = forcedWrites || writeBufferSize < 1 ? 1 : writeBufferSize;
 

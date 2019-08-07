@@ -12,9 +12,6 @@
     public class DbItem : IEquatable<DbItem>
     {
         private static readonly short _baseSize = 10;
-
-        private readonly SizeRange _sizeRange;
-
         private byte[] _rawData;
 
         private static readonly short[] _maxSizes;
@@ -68,7 +65,7 @@
         /// <returns></returns>
         public AllocationType GetAllocationType(int pageSize)
         {
-            if(_sizeRange == SizeRange.MultiPage)
+            if(SizeRange == SizeRange.MultiPage)
                 return AllocationType.MultiPage;
 
             return GetMaxSize(SizeRange) > pageSize - 8 
@@ -80,7 +77,7 @@
         /// Gets a size range of this item.
         /// Items unable to change its size ranges.
         /// </summary>
-        public SizeRange SizeRange => _sizeRange;
+        public SizeRange SizeRange { get; }
 
 
         /// <summary>
@@ -98,7 +95,7 @@
             if (other == null)
                 return false;
 
-            return _sizeRange == other.SizeRange &&
+            return SizeRange == other.SizeRange &&
                    _rawData.Length == other.RawData.Length &&
                    _rawData.SequenceEqual(other.RawData);
         }
@@ -107,7 +104,7 @@
         {
             _rawData = rawData ?? throw new ArgumentNullException(nameof(rawData));
 
-            _sizeRange = GetSizeRange(rawData.Length);
+            SizeRange = GetSizeRange(rawData.Length);
         }
     }
 }

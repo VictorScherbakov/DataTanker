@@ -14,8 +14,7 @@
     {
         internal class PagemapHeader
         {
-            private bool _changed;
-            public bool Changed => _changed;
+            public bool Changed { get; private set; }
 
             private long _pageCount;
             public long PageCount
@@ -23,7 +22,7 @@
                 get { return _pageCount; }
                 set
                 {
-                    _changed = _pageCount != value;
+                    Changed = _pageCount != value;
                     _pageCount = value;
                 }
             }
@@ -34,7 +33,7 @@
                 get { return _releasedPageCount; }
                 set
                 {
-                    _changed = _releasedPageCount != value;
+                    Changed = _releasedPageCount != value;
                     _releasedPageCount = value;
                 }
             }
@@ -45,7 +44,7 @@
                 get { return _onDiskPageCount; }
                 set
                 {
-                    _changed = _onDiskPageCount != value;
+                    Changed = _onDiskPageCount != value;
                     _onDiskPageCount = value;
                 }
             }
