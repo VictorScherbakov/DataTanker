@@ -3,7 +3,7 @@
     /// <summary>
     /// Specifies the size of page (in bytes)
     /// </summary>
-    public enum PageSize : int
+    public enum PageSize
     {
         Default = 4096,
         _4096 = 4096, 

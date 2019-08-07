@@ -24,11 +24,6 @@
             header.WriteToPage(page);
         }
 
-        public static bool IsPageCorrect(IPage page)
-        {
-            throw new NotImplementedException();
-        }
-
         public static PageHeaderBase GetPageHeader(IPage page)
         {
             PageHeaderBase ph;

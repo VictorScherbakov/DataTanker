@@ -51,10 +51,5 @@ namespace DataTanker
         /// </summary>
         /// <param name="reference">Reference to allocated value</param>
         void Free(DbItemReference reference);
-
-        /// <summary>
-        /// Gets the value indicating whether the versioning mechanisms is enabled.
-        /// </summary>
-        bool IsVersioningEnabled { get; }
     }
 }

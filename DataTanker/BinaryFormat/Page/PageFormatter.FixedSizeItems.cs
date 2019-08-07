@@ -320,20 +320,6 @@
                 item.RawData.Length);
         }
 
-        public static void DeleteFixedSizeItems(IPage page)
-        {
-            PageHeaderBase header = GetPageHeader(page);
-            if (header.SizeRange == SizeRange.MultiPage ||
-               header.SizeRange == SizeRange.NotApplicable)
-                throw new PageFormatException("Page is not dedicated to fixed size items.");
-
-            // set length of item markers to zero
-            ZeroBytesShort.CopyTo(page.Content, header.Length);
-
-            // set empty slot count to zero
-            ZeroBytesShort.CopyTo(page.Content, OnPageOffsets.FixedSizeItem.EmptySlotCount);
-        }
-
         private static readonly byte[] ZeroBytesShort = BitConverter.GetBytes((short)0);
 
         private static int GetNewSlotCount(IPage page, PageHeaderBase header)

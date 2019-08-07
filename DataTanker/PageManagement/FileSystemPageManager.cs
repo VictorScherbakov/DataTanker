@@ -53,24 +53,6 @@
             return Storage.Path + Path.DirectorySeparatorChar + _recoveryFileName;
         }
 
-        public void CheckIfStorageFilesExist(string path)
-        {
-            Lock();
-            try
-            {
-                if (!Directory.Exists(path))
-                    throw new DirectoryNotFoundException("Directory " + path + " not found");
-
-                _pagemap.CheckIfFilesExist();
-
-                CheckIfFileExists(StorageFileName());
-            }
-            finally
-            {
-                Unlock();
-            }
-        }
-
         private static void EnsureFileExists(string fileName)
         {
             if (File.Exists(fileName)) 

@@ -49,8 +49,6 @@
                 }
             }
 
-            public static int BytesLength => 24;
-
             public void Write(Stream stream)
             {
                 stream.Write(BitConverter.GetBytes(PageCount), 0, sizeof(long));
@@ -119,11 +117,6 @@
         public void CheckIfFilesExist()
         {
             CheckIfFileExists(PagemapFileName());
-        }
-
-        public bool FilesExist()
-        {
-            return File.Exists(PagemapFileName());
         }
 
         private static void EnsureFileExists(string fileName)
