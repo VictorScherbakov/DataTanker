@@ -12,8 +12,7 @@ namespace DataTanker.Transactions
 
         public DataTankerTransaction Create(ITransactionInventory inventory)
         {
-            ISnapshotData snapshotData;
-            int number = inventory.CreateTransaction(out snapshotData);
+            int number = inventory.CreateTransaction(out var snapshotData);
             return new DataTankerTransaction(inventory, snapshotData, number);
         }
     }

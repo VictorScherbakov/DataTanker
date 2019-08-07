@@ -127,8 +127,7 @@
         public bool HasSubkeys(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out var isFullMatch);
 
             return isFullMatch && node.Entries.Any();
         }
@@ -142,8 +141,7 @@
         public long SubkeysCount(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out var isFullMatch);
 
             long result = 0;
 
@@ -155,8 +153,7 @@
 
         private IRadixTreeNode GetChildPreviousTo(IRadixTreeNode node, byte b)
         {
-            int index;
-            FindSuitableEntry(node.Entries, b, out index);
+            FindSuitableEntry(node.Entries, b, out var index);
             if (index <= 0 || index > node.Entries.Count)
                 return null;
             return _nodeStorage.Fetch(node.Entries[index - 1].Value);
@@ -164,8 +161,7 @@
 
         private IRadixTreeNode GetChildNextTo(IRadixTreeNode node, byte b)
         {
-            int index;
-            var entry = FindSuitableEntry(node.Entries, b, out index);
+            var entry = FindSuitableEntry(node.Entries, b, out var index);
             if (entry != null)
                 index++;
 
@@ -203,10 +199,7 @@
         public TKey PreviousTo(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
-            int nodePrefixOffset;
-            bool isFullMatch;
-            IRadixTreeNode targetNode = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode targetNode = FindMostSuitableNode(binaryKey, out var keyOffset, out var nodePrefixOffset, out var isFullMatch);
 
             bool goDown = true;
             if (isFullMatch || keyOffset == binaryKey.Length || 
@@ -268,9 +261,7 @@
         public TKey NextTo(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
-            bool isFullMatch;
-            IRadixTreeNode targetNode = FindMostSuitableNode(binaryKey, out keyOffset, out _, out isFullMatch);
+            IRadixTreeNode targetNode = FindMostSuitableNode(binaryKey, out var keyOffset, out _, out var isFullMatch);
 
             if (isFullMatch || keyOffset == binaryKey.Length)
             {
@@ -326,9 +317,8 @@
         public TValue Get(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            bool isFullMatch;
 
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch/*, treeNode => references.Add(treeNode.Reference)*/);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out var isFullMatch/*, treeNode => references.Add(treeNode.Reference)*/);
 
             if (isFullMatch)
             {
@@ -420,8 +410,7 @@
         public void Remove(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out var isFullMatch);
 
             if (isFullMatch)
             {
@@ -449,8 +438,7 @@
                             child = UpdateOrReallocateNode(child, out _);
 
                             var parent = _nodeStorage.Fetch(child.ParentNodeReference);
-                            int index;
-                            FindSuitableEntry(parent.Entries, child.Prefix[0], out index);
+                            FindSuitableEntry(parent.Entries, child.Prefix[0], out var index);
                             parent.Entries[index] = new KeyValuePair<byte, DbItemReference>(child.Prefix[0], child.Reference);
 
                             UpdateOrFail(parent);
@@ -467,8 +455,7 @@
                     while (!DbItemReference.IsNull(node.ParentNodeReference))
                     {
                         var parentNode = _nodeStorage.Fetch(node.ParentNodeReference);
-                        int index;
-                        FindSuitableEntry(parentNode.Entries, node.Prefix[0], out index);
+                        FindSuitableEntry(parentNode.Entries, node.Prefix[0], out var index);
                         parentNode.Entries.RemoveAt(index);
                         _nodeStorage.Remove(node.Reference);
 
@@ -555,8 +542,7 @@
             var parentNode = _nodeStorage.Fetch(node.ParentNodeReference);
 
             var b = node.Prefix[0];
-            int index;
-            if (FindSuitableEntry(parentNode.Entries, b, out index).HasValue)
+            if (FindSuitableEntry(parentNode.Entries, b, out var index).HasValue)
             {
                 parentNode.Entries[index] = new KeyValuePair<byte, DbItemReference>(b, (DbItemReference)(node.Reference.Clone()));
                 if(updateNode)
@@ -586,11 +572,8 @@
         public void Set(TKey key, TValue value)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            int keyOffset;
-            int nodePrefixOffset;
-            bool isFullMatch;
 
-            IRadixTreeNode targetNode = FindMostSuitableNode(binaryKey, out keyOffset, out nodePrefixOffset, out isFullMatch);
+            IRadixTreeNode targetNode = FindMostSuitableNode(binaryKey, out var keyOffset, out var nodePrefixOffset, out var isFullMatch);
 
             if (isFullMatch)
             {
@@ -627,10 +610,8 @@
                 // nodeChain (if has any items) is attached to newParentNode as a child
 
                 // split prefix
-                byte[] remainingPrefix;
-                byte[] prefixForNewParent;
 
-                SplitPrefix(targetNode.Prefix, nodePrefixOffset, out prefixForNewParent, out remainingPrefix);
+                SplitPrefix(targetNode.Prefix, nodePrefixOffset, out var prefixForNewParent, out var remainingPrefix);
 
                 targetNode.Prefix = remainingPrefix;
 
@@ -672,12 +653,10 @@
                 // all nodes above remain intact
 
                 byte b = remainingKeyPart[0];
-                int index;
-                FindSuitableEntry(targetNode.Entries, b, out index);
+                FindSuitableEntry(targetNode.Entries, b, out var index);
 
                 targetNode.Entries.Insert(index, new KeyValuePair<byte, DbItemReference>(b, (DbItemReference)(nodeChain.First().Reference.Clone())));
-                bool reallocated;
-                targetNode = UpdateOrReallocateNode(targetNode, out reallocated);
+                targetNode = UpdateOrReallocateNode(targetNode, out var reallocated);
 
                 if (reallocated)
                 {
@@ -701,8 +680,7 @@
         public bool Exists(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out var isFullMatch);
 
             if (isFullMatch)
             {
@@ -748,8 +726,7 @@
         public long GetRawDataLength(TKey key)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out var isFullMatch);
 
             if (isFullMatch)
             {
@@ -771,8 +748,7 @@
         public byte[] GetRawDataSegment(TKey key, long startIndex, long endIndex)
         {
             var binaryKey = _keySerializer.Serialize(key);
-            bool isFullMatch;
-            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out isFullMatch);
+            IRadixTreeNode node = FindMostSuitableNode(binaryKey, out _, out _, out var isFullMatch);
 
             if (!isFullMatch) return null;
 
@@ -864,8 +840,7 @@
                         return currentNode;
                     }
 
-                    int index;
-                    if (FindSuitableEntry(currentNode.Entries, binaryKey[keyOffset], out index).HasValue)
+                    if (FindSuitableEntry(currentNode.Entries, binaryKey[keyOffset], out var index).HasValue)
                     {
                         currentNode = _nodeStorage.Fetch(currentNode.Entries[index].Value);
 

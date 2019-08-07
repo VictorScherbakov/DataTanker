@@ -73,8 +73,7 @@
 
         private IBPlusTreeNode<TKey> NextNodeForKey(TKey key, IBPlusTreeNode<TKey> node, bool returnNullIfOutOfRange = false)
         {
-            int index;
-            FindSuitableEntry(node.Entries, key, out index);
+            FindSuitableEntry(node.Entries, key, out var index);
             if (index < node.Entries.Count)
                 return FetchNode(node.Entries[index].Value.PageIndex);
 
@@ -160,9 +159,7 @@
         {
             var node = GetSuitableLeafNodeForKey(key);
 
-            int index;
-
-            FindSuitableEntry(node.Entries, key, out index);
+            FindSuitableEntry(node.Entries, key, out var index);
 
             if (index == 0)
             {
@@ -186,9 +183,7 @@
         {
             var node = GetSuitableLeafNodeForKey(key);
 
-            int index;
-
-            FindSuitableEntry(node.Entries, key, out index);
+            FindSuitableEntry(node.Entries, key, out var index);
 
             if (index == node.Entries.Count)
                 return default(TKey);
@@ -268,9 +263,7 @@
             var keyPath = GetPathForKey(key);
             var leafNode = keyPath.Last();
 
-            int index;
-
-            var entry = FindSuitableEntry(leafNode.Entries, key, out index);
+            var entry = FindSuitableEntry(leafNode.Entries, key, out var index);
 
             if (entry.HasValue)
             {
@@ -316,9 +309,7 @@
             if(leafNode == null)
                 return;
 
-            int index;
-
-            var entry = FindSuitableEntry(leafNode.Entries, key, out index);
+            var entry = FindSuitableEntry(leafNode.Entries, key, out var index);
             if (entry.HasValue)
             {
                 // free referenced value
@@ -476,8 +467,7 @@
 
             newNode.ParentNodeIndex = node.ParentNodeIndex;
 
-            int index;
-            FindSuitableEntry(parentNode.Entries, node.Entries.First().Key, out index);
+            FindSuitableEntry(parentNode.Entries, node.Entries.First().Key, out var index);
             parentNode.Entries.RemoveAt(index);
             parentNode.Entries.Insert(index, entry2ForParent);
             parentNode.Entries.Insert(index, entry1ForParent);
@@ -646,8 +636,7 @@
         private void RedistributeEntries(IBPlusTreeNode<TKey> left, IBPlusTreeNode<TKey> right, IBPlusTreeNode<TKey> parent)
         {
             // get the index of parent entry referencing to the left node
-            int index;
-            FindSuitableEntry(parent.Entries, left.Entries.First().Key, out index);
+            FindSuitableEntry(parent.Entries, left.Entries.First().Key, out var index);
 
             // get concatenated sequence of leaf entries
             var entries = left.Entries.Concat(right.Entries).ToList();
