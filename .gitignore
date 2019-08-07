@@ -182,3 +182,4 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 /.vs/DataTanker/v15/Server/sqlite3
+/.vs/DataTanker.Examples/v15/Server/sqlite3
