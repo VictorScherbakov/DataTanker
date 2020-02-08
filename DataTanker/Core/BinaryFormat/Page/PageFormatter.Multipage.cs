@@ -76,7 +76,12 @@
 
             // skip object length marker if we are on the start page
             if (header.PreviousPageIndex == -1)
+            {
                 offset += 8;
+                // corresponding to the ` last -= 8 ` in function `WriteMultipageItemBlock`.
+                // otherwise,the last 8 bytes will be eaten!
+                length -= 8;  
+            }
 
             return ReadBlock(page, Math.Min(length, page.Length - offset), offset);
         }
