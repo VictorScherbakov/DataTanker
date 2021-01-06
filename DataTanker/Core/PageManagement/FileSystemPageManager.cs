@@ -76,7 +76,7 @@
 
         private static void EnsureFileExists(string fileName)
         {
-            if (File.Exists(fileName)) 
+            if (File.Exists(fileName))
                 return;
 
             using (File.Create(fileName))
@@ -119,7 +119,7 @@
                 _pagemap.Flush();
 
                 _storageStream.Seek(0, SeekOrigin.End);
-               
+
                 _storageStream.Write(pageBytes, 0, _pageSize);
                 Flush(_storageStream);
             }
@@ -145,7 +145,7 @@
                 _pagemap.TruncateLastFreePageMarker();
                 _pagemap.Flush();
 
-                
+
                 _storageStream.Seek(pageAllocation, SeekOrigin.Begin);
                 _storageStream.Write(pageBytes, 0, _pageSize);
                 Flush(_storageStream);
@@ -192,7 +192,7 @@
                     // write an allocation marker of reallocated page
                     _pagemap.WritePageAllocation(lastPageIndex, newPageAllocation);
 
-                    // write an allocation marker of first free page 
+                    // write an allocation marker of first free page
                     _pagemap.WritePageAllocation(firstFreePage.Item2, -1);
 
                     // write a disk-to-virtual entry of reallocated page
@@ -222,7 +222,7 @@
 
         /// <summary>
         /// Gets or sets a maximum number of empty (removed) pages in a storage file.
-        /// When the number of empty pages exceeds this value, the vacuum 
+        /// When the number of empty pages exceeds this value, the vacuum
         /// routine starts.
         /// </summary>
         public int MaxEmptyPages
@@ -266,7 +266,7 @@
 
         /// <summary>
         /// Switches page manager instance to the atomic operation mode.
-        /// In such a mode, all further changes can be applied all at once 
+        /// In such a mode, all further changes can be applied all at once
         /// by calling ExitAtomicOperation() method or canceled.
         /// </summary>
         public void EnterAtomicOperation()
@@ -283,7 +283,7 @@
         {
             if (_deferredUpdatesMode)
             {
-                // write end marker to indicate that 
+                // write end marker to indicate that
                 // one can playback the recovery records
                 // without risking to corrupt the storage
                 _recoveryFile.WriteFinalMarker();
@@ -343,7 +343,7 @@
                 if (_pagemap.GetPageAllocation(pageIndex) == -1)
                     return false;
 
-                if (_pagemap.IsPageRemoved(pageIndex)) 
+                if (_pagemap.IsPageRemoved(pageIndex))
                     return false;
 
                 return true;
@@ -399,7 +399,7 @@
         /// <summary>
         /// Fetches the page with specified index using provided array as a container.
         /// Callee should have full control over the sharing of content.
-        /// This method should used to reduce buffers reallocation. 
+        /// This method should used to reduce buffers reallocation.
         /// </summary>
         /// <param name="pageIndex">An index of page</param>
         /// <param name="content">The content of creating page</param>
@@ -478,7 +478,7 @@
                     Flush(_storageStream);
                 }
             }
-            finally 
+            finally
             {
                 Unlock();
             }
@@ -576,7 +576,7 @@
 
                 OpenExistingPageSpace();
             }
-            finally 
+            finally
             {
                 Unlock();
             }
@@ -639,10 +639,9 @@
                 // reset recovery file in any way
                 recoveryFile.Reset();
             }
-            finally 
+            finally
             {
-                if (_recoveryFile != null)
-                    recoveryFile.Dispose();
+                DisposeIfNotMemberVariable(recoveryFile);
             }
         }
 
@@ -720,11 +719,17 @@
             Dispose(false);
         }
 
+        private void DisposeIfNotMemberVariable(RecoveryFile recoveryFile)
+        {
+            if (_recoveryFile == null)
+                recoveryFile.Dispose();
+        }
+
         /// <summary>
         /// Initializes a new instance of the FileSystemPageManager.
         /// </summary>
         /// <param name="pageSize"></param>
-        internal FileSystemPageManager(int pageSize) 
+        internal FileSystemPageManager(int pageSize)
             : this (pageSize, false, 1)
         {
         }
