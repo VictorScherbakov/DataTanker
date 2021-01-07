@@ -9,6 +9,8 @@
     using Settings;
     using Utils;
 
+    using FlushExcepEvent = System.EventHandler<StorageFlushExceptionEventArgs>;
+
     /// <summary>
     /// Represents a data Storage.
     /// </summary>
@@ -23,6 +25,8 @@
         private string _infoFileName = "info";
 
         private StorageInfo _info;
+
+        public event FlushExcepEvent OnFlushException;
 
         public StorageInfo Info => _info;
 
@@ -40,7 +44,7 @@
 
             var hph = new HeadingPageHeader
                           {
-                              FsmPageIndex = 1, 
+                              FsmPageIndex = 1,
                               AccessMethodPageIndex = 2,
                               PageSize = PageManager.PageSize,
                               OnDiskStructureVersion = OnDiskStructureVersion,
@@ -57,8 +61,8 @@
 
             var fsmh = new FreeSpaceMapPageHeader
                            {
-                               StartPageIndex = fsmPage.Index, 
-                               PreviousPageIndex = -1, 
+                               StartPageIndex = fsmPage.Index,
+                               PreviousPageIndex = -1,
                                NextPageIndex = -1,
                                BasePageIndex = 0
                            };
@@ -196,7 +200,7 @@
                 else
                     OpenExisting(path);
             }
-            finally 
+            finally
             {
                 PageManager.Unlock();
             }
@@ -220,7 +224,7 @@
             _path = path;
             FillInfo();
             WriteInfo();
-            
+
             PageManager.CreateNewPageSpace();
             _isOpen = true;
 
@@ -327,10 +331,40 @@
             _autoFlushTimeout = autoFlushTimeout;
             _autoFlushInterval = autoFlushInterval;
             _flushTimer = new TimerHelper();
-            _flushTimer.Elapsed += (timer, o) => Flush();
+            _flushTimer.Elapsed += (timer, o) => {
+                // We wrap |Flush| with try...catch... because, in case we have
+                // a storage corruption, this might throw an exception (e.g.
+                // IndexOutOfRangeException) and we would like to give the
+                // library user a chance to stop gracefully.
+                try
+                {
+                    Flush();
+                }
+                catch (Exception ex)
+                {
+                    _flushTimer.Stop();
+                    TriggerFlushException(ex);
+                }
+            };
 
             PageManager = pageManager;
             pageManager.Storage = this;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ex"></param>
+        private void TriggerFlushException(Exception ex)
+        {
+            if (OnFlushException == null)
+                return;
+
+            var args = new StorageFlushExceptionEventArgs() {
+                FlushException = ex
+            };
+
+            OnFlushException.Invoke(this, args);
         }
 
         /// <summary>

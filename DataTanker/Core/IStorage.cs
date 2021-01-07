@@ -8,6 +8,12 @@
     public interface IStorage : IDisposable
     {
         /// <summary>
+        /// Triggered when there is a storage flush exception - usually
+        /// indicating a corrupted storage (that should be restarted/deleted).
+        /// </summary>
+        event EventHandler<StorageFlushExceptionEventArgs> OnFlushException;
+
+        /// <summary>
         /// Opens an existing storage.
         /// </summary>
         /// <param name="path">A string containing information about storage location</param>
